@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useTranslation } from '../hooks/useTranslation';
 import { UserRole, DressPart, SavedDesign, Order, Product, Measurements, PortfolioItem, UserProfile, User, SocialLink } from '../types';
 import { GoogleGenAI } from "@google/genai";
+import { useAuth } from '../contexts/AuthContext';
+import { api } from '../services/api';
 
-const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+let stripePromise: Promise<any> | null = null;
+const getStripePromise = async () => {
+  if (stripePromise) return stripePromise;
+  try {
+    const settings = await api.getPublicSettings();
+    const key = settings.stripe_public_key;
+    if (key) {
+      stripePromise = loadStripe(key);
+      return stripePromise;
+    }
+  } catch {}
+  return null;
+};
 
 // Consistent Role Images matching LoginPage
 const ROLE_IMAGES = {
@@ -32,6 +46,7 @@ interface UserDashboardProps {
   setSocialLinks: React.Dispatch<React.SetStateAction<SocialLink[]>>;
   dressParts: DressPart[];
   setDressParts: React.Dispatch<React.SetStateAction<DressPart[]>>;
+  onLogout: () => void;
 }
 
 type DashboardView = 'overview' | 'design' | 'my-designs' | 'orders' | 'profile' | 'wallet' | 'portfolio' | 'requests' | 'designer-portfolio' | 'admin-approvals' | 'admin-products' | 'admin-users' | 'admin-payments' | 'admin-socials' | 'admin-design-assets' | 'admin-orders';
@@ -81,7 +96,7 @@ const StripePaymentForm = ({ amount, onSuccess }: { amount: string, onSuccess: (
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         if (!stripe || !elements) return;
-        const cardElement = elements.getElement(CardElement);
+        const cardElement = elements.getElement(CardElement) as any;
         if (!cardElement) return;
 
         setProcessing(true);
@@ -127,11 +142,12 @@ const StripePaymentForm = ({ amount, onSuccess }: { amount: string, onSuccess: (
 };
 
 const UserDashboard: React.FC<UserDashboardProps> = ({ 
-  onNavigate, userRole, orders, users, setUsers, products, setProducts, socialLinks, setSocialLinks, dressParts, setSavedDesigns, savedDesigns
+  onNavigate, userRole, orders, users, setUsers, products, setProducts, socialLinks, setSocialLinks, dressParts, setSavedDesigns, savedDesigns, onLogout
 }) => {
   const { t } = useTranslation();
+  const { user: authUser, refreshUser } = useAuth();
   const [currentView, setCurrentView] = useState<DashboardView>('overview');
-  const [walletBalance, setWalletBalance] = useState<number>(150.00);
+  const [walletBalance, setWalletBalance] = useState<number>(authUser?.balance || 0);
   const [showTopUpModal, setShowTopUpModal] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState<string>('');
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string | null>(null);
@@ -153,8 +169,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       { id: 'baraka', translationKey: 'payment_method_barakabank', isActive: false, imgUrl: 'https://cdn-icons-png.flaticon.com/512/2830/2830289.png', type: 'bank_transfer', details: {} },
   ]);
 
-  // Portfolio Items Mock - NOW USING KEYS
-  const [portfolioItems] = useState<PortfolioItem[]>([
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([
       { id: 'p1', tailorId: 'u3', title: 'portfolio_p1_title', description: 'portfolio_p1_desc', price: 550, imageUrls: ['https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/9d86cb91-bae4-4c50-b229-260ea30b6827.jpg?raw=true'], status: 'approved' },
       { id: 'p2', tailorId: 'u3', title: 'portfolio_p2_title', description: 'portfolio_p2_desc', price: 420, imageUrls: ['https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/8b1facb8-f876-4bb6-9434-1184d39783bc.jpg?raw=true'], status: 'pending' },
       { id: 'p3', tailorId: 'u3', title: 'portfolio_p3_title', description: 'portfolio_p3_desc', price: 380, imageUrls: ['https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/8b1facb8-f876-4bb6-9434-1184d39783bc.jpg?raw=true'], status: 'pending' },
@@ -165,6 +180,73 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   const [selectedColor, setSelectedColor] = useState('#000000');
   const [generatedAiImage, setGeneratedAiImage] = useState<string | null>(null);
   const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+
+  const [adminStats, setAdminStats] = useState<any>(null);
+
+  useEffect(() => {
+    const loadWallet = async () => {
+      try {
+        const wallet = await api.getWallet();
+        setWalletBalance(Number(wallet.balance));
+      } catch {}
+    };
+    if (userRole) loadWallet();
+  }, []);
+
+  useEffect(() => {
+    if (userRole === 'manager') {
+      api.getUsers().then((data: any[]) => {
+        setUsers(data.map(u => ({
+          id: String(u.id),
+          firstName: u.first_name,
+          lastName: u.last_name,
+          email: u.email,
+          role: u.role as UserRole,
+          balance: Number(u.balance),
+          joinedDate: new Date(u.created_at || Date.now()),
+        })));
+      }).catch(() => {});
+    }
+  }, [userRole]);
+
+  useEffect(() => {
+    api.getPaymentMethods().then((data: any[]) => {
+      if (data.length > 0) {
+        setPaymentMethods(data.map(m => ({
+          id: String(m.id),
+          translationKey: m.translation_key || m.name,
+          isActive: m.is_active,
+          imgUrl: m.img_url || '',
+          type: m.type || 'cash_location',
+          details: m.details || {},
+        })));
+      }
+    }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (userRole === 'tailor' || userRole === 'designer' || userRole === 'manager') {
+      api.getPortfolio().then((data: any[]) => {
+        if (data.length > 0) {
+          setPortfolioItems(data.map(item => ({
+            id: String(item.id),
+            tailorId: String(item.tailor_id),
+            title: item.title,
+            description: item.description || '',
+            price: item.price || 0,
+            imageUrls: item.image_urls || [],
+            status: item.status as any,
+          })));
+        }
+      }).catch(() => {});
+    }
+  }, [userRole]);
+
+  useEffect(() => {
+    if (userRole === 'manager' && currentView === 'overview') {
+      api.getAdminStats().then(setAdminStats).catch(() => {});
+    }
+  }, [userRole, currentView]);
 
   // --- Sub-renderers ---
 
@@ -210,14 +292,27 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         setGeneratedAiImage(null);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            let apiKey = '';
+            try {
+              const settings = await api.getPublicSettings();
+              apiKey = settings.gemini_api_key || '';
+            } catch {}
+            if (!apiKey) {
+              const storedKey = localStorage.getItem('modeya_gemini_key');
+              if (storedKey) apiKey = storedKey;
+            }
+            if (!apiKey) {
+              alert('Please configure Gemini API key in settings');
+              return;
+            }
+            const ai = new GoogleGenAI({ apiKey });
             
             const partsDescription = [
-                designSelections.top ? `Top: ${t(designSelections.top.name as any)}` : '',
-                designSelections.bottom ? `Bottom: ${t(designSelections.bottom.name as any)}` : '',
-                designSelections.sleeve ? `Sleeves: ${t(designSelections.sleeve.name as any)}` : '',
-                designSelections.fabric ? `Fabric: ${t(designSelections.fabric.name as any)}` : '',
-                designSelections.embellishment ? `Embellishment: ${t(designSelections.embellishment.name as any)}` : '',
+                designSelections.front_neckline ? `Front Neckline: ${t(designSelections.front_neckline.name as any)}` : '',
+                designSelections.back_neckline ? `Back Neckline: ${t(designSelections.back_neckline.name as any)}` : '',
+                designSelections.fabrics ? `Fabric: ${t(designSelections.fabrics.name as any)}` : '',
+                designSelections.skirt_styles ? `Skirt Style: ${t(designSelections.skirt_styles.name as any)}` : '',
+                designSelections.train ? `Train: ${t(designSelections.train.name as any)}` : '',
             ].filter(Boolean).join(', ');
 
             const prompt = `Create a high-fashion, realistic full-body photograph of a dress. The dress has the following specifications: ${partsDescription}. The color of the dress is ${selectedColor}. The style should be elegant and suitable for a boutique display. Professional studio lighting, 4k resolution, white background.`;
@@ -259,7 +354,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
           </div>
           <div className="grid lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
-                  {['top', 'bottom', 'sleeve', 'fabric', 'embellishment'].map(partType => (
+                  {['front_neckline', 'back_neckline', 'fabrics', 'skirt_styles', 'train'].map(partType => (
                       <div key={partType} className={glassCardClass + " p-6"}>
                           <h4 className="font-bold uppercase tracking-widest text-xs mb-4 text-brand-gold">{t(`design_part_${partType}` as any)}</h4>
                           <div className="flex gap-4 overflow-x-auto pb-2 custom-scrollbar">
@@ -328,16 +423,36 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                       </div>
 
                       <button 
-                        onClick={() => {
+                        onClick={async () => {
                             const newDesign: SavedDesign = {
                                 id: Date.now().toString(),
-                                name: 'dashboard_design_default_name', // Save the KEY not the translated string
+                                name: 'dashboard_design_default_name',
                                 createdAt: new Date(),
                                 parts: designSelections,
                                 selectedColor: selectedColor,
                                 generatedImageUrl: generatedAiImage || undefined
                             };
                             setSavedDesigns([...savedDesigns, newDesign]);
+                            try {
+                              const designData: Record<string, unknown> = {
+                                name: 'Custom Design',
+                                design_type: 'ai_generated',
+                                image_url: generatedAiImage || '',
+                                price: 0,
+                                is_public: false,
+                              };
+                              for (const [key, part] of Object.entries(designSelections)) {
+                                const partId = parseInt((part as any).id);
+                                if (!isNaN(partId)) {
+                                  if (key === 'front_neckline') designData.front_neckline_id = partId;
+                                  else if (key === 'back_neckline') designData.back_neckline_id = partId;
+                                  else if (key === 'fabrics') designData.fabric_id = partId;
+                                  else if (key === 'skirt_styles') designData.skirt_style_id = partId;
+                                  else if (key === 'train') designData.train_id = partId;
+                                }
+                              }
+                              await api.createDesign(designData);
+                            } catch {}
                             alert(t('profile_save_success'));
                         }}
                         className={glassButtonClass}
@@ -436,7 +551,14 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                       </label>
                   </div>
               ))}
-              <button onClick={() => alert(t('admin_socials_success'))} className={glassButtonClass + " mt-4"}>
+              <button onClick={async () => { 
+                  try {
+                    await api.updateSocialLinks(socialLinks.map(l => ({ name: l.name, href: l.href, is_enabled: l.isEnabled })));
+                    alert(t('admin_socials_success'));
+                  } catch (err: any) {
+                    alert(err.message || 'Failed to save social links');
+                  }
+              }} className={glassButtonClass + " mt-4"}>
                   {t('admin_socials_save')}
               </button>
           </div>
@@ -479,15 +601,15 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   const ManagerOverview = () => (
     <div className="animate-fade-in text-start">
         <div className="mb-10">
-            <h2 className="text-3xl font-serif text-white mb-1">{t('dashboard_welcome_user')}, {userRole === 'manager' ? 'Admin' : users[0].firstName}</h2>
+            <h2 className="text-3xl font-serif text-white mb-1">{t('dashboard_welcome_user')}, {userRole === 'manager' ? 'Admin' : users[0]?.firstName || 'User'}</h2>
             <p className="text-sm text-gray-300">{t('dashboard_welcome_message')}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <MetricCard title={t('admin_stat_total_users')} value={users.length} icon="users" trend="12%" />
-            <MetricCard title={t('admin_stat_total_orders')} value={orders.length} icon="shopping-bag" trend="5%" />
-            <MetricCard title={t('admin_stat_total_revenue')} value={`$${(orders.reduce((acc, curr) => acc + (curr.price || 0), 0)).toFixed(0)}`} icon="credit-card" trend="20%" />
-            <MetricCard title={t('admin_stat_pending_approvals')} value={portfolioItems.filter(i => i.status === 'pending').length} icon="check-circle" />
+            <MetricCard title={t('admin_stat_total_users')} value={adminStats?.total_users ?? users.length} icon="users" trend="12%" />
+            <MetricCard title={t('admin_stat_total_orders')} value={adminStats?.total_orders ?? orders.length} icon="shopping-bag" trend="5%" />
+            <MetricCard title={t('admin_stat_total_revenue')} value={`$${(adminStats?.total_revenue ?? orders.reduce((acc, curr) => acc + (curr.price || 0), 0)).toFixed(0)}`} icon="credit-card" trend="20%" />
+            <MetricCard title={t('admin_stat_pending_approvals')} value={adminStats?.pending_approvals ?? portfolioItems.filter(i => i.status === 'pending').length} icon="check-circle" />
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -579,7 +701,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                               <td className="px-6 py-4 text-end">
                                   <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                       <button onClick={() => { setSelectedUserForWallet(u); setIsUserWalletModalOpen(true); }} className="text-white hover:text-brand-gold text-[10px] font-bold uppercase tracking-widest">{t('admin_users_action_wallet')}</button>
-                                      <button onClick={() => { if(confirm(t('admin_users_delete_confirm'))) setUsers(users.filter(user => user.id !== u.id)); }} className="text-red-400 hover:text-red-500 text-[10px] font-bold uppercase tracking-widest">{t('admin_users_action_delete')}</button>
+                                      <button onClick={async () => { if(confirm(t('admin_users_delete_confirm'))) { try { await api.deleteUser(parseInt(u.id)); setUsers(users.filter(user => user.id !== u.id)); } catch (err: any) { alert(err.message || 'Failed to delete user'); } } }} className="text-red-400 hover:text-red-500 text-[10px] font-bold uppercase tracking-widest">{t('admin_users_action_delete')}</button>
                                   </div>
                               </td>
                           </tr>
@@ -605,8 +727,15 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                             <input 
                                 type="checkbox" 
                                 checked={method.isActive} 
-                                onChange={() => {
-                                    setPaymentMethods(prev => prev.map(m => m.id === method.id ? { ...m, isActive: !m.isActive } : m));
+                                onChange={async () => {
+                                    const newActive = !method.isActive;
+                                    setPaymentMethods(prev => prev.map(m => m.id === method.id ? { ...m, isActive: newActive } : m));
+                                    try {
+                                      await api.updatePaymentMethod(parseInt(method.id), { is_active: newActive });
+                                    } catch (err: any) {
+                                      setPaymentMethods(prev => prev.map(m => m.id === method.id ? { ...m, isActive: !newActive } : m));
+                                      alert(err.message || 'Failed to update payment method');
+                                    }
                                 }}
                                 className="sr-only peer"
                             />
@@ -771,9 +900,11 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                         <p className="text-[7px] text-gray-400 leading-none">{t('dashboard_version_premium')}</p>
                     </div>
                 </div>
-                {/* LARGER LOGOUT BUTTON */}
                 <button 
-                    onClick={() => onNavigate('home')} 
+                    onClick={() => {
+                      onLogout();
+                      onNavigate('home');
+                    }} 
                     title={t('dashboard_menu_logout')}
                     className="p-3 rounded-lg text-red-400 hover:bg-white/10 transition-colors shadow-sm"
                 >
@@ -797,13 +928,125 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
               {(currentView === 'portfolio' || currentView === 'admin-approvals') && <ProfessionalPortfolio />}
               
               {/* Fallback for other views */}
-              {!['overview', 'admin-users', 'admin-payments', 'admin-products', 'admin-socials', 'admin-orders', 'design', 'my-designs', 'portfolio', 'admin-approvals'].includes(currentView) && (
-                <div className={glassCardClass + " p-16 md:p-24 text-center"}>
-                    <h2 className="text-2xl font-serif text-white mb-4 capitalize">{t(`dashboard_menu_${currentView.replace(/-/g, '_')}` as any)}</h2>
-                    <p className="text-gray-400 text-sm max-w-sm mx-auto mb-8">{t('dashboard_feature_coming_soon')}</p>
-                    <button onClick={() => setCurrentView('overview')} className={glassButtonClass + " w-auto px-8"}>
-                        {t('dashboard_return_to_overview')}
-                    </button>
+              {currentView === 'wallet' && (
+                <div className="animate-fade-in text-start">
+                  <div className="mb-8">
+                    <h2 className="text-3xl font-serif text-white mb-1">{t('dashboard_menu_wallet')}</h2>
+                    <p className="text-sm text-gray-300">{t('wallet_subtitle' as any)}</p>
+                  </div>
+                  <div className="grid md:grid-cols-3 gap-6 mb-8">
+                    <div className={glassCardClass + " p-6 text-center"}>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_current_balance')}</p>
+                      <p className="text-4xl font-serif text-white font-bold">${walletBalance.toFixed(2)}</p>
+                    </div>
+                    <div className={glassCardClass + " p-6 text-center"}>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_top_up' as any)}</p>
+                      <div className="flex gap-2 mt-3">
+                        <input type="number" value={topUpAmount} onChange={e => setTopUpAmount(e.target.value)} className={glassInputClass.replace('w-full','flex-1')} placeholder="0.00" />
+                        <button onClick={async () => { if (!topUpAmount || parseFloat(topUpAmount) <= 0) return; try { await api.topUpWallet(parseFloat(topUpAmount)); const w = await api.getWallet(); setWalletBalance(Number(w.balance)); setTopUpAmount(''); } catch (err: any) { alert(err.message || 'Failed to top up'); } }} className="px-4 py-2 bg-brand-gold text-white font-bold uppercase tracking-widest text-[10px] rounded-xl hover:bg-yellow-600">{t('wallet_top_up' as any)}</button>
+                      </div>
+                    </div>
+                    <div className={glassCardClass + " p-6 text-center"}>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_pending_balance' as any)}</p>
+                      <p className="text-2xl font-serif text-white font-bold">${authUser?.pending_balance?.toFixed(2) || '0.00'}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {currentView === 'profile' && (
+                <div className="animate-fade-in text-start">
+                  <div className="mb-8">
+                    <h2 className="text-3xl font-serif text-white mb-1">{t('dashboard_menu_profile')}</h2>
+                    <p className="text-sm text-gray-300">{t('profile_subtitle' as any)}</p>
+                  </div>
+                  <div className={glassCardClass + " p-8 max-w-2xl"}>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_firstName')}</label>
+                        <input type="text" defaultValue={authUser?.first_name || ''} id="profile-first-name" className={glassInputClass} />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_lastName')}</label>
+                        <input type="text" defaultValue={authUser?.last_name || ''} id="profile-last-name" className={glassInputClass} />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_email')}</label>
+                        <input type="email" defaultValue={authUser?.email || ''} className={glassInputClass} disabled />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('signup_form_phone_label')}</label>
+                        <input type="tel" defaultValue={authUser?.phone || ''} id="profile-phone" className={glassInputClass} />
+                      </div>
+                    </div>
+                    <div className="mt-6">
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Bio</label>
+                      <textarea defaultValue={authUser?.bio || ''} id="profile-bio" rows={3} className={glassInputClass + " resize-none"} />
+                    </div>
+                    <button onClick={async () => { try { const first_name = (document.getElementById('profile-first-name') as HTMLInputElement)?.value; const last_name = (document.getElementById('profile-last-name') as HTMLInputElement)?.value; const phone = (document.getElementById('profile-phone') as HTMLInputElement)?.value; const bio = (document.getElementById('profile-bio') as HTMLTextAreaElement)?.value; await api.updateMe({ first_name, last_name, phone, bio }); await refreshUser(); alert(t('profile_save_success')); } catch (err: any) { alert(err.message || 'Failed to update profile'); } }} className={glassButtonClass + " mt-6 w-auto px-8"}>{t('profile_save_button' as any)}</button>
+                  </div>
+                </div>
+              )}
+              {currentView === 'orders' && (
+                <div className="animate-fade-in text-start">
+                  <div className="mb-8">
+                    <h2 className="text-3xl font-serif text-white mb-1">{t('dashboard_menu_orders')}</h2>
+                    <p className="text-sm text-gray-300">{t('orders_subtitle' as any)}</p>
+                  </div>
+                  <div className={glassCardClass + " overflow-hidden"}>
+                    <table className="w-full text-start">
+                      <thead className="bg-white/5 text-gray-300 uppercase text-[9px] font-bold tracking-[0.15em] border-b border-white/10">
+                        <tr>
+                          <th className="px-6 py-4">{t('admin_orders_table_id')}</th>
+                          <th className="px-6 py-4">{t('admin_orders_table_status')}</th>
+                          <th className="px-6 py-4">{t('admin_orders_table_price')}</th>
+                          <th className="px-6 py-4">Date</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/10">
+                        {orders.map(order => (
+                          <tr key={order.id} className="hover:bg-white/5 transition-colors">
+                            <td className="px-6 py-4 font-mono text-xs text-gray-300">#{order.id.slice(-6)}</td>
+                            <td className="px-6 py-4"><StatusPill status={order.status} /></td>
+                            <td className="px-6 py-4 text-xs text-white">${order.price || '-'}</td>
+                            <td className="px-6 py-4 text-xs text-gray-400">{new Date(order.createdAt).toLocaleDateString()}</td>
+                          </tr>
+                        ))}
+                        {orders.length === 0 && (
+                          <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-400 text-xs">{t('dashboard_no_orders')}</td></tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+              {currentView === 'requests' && (
+                <div className="animate-fade-in text-start">
+                  <div className="mb-8">
+                    <h2 className="text-3xl font-serif text-white mb-1">{t('dashboard_menu_requests')}</h2>
+                    <p className="text-sm text-gray-300">{t('requests_subtitle' as any)}</p>
+                  </div>
+                  <div className={glassCardClass + " overflow-hidden"}>
+                    <table className="w-full text-start">
+                      <thead className="bg-white/5 text-gray-300 uppercase text-[9px] font-bold tracking-[0.15em] border-b border-white/10">
+                        <tr>
+                          <th className="px-6 py-4">{t('admin_orders_table_id')}</th>
+                          <th className="px-6 py-4">{t('admin_orders_table_customer')}</th>
+                          <th className="px-6 py-4">{t('admin_orders_table_status')}</th>
+                          <th className="px-6 py-4">{t('admin_orders_table_price')}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/10">
+                        {orders.filter(o => o.status === 'pending_quote').map(order => (
+                          <tr key={order.id} className="hover:bg-white/5 transition-colors">
+                            <td className="px-6 py-4 font-mono text-xs text-gray-300">#{order.id.slice(-6)}</td>
+                            <td className="px-6 py-4 text-xs font-bold text-white">{users.find(u => u.id === order.customerId)?.firstName || '-'}</td>
+                            <td className="px-6 py-4"><StatusPill status={order.status} /></td>
+                            <td className="px-6 py-4 text-xs text-white">${order.price || '-'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
           </div>
@@ -841,11 +1084,17 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                   </div>
                   <div className="flex gap-3">
                       <button onClick={() => setIsUserWalletModalOpen(false)} className="flex-1 py-4 text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:text-white transition-colors">{t('modal_cancel')}</button>
-                      <button onClick={() => { 
+                      <button onClick={async () => { 
                           const amt = parseFloat(adminWalletAmount); 
-                          setUsers(users.map(u => u.id === selectedUserForWallet.id ? { ...u, balance: adminWalletAction === 'add' ? u.balance + amt : u.balance - amt } : u));
-                          setIsUserWalletModalOpen(false); 
-                          setAdminWalletAmount('');
+                          if (!amt || amt <= 0) return;
+                          try {
+                            await api.updateUserWallet(parseInt(selectedUserForWallet.id), adminWalletAction, amt);
+                            setUsers(users.map(u => u.id === selectedUserForWallet.id ? { ...u, balance: adminWalletAction === 'add' ? u.balance + amt : u.balance - amt } : u));
+                            setIsUserWalletModalOpen(false); 
+                            setAdminWalletAmount('');
+                          } catch (err: any) {
+                            alert(err.message || 'Failed to update wallet');
+                          }
                       }} className="flex-1 py-4 bg-white text-black rounded-xl shadow-lg font-bold uppercase tracking-widest text-[10px] hover:bg-brand-gold hover:text-white transition-colors">{t('admin_wallet_submit')}</button>
                   </div>
               </div>

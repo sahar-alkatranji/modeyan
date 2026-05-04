@@ -5,13 +5,15 @@ import { useTranslation } from '../hooks/useTranslation';
 import { SocialLink } from '../types';
 
 interface HeaderProps {
-  onNavigate: (page: 'home' | 'login' | 'shop' | 'about', anchor?: string) => void;
+  onNavigate: (page: 'home' | 'login' | 'shop' | 'about' | 'user-dashboard', anchor?: string) => void;
   cartItemCount: number;
   onCartClick: () => void;
   socialLinks: SocialLink[];
+  isAuthenticated: boolean;
+  onLogout: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onNavigate, cartItemCount, onCartClick, socialLinks }) => {
+const Header: React.FC<HeaderProps> = ({ onNavigate, cartItemCount, onCartClick, socialLinks, isAuthenticated, onLogout }) => {
   const { language, setLanguage } = useLanguage();
   const { t } = useTranslation();
 
@@ -70,12 +72,29 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, cartItemCount, onCartClick,
                   {language === 'en' ? t('header_lang_switch_ar') : t('header_lang_switch_en')}
                 </button>
                 <div className="h-4 w-px bg-gray-300"></div>
-                <button onClick={() => onNavigate('login')} className="text-gray-600 hover:text-black flex items-center space-x-1 text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    <span>{t('header_login')}</span>
-                </button>
+                {isAuthenticated ? (
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => onNavigate('user-dashboard')} className="text-gray-600 hover:text-black flex items-center space-x-1 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                        <span>{t('header_dashboard' as any) || 'Dashboard'}</span>
+                    </button>
+                    <button onClick={onLogout} className="text-gray-600 hover:text-black flex items-center space-x-1 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span>{t('header_logout' as any) || 'Logout'}</span>
+                    </button>
+                  </div>
+                ) : (
+                  <button onClick={() => onNavigate('login')} className="text-gray-600 hover:text-black flex items-center space-x-1 text-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span>{t('header_login')}</span>
+                  </button>
+                )}
 
                 <button onClick={onCartClick} className="relative text-gray-600 hover:text-black" aria-label="Open shopping cart">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

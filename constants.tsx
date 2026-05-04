@@ -91,37 +91,37 @@ export const PRODUCTS: Product[] = [
 
 // Mock Data for Dress Parts with Visualization Images
 export const DRESS_PARTS: DressPart[] = [
-  // Tops
-  { id: 'top_1', type: 'top', name: 'part_v_neck', imageUrl: 'https://cdn-icons-png.flaticon.com/512/9281/9281147.png' },
-  { id: 'top_2', type: 'top', name: 'part_off_shoulder', imageUrl: 'https://cdn-icons-png.flaticon.com/512/2290/2290518.png' },
-  { id: 'top_3', type: 'top', name: 'part_halter', imageUrl: 'https://cdn-icons-png.flaticon.com/512/3365/3365457.png' },
-  // Bottoms
-  { id: 'bot_1', type: 'bottom', name: 'part_a_line', imageUrl: 'https://cdn-icons-png.flaticon.com/512/1867/1867631.png' },
-  { id: 'bot_2', type: 'bottom', name: 'part_mermaid', imageUrl: 'https://cdn-icons-png.flaticon.com/512/12462/12462992.png' },
-  { id: 'bot_3', type: 'bottom', name: 'part_ball_gown', imageUrl: 'https://cdn-icons-png.flaticon.com/512/9398/9398928.png' },
-  // Sleeves
-  { id: 'slv_1', type: 'sleeve', name: 'part_long_lace', imageUrl: 'https://cdn-icons-png.flaticon.com/512/5266/5266654.png' },
-  { id: 'slv_2', type: 'sleeve', name: 'part_puff', imageUrl: 'https://cdn-icons-png.flaticon.com/512/2290/2290495.png' },
-  { id: 'slv_3', type: 'sleeve', name: 'part_sleeveless', imageUrl: 'https://cdn-icons-png.flaticon.com/512/3109/3109804.png' },
+  // Front Neckline
+  { id: 'front_neckline_1', type: 'front_neckline', name: 'part_v_neck', imageUrl: 'https://cdn-icons-png.flaticon.com/512/9281/9281147.png' },
+  { id: 'front_neckline_2', type: 'front_neckline', name: 'part_off_shoulder', imageUrl: 'https://cdn-icons-png.flaticon.com/512/2290/2290518.png' },
+  { id: 'front_neckline_3', type: 'front_neckline', name: 'part_halter', imageUrl: 'https://cdn-icons-png.flaticon.com/512/3365/3365457.png' },
+  // Skirt Styles
+  { id: 'skirt_styles_1', type: 'skirt_styles', name: 'part_a_line', imageUrl: 'https://cdn-icons-png.flaticon.com/512/1867/1867631.png' },
+  { id: 'skirt_styles_2', type: 'skirt_styles', name: 'part_mermaid', imageUrl: 'https://cdn-icons-png.flaticon.com/512/12462/12462992.png' },
+  { id: 'skirt_styles_3', type: 'skirt_styles', name: 'part_ball_gown', imageUrl: 'https://cdn-icons-png.flaticon.com/512/9398/9398928.png' },
+  // Back Neckline
+  { id: 'back_neckline_1', type: 'back_neckline', name: 'part_long_lace', imageUrl: 'https://cdn-icons-png.flaticon.com/512/5266/5266654.png' },
+  { id: 'back_neckline_2', type: 'back_neckline', name: 'part_puff', imageUrl: 'https://cdn-icons-png.flaticon.com/512/2290/2290495.png' },
+  { id: 'back_neckline_3', type: 'back_neckline', name: 'part_sleeveless', imageUrl: 'https://cdn-icons-png.flaticon.com/512/3109/3109804.png' },
   
   // Fabrics - Updated with specific fabrics and images
-  { id: 'fab_tulle_glitter', type: 'fabric', name: 'fabric_tulle_glitter', imageUrl: 'https://raw.githubusercontent.com/boshrasaman/PHOTO_DESGAIN/b5944f5905565306a22782e3fa5853cd3e8bedbb/71KtFxt74aL._AC_SX679_.jpg' },
-  { id: 'fab_organza', type: 'fabric', name: 'fabric_organza', imageUrl: 'https://raw.githubusercontent.com/boshrasaman/PHOTO_DESGAIN/b5944f5905565306a22782e3fa5853cd3e8bedbb/%D8%A3%D9%88%D8%B1%D8%BA%D9%86%D8%B2%D8%A7%20(Organza).webp' },
-  { id: 'fab_tulle', type: 'fabric', name: 'fabric_tulle', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D8%AA%D9%88%D9%84%20(Tulle).webp?raw=true' },
-  { id: 'fab_georgette', type: 'fabric', name: 'fabric_georgette', imageUrl: 'https://raw.githubusercontent.com/boshrasaman/PHOTO_DESGAIN/b5944f5905565306a22782e3fa5853cd3e8bedbb/%D8%AC%D9%88%D8%B1%D8%AC%D9%8A%D8%AA%20(Georgette).webp' },
-  { id: 'fab_chiffon', type: 'fabric', name: 'fabric_chiffon', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D8%B4%D9%8A%D9%81%D9%88%D9%86%20(Chiffon).webp?raw=true' },
-  { id: 'fab_linen', type: 'fabric', name: 'fabric_linen', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D9%84%D9%8A%D9%86%D9%8A%D9%86%20(Linen).webp?raw=true' },
-  { id: 'fab_velvet', type: 'fabric', name: 'fabric_velvet', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D9%85%D8%AE%D9%85%D9%84%20(Velvet).webp?raw=true' },
-  { id: 'fab_crepe', type: 'fabric', name: 'fabric_crepe', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D9%83%D8%B1%D9%8A%D8%A8%20(Crepe).webp?raw=true' },
-  { id: 'fab_lace', type: 'fabric', name: 'fabric_lace', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D8%AF%D8%A7%D9%86%D8%AA%D9%8A%D9%84%20(Lace).webp?raw=true' },
-  { id: 'fab_silk', type: 'fabric', name: 'fabric_silk', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D8%AD%D8%B1%D9%8A%D8%B1%20(Silk).webp?raw=true' },
-  { id: 'fab_jersey', type: 'fabric', name: 'fabric_jersey', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D8%AC%D9%8A%D8%B1%D8%B3%D9%8A%20(Jersey).webp?raw=true' },
-  { id: 'fab_sequin', type: 'fabric', name: 'fabric_sequin', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/fluweel-paillet-oudroze%20(1).webp?raw=true' },
+  { id: 'fab_tulle_glitter', type: 'fabrics', name: 'fabric_tulle_glitter', imageUrl: 'https://raw.githubusercontent.com/boshrasaman/PHOTO_DESGAIN/b5944f5905565306a22782e3fa5853cd3e8bedbb/71KtFxt74aL._AC_SX679_.jpg' },
+  { id: 'fab_organza', type: 'fabrics', name: 'fabric_organza', imageUrl: 'https://raw.githubusercontent.com/boshrasaman/PHOTO_DESGAIN/b5944f5905565306a22782e3fa5853cd3e8bedbb/%D8%A3%D9%88%D8%B1%D8%BA%D9%86%D8%B2%D8%A7%20(Organza).webp' },
+  { id: 'fab_tulle', type: 'fabrics', name: 'fabric_tulle', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D8%AA%D9%88%D9%84%20(Tulle).webp?raw=true' },
+  { id: 'fab_georgette', type: 'fabrics', name: 'fabric_georgette', imageUrl: 'https://raw.githubusercontent.com/boshrasaman/PHOTO_DESGAIN/b5944f5905565306a22782e3fa5853cd3e8bedbb/%D8%AC%D9%88%D8%B1%D8%AC%D9%8A%D8%AA%20(Georgette).webp' },
+  { id: 'fab_chiffon', type: 'fabrics', name: 'fabric_chiffon', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D8%B4%D9%8A%D9%81%D9%88%D9%86%20(Chiffon).webp?raw=true' },
+  { id: 'fab_linen', type: 'fabrics', name: 'fabric_linen', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D9%84%D9%8A%D9%86%D9%8A%D9%86%20(Linen).webp?raw=true' },
+  { id: 'fab_velvet', type: 'fabrics', name: 'fabric_velvet', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D9%85%D8%AE%D9%85%D9%84%20(Velvet).webp?raw=true' },
+  { id: 'fab_crepe', type: 'fabrics', name: 'fabric_crepe', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D9%83%D8%B1%D9%8A%D8%A8%20(Crepe).webp?raw=true' },
+  { id: 'fab_lace', type: 'fabrics', name: 'fabric_lace', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D8%AF%D8%A7%D9%86%D8%AA%D9%8A%D9%84%20(Lace).webp?raw=true' },
+  { id: 'fab_silk', type: 'fabrics', name: 'fabric_silk', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D8%AD%D8%B1%D9%8A%D8%B1%20(Silk).webp?raw=true' },
+  { id: 'fab_jersey', type: 'fabrics', name: 'fabric_jersey', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/%D8%AC%D9%8A%D8%B1%D8%B3%D9%8A%20(Jersey).webp?raw=true' },
+  { id: 'fab_sequin', type: 'fabrics', name: 'fabric_sequin', imageUrl: 'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/fluweel-paillet-oudroze%20(1).webp?raw=true' },
 
-  // Embellishments
-  { id: 'emb_1', type: 'embellishment', name: 'Pearls', imageUrl: 'https://cdn-icons-png.flaticon.com/512/2655/2655340.png' },
-  { id: 'emb_2', type: 'embellishment', name: 'Swarovski Crystals', imageUrl: 'https://cdn-icons-png.flaticon.com/512/3989/3989608.png' },
-  { id: 'emb_3', type: 'embellishment', name: 'Embroidery', imageUrl: 'https://cdn-icons-png.flaticon.com/512/4298/4298032.png' },
+  // Train
+  { id: 'train_1', type: 'train', name: 'Pearls', imageUrl: 'https://cdn-icons-png.flaticon.com/512/2655/2655340.png' },
+  { id: 'train_2', type: 'train', name: 'Swarovski Crystals', imageUrl: 'https://cdn-icons-png.flaticon.com/512/3989/3989608.png' },
+  { id: 'train_3', type: 'train', name: 'Embroidery', imageUrl: 'https://cdn-icons-png.flaticon.com/512/4298/4298032.png' },
 ];
 
 export const TAILORS: Tailor[] = [

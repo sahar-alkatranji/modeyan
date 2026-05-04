@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 import { UserRole } from '../types';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LoginPageProps {
   onNavigate: (page: 'home' | 'login' | 'user-dashboard') => void;
@@ -19,11 +20,14 @@ const ROLE_IMAGES = {
 
 const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLogin }) => {
   const { t } = useTranslation();
+  const { login, register: registerUser } = useAuth();
   const [view, setView] = useState<'login' | 'signup' | 'forgot'>('login');
   const [activeRole, setActiveRole] = useState<UserRole>('customer');
   const [bgImage, setBgImage] = useState(ROLE_IMAGES.default);
   const [recoveryStep, setRecoveryStep] = useState<'enterEmail' | 'showOptions' | 'codeSent'>('enterEmail');
   const [isAnimating, setIsAnimating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   // Preload images
   useEffect(() => {
@@ -45,16 +49,44 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLogin }) => {
     }, 300);
   };
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(activeRole);
+    setError(null);
+    setLoading(true);
+    const form = e.target as HTMLFormElement;
+    const email = (form.querySelector('[name="email"]') as HTMLInputElement)?.value;
+    const password = (form.querySelector('[name="password"]') as HTMLInputElement)?.value;
+    try {
+      await login(email, password);
+      onLogin(activeRole);
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
   
-  const handleSignupSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignupSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
     const formData = new FormData(e.currentTarget);
     const role = formData.get('role') as UserRole || activeRole;
-    onLogin(role);
+    try {
+      await registerUser({
+        email: formData.get('email') as string,
+        password: formData.get('password') as string,
+        first_name: formData.get('firstName') as string,
+        last_name: formData.get('lastName') as string,
+        phone: formData.get('phone') as string,
+        role: role,
+      });
+      onLogin(role);
+    } catch (err: any) {
+      setError(err.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleForgotPasswordSubmit = (e: React.FormEvent) => {
@@ -109,8 +141,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLogin }) => {
                 <button type="button" onClick={() => setView('forgot')} className="text-xs text-gray-300 hover:text-white underline">{t('login_form_forgot_password')}</button>
             </div>
         </div>
-        <button type="submit" className={buttonClasses}>{t('login_form_login_button')}</button>
+        <button type="submit" disabled={loading} className={buttonClasses}>{loading ? '...' : t('login_form_login_button')}</button>
       </form>
+      {error && <p className="text-red-400 text-xs text-center mt-2">{error}</p>}
 
       <div className="text-center border-t border-white/10 pt-6">
         <p className="text-sm text-gray-300 mb-2">{t('login_form_no_account')}</p>
@@ -141,9 +174,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLogin }) => {
         <input type="hidden" name="role" value={activeRole} />
         
         <div className="pt-2">
-            <button type="submit" className={buttonClasses}>{t('signup_form_signup_button')}</button>
+            <button type="submit" disabled={loading} className={buttonClasses}>{loading ? '...' : t('signup_form_signup_button')}</button>
         </div>
       </form>
+      {error && <p className="text-red-400 text-xs text-center mt-2">{error}</p>}
 
       <div className="text-center">
         <p className="text-sm text-gray-300">

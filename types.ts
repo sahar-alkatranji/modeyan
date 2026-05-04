@@ -43,9 +43,11 @@ export interface User {
   joinedDate: Date;
 }
 
+export type DressPartCategory = 'front_neckline' | 'back_neckline' | 'fabrics' | 'skirt_styles' | 'train';
+
 export interface DressPart {
   id: string;
-  type: 'top' | 'bottom' | 'sleeve' | 'fabric' | 'embellishment';
+  type: DressPartCategory;
   name: string;
   imageUrl?: string; 
 }
@@ -55,11 +57,11 @@ export interface SavedDesign {
   name: string;
   createdAt: Date;
   parts: {
-    top?: DressPart;
-    bottom?: DressPart;
-    sleeve?: DressPart;
-    fabric?: DressPart;
-    embellishment?: DressPart;
+    front_neckline?: DressPart;
+    back_neckline?: DressPart;
+    fabrics?: DressPart;
+    skirt_styles?: DressPart;
+    train?: DressPart;
   };
   selectedColor?: string;
   generatedImageUrl?: string;
@@ -83,13 +85,15 @@ export interface ChatMessage {
 export interface Order {
   id: string;
   customerId: string;
-  design: SavedDesign;
+  design?: SavedDesign;
   tailorId: string;
-  measurements: Measurements;
-  status: 'pending_quote' | 'priced' | 'accepted' | 'rejected' | 'in_progress' | 'completed' | 'cancelled';
+  measurements?: Measurements;
+  status: 'pending_quote' | 'quote_submitted' | 'quote_accepted' | 'in_progress' | 'completed' | 'cancelled' | 'disputed';
   price?: number;
   createdAt: Date;
   chatHistory?: ChatMessage[];
+  designType?: string;
+  notes?: string;
 }
 
 export interface PortfolioItem {
@@ -123,4 +127,69 @@ export interface SocialLink {
   href: string;
   icon: React.ReactNode;
   isEnabled: boolean;
+}
+
+export interface ApiDressPart {
+  id: number;
+  name: string;
+  category: string;
+  part_type?: string;
+  image_url?: string;
+  filename?: string;
+  is_active: boolean;
+}
+
+export interface ApiDesign {
+  id: number;
+  designer_id?: number;
+  name: string;
+  description?: string;
+  design_type: string;
+  image_url: string;
+  is_public: boolean;
+  price?: number;
+  created_at?: string;
+}
+
+export interface ApiOrder {
+  id: number;
+  customer_id: number;
+  tailor_id?: number;
+  design_id?: number;
+  status: string;
+  design_type: string;
+  total_price?: number;
+  selected_parts?: Record<string, unknown>;
+  notes?: string;
+  created_at?: string;
+}
+
+export interface ApiPortfolioItem {
+  id: number;
+  tailor_id: number;
+  title: string;
+  description?: string;
+  price?: number;
+  image_urls?: string[];
+  stock?: Array<{ size: string; quantity: number }>;
+  status: string;
+  created_at?: string;
+}
+
+export interface ApiPaymentMethod {
+  id: number;
+  name: string;
+  translation_key?: string;
+  is_active: boolean;
+  img_url?: string;
+  type?: string;
+  details?: Record<string, unknown>;
+}
+
+export interface ApiSocialLink {
+  id: number;
+  name: string;
+  href?: string;
+  is_enabled: boolean;
+  icon_svg?: string;
 }
