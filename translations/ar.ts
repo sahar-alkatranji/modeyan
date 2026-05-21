@@ -128,6 +128,8 @@ export const ar = {
 
   // Profile Settings
   profile_title: 'إعدادات الملف الشخصي',
+  profile_subtitle: 'إدارة معلوماتك الشخصية',
+  profile_save_button: 'حفظ التغييرات',
   profile_label_firstName: 'الاسم الأول',
   profile_label_lastName: 'الاسم الأخير',
   profile_label_email: 'البريد الإلكتروني',
@@ -138,7 +140,10 @@ export const ar = {
   profile_save_success: 'تم تحديث الملف الشخصي بنجاح!',
 
   // Wallet & Payments
+  wallet_subtitle: 'إدارة رصيدك ومعاملاتك',
   wallet_current_balance: 'الرصيد الحالي',
+  wallet_top_up: 'شحن الرصيد',
+  wallet_pending_balance: 'الرصيد المعلق',
   wallet_add_funds: 'إضافة رصيد',
   wallet_history: 'سجل المعاملات',
   wallet_topup_modal_title: 'شحن المحفظة',
@@ -177,6 +182,7 @@ export const ar = {
   // Tailor Dashboard
   dashboard_menu_portfolio: 'معرض أعمالي',
   dashboard_menu_requests: 'طلبات العملاء',
+  requests_subtitle: 'الطلبات الواردة بانتظار عرض سعرك',
   portfolio_subtitle: 'إدارة أعمالك ومعرضك.',
   tailor_portfolio_add_button: 'إضافة عمل جديد',
   tailor_portfolio_modal_title: 'إضافة عمل إلى المعرض',
@@ -324,6 +330,11 @@ export const ar = {
   design_part_sleeve: 'الأكمام',
   design_part_fabric: 'القماش',
   design_part_embellishment: 'الزينة',
+  design_part_front_neckline: 'قص الصدر',
+  design_part_back_neckline: 'قص الظهر',
+  design_part_fabrics: 'القماش',
+  design_part_skirt_styles: 'أسلوب التنورة',
+  design_part_train: 'الشاحط',
   design_part_color: 'لون الفستان',
   design_part_all: 'الكل',
   design_select_fabric_placeholder: 'اختر نوع القماش...',
@@ -412,6 +423,7 @@ export const ar = {
   order_sent_success_design_saved: 'تم إرسال الطلب بنجاح! لا يزال التصميم محفوظاً في قائمة تصاميمك.',
 
   // Orders
+  orders_subtitle: 'تتبع وإدارة طلباتك',
   dashboard_no_orders: 'لا توجد طلبات نشطة.',
   order_id: 'رقم الطلب',
   order_design_name: 'التصميم',

@@ -128,6 +128,8 @@ export const en = {
 
   // Profile Settings
   profile_title: 'Profile Settings',
+  profile_subtitle: 'Manage your personal information',
+  profile_save_button: 'Save Changes',
   profile_label_firstName: 'First Name',
   profile_label_lastName: 'Last Name',
   profile_label_email: 'Email',
@@ -138,6 +140,9 @@ export const en = {
   profile_save_success: 'Profile updated successfully!',
 
   // Wallet & Payments
+  wallet_subtitle: 'Manage your balance and transactions',
+  wallet_top_up: 'Top Up',
+  wallet_pending_balance: 'Pending Balance',
   wallet_current_balance: 'Current Balance',
   wallet_add_funds: 'Add Funds',
   wallet_history: 'Transaction History',
@@ -177,6 +182,7 @@ export const en = {
   // Tailor Dashboard
   dashboard_menu_portfolio: 'My Portfolio',
   dashboard_menu_requests: 'Customer Requests',
+  requests_subtitle: 'Incoming orders waiting for your quote',
   portfolio_subtitle: 'Manage your work and showcase.',
   tailor_portfolio_add_button: 'Add New Work',
   tailor_portfolio_modal_title: 'Add Work to Portfolio',
@@ -325,6 +331,11 @@ export const en = {
   design_part_embellishment: 'Embellishment',
   design_part_color: 'Dress Color',
   design_part_all: 'All',
+  design_part_front_neckline: 'Front Neckline',
+  design_part_back_neckline: 'Back Neckline',
+  design_part_fabrics: 'Fabric',
+  design_part_skirt_styles: 'Skirt Style',
+  design_part_train: 'Train',
   design_select_fabric_placeholder: 'Select Fabric Type...',
   dashboard_design_save_button: 'Save to My Designs',
   dashboard_design_preview: 'AI Dress Preview',
@@ -411,6 +422,7 @@ export const en = {
   order_sent_success_design_saved: 'Request sent successfully! The design remains saved in your collection.',
 
   // Orders
+  orders_subtitle: 'Track and manage your orders',
   dashboard_no_orders: 'No active orders.',
   order_id: 'Order ID',
   order_design_name: 'Design',
