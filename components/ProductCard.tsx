@@ -12,7 +12,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
   return (
     <div className="group text-center">
       <div className="relative overflow-hidden mb-4">
-        <img src={product.imageUrls[0]} alt={t(product.name as any)} className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" />
+        <img src={product.imageUrls[0]} alt={t(product.name as any)} className="w-full h-80 object-cover object-top transition-transform duration-500 group-hover:scale-105" />
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-300 flex items-center justify-center">
           <button 
             onClick={() => onQuickView(product)}
