@@ -3,21 +3,46 @@
 ## 🏗️ نظرة عامة
 تطبيق MODEYAN هو متجر إلكتروني وبوتيك متطور لتصاميم الأزياء الراقية، مصمم لمصممة الأزياء سحر القطرنجي. يتميز بميزات مخصصة مثل اختيار وتفصيل المقاسات والاتصال المباشر.
 
+**الاتصال:**
+- 📧 البريد: bsaman710@gmail.com
+- 📱 الهاتف: +963 969 656 346
+- 💬 واتساب: https://wa.me/963969656346
+
+---
+
 ## 📝 سجل التغييرات
 | التاريخ | التغيير | الملفات المتأثرة |
 |---------|---------|------------------|
-| 2026-05-21 | تحديث معلومات الاتصال الحقيقية واستبدال الإيميل القديم والهاتف. | [Footer.tsx](file:///c:/Users/Abdalgani/Desktop/myapp/new_modeya-/modeyan/components/Footer.tsx), [ar.ts](file:///c:/Users/Abdalgani/Desktop/myapp/new_modeya-/modeyan/translations/ar.ts), [en.ts](file:///c:/Users/Abdalgani/Desktop/myapp/new_modeya-/modeyan/translations/en.ts) |
-| 2026-05-21 | تعديل تصنيفات شريط الفوتر لتشمل تصنيفات الفساتين بدلاً من تصنيفات الملابس العامة. | [Footer.tsx](file:///c:/Users/Abdalgani/Desktop/myapp/new_modeya-/modeyan/components/Footer.tsx), [constants.tsx](file:///c:/Users/Abdalgani/Desktop/myapp/new_modeya-/modeyan/constants.tsx), [ar.ts](file:///c:/Users/Abdalgani/Desktop/myapp/new_modeya-/modeyan/translations/ar.ts), [en.ts](file:///c:/Users/Abdalgani/Desktop/myapp/new_modeya-/modeyan/translations/en.ts) |
-| 2026-05-21 | بناء صفحة سياسة الشحن المتكاملة وإضافة قسم تتبع الطلب بشكل متكامل وتفاعلي. | [ShippingPolicyPage.tsx](file:///c:/Users/Abdalgani/Desktop/myapp/new_modeya-/modeyan/components/ShippingPolicyPage.tsx), [App.tsx](file:///c:/Users/Abdalgani/Desktop/myapp/new_modeya-/modeyan/App.tsx), [ar.ts](file:///c:/Users/Abdalgani/Desktop/myapp/new_modeya-/modeyan/translations/ar.ts), [en.ts](file:///c:/Users/Abdalgani/Desktop/myapp/new_modeya-/modeyan/translations/en.ts) |
-| 2026-05-21 | حل مشكلة إعادة التحميل للمدخلات وفقدان التركيز أثناء الكتابة في نافذة التخصيص. | [ProductModal.tsx](file:///c:/Users/Abdalgani/Desktop/myapp/new_modeya-/modeyan/components/ProductModal.tsx), [CustomizationView.tsx](file:///c:/Users/Abdalgani/Desktop/myapp/new_modeya-/modeyan/components/CustomizationView.tsx) |
+| 2026-05-21 | تحديث معلومات الاتصال الحقيقية واستبدال الإيميل القديم والهاتف | `Footer.tsx`, `ar.ts`, `en.ts` |
+| 2026-05-21 | تعديل تصنيفات شريط الفوتر لتشمل تصنيفات الفساتين الستة | `Footer.tsx`, `constants.tsx`, `ar.ts`, `en.ts` |
+| 2026-05-21 | بناء صفحة سياسة الشحن المتكاملة مع تتبع الطلب | `ShippingPolicyPage.tsx`, `App.tsx`, ملفات الترجمة |
+| 2026-05-21 | حل مشكلة إعادة التحميل وفقدان التركيز في نافذة التخصيص | `ProductModal.tsx`, `CustomizationView.tsx` |
+| 2026-05-21 | تفكيك UserDashboard.tsx إلى مكونات مستقلة في مجلد dashboard/ | `components/dashboard/*` (12 ملف) |
+| 2026-05-21 | **إصلاح حلقة HMR اللانهائية** - فصل useAuth إلى ملف منفصل | `contexts/useAuth.ts`, `contexts/AuthContext.tsx` |
+| 2026-05-21 | **إضافة Error Boundary** - حماية الموقع من الأعطال | `components/ErrorBoundary.tsx`, `index.tsx` |
+| 2026-05-21 | **ربط تصنيفات الفوتر بفلتر المتجر** - نقر تصنيف → متجر مفلتر | `App.tsx`, `Footer.tsx`, `ShopPage.tsx` |
+| 2026-05-21 | **إصلاح صورة About** - إظهار وجه الفتاة بـ object-top | `components/About.tsx` |
+| 2026-05-21 | **تحسين صفحة Contact** - إضافة واتساب + رسالة نجاح عربية | `components/Contact.tsx` |
+
+---
 
 ## 🐛 المشاكل والحلول
 | المشكلة | الحالة | الحل |
 |---------|--------|------|
-| إعادة تحميل نافذة التخصيص وفقدان الـ focus أثناء الكتابة (تحديث الحالة) | تم الحل ✅ | استخراج `CustomizationView` كمكون مستقل بدلاً من تعريفه داخلياً في `ProductModal` لتجنب إعادة البناء المتكرر للـ DOM node. |
+| إعادة تحميل نافذة التخصيص وفقدان الـ focus أثناء الكتابة | ✅ محلولة | استخراج `CustomizationView` كمكون مستقل |
+| **حلقة HMR اللانهائية في المتصفح** | ✅ محلولة | `AuthContext.tsx` كانت تصدر hook و Component معاً - تم فصل `useAuth` في `useAuth.ts` |
+| **الصفحة الرئيسية لا تعمل / بيضاء** | ✅ محلولة | إضافة Error Boundary + إصلاح HMR + التأكد من الـ Fallbacks |
+| تصنيفات الفوتر (بلوزات، تنانير...) قديمة | ✅ محلولة | استبدالها بالتصنيفات الستة الجديدة للفساتين |
+| روابط الفوتر لا تعمل (href="#") | ✅ محلولة | ربط كل تصنيف بصفحة المتجر مع الفلتر المقابل |
+| صورة البنت تقطع وجهها | ✅ محلولة | `h-[420px]` + `object-top` في `About.tsx` |
+| معلومات التواصل وهمية (info@mysite.com) | ✅ محلولة | تحديث لـ bsaman710@gmail.com + +963 969 656 346 |
+| لا زر واتساب | ✅ محلولة | إضافة واتساب في Footer + Contact + رابط wa.me/963969656346 |
+
+---
 
 ## 💻 أخطاء التيرمينال
 | الأمر | الخطأ | الحل |
 |-------|-------|------|
-| `npm run build 2>&1 \| tail -30` | `tail` غير معرف في بيئة windows الافتراضية | تشغيل الأمر بدون استخدام `tail` |
-| `npm run build` | `vite` غير معرف (عدم تثبيت node_modules) | تشغيل `npm install --legacy-peer-deps` لتفادي تعارضات react 19 مع stripe ثم إعادة التشغيل. |
+| `npm run build 2>&1 \| tail -30` | `tail` غير معرف في PowerShell | استخدام `npm run build 2>&1` فقط |
+| `npm run build` | `vite` غير معرف (عدم تثبيت node_modules) | تشغيل `npm install --legacy-peer-deps` ثم إعادة التشغيل |
+| `cd ... && npm run build` | `&&` غير صالح في PowerShell | تشغيل الأوامر منفصلة بدون `&&` |
