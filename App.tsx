@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import NewArrivals from './components/NewArrivals';
@@ -19,11 +19,13 @@ import { api } from './services/api';
 import ShippingPolicyPage from './components/ShippingPolicyPage';
 
 type Page = 'home' | 'login' | 'about' | 'shop' | 'user-dashboard' | 'policy-shipping';
+type ShopCategory = 'all' | 'long' | 'short' | 'summer' | 'winter' | 'spring' | 'autumn';
 
 const AppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [shopCategory, setShopCategory] = useState<ShopCategory>('all');
   const { user, isAuthenticated, isLoading, logout } = useAuth();
 
   const [products, setProducts] = useState<Product[]>(PRODUCTS);
@@ -56,39 +58,49 @@ const AppContent: React.FC = () => {
     const loadData = async () => {
       try {
         const designs = await api.getDesigns();
-        const mappedProducts: Product[] = designs.map((d: any) => ({
-          id: d.id,
-          name: d.name,
-          description: d.description,
-          price: d.price || 0,
-          imageUrls: [d.image_url],
-          sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
-        }));
-        setProducts(prev => mappedProducts.length > 0 ? mappedProducts : prev);
-      } catch { /* use fallback */ }
+        if (Array.isArray(designs)) {
+          const mappedProducts: Product[] = designs.map((d: any) => ({
+            id: d.id,
+            name: d.name || '',
+            description: d.description || '',
+            price: Number(d.price) || 0,
+            imageUrls: d.image_url ? [d.image_url] : [],
+            sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
+          }));
+          setProducts(prev => mappedProducts.length > 0 ? mappedProducts : prev);
+        }
+      } catch (e) {
+        console.error("Failed to load designs from API, using fallback", e);
+      }
 
       try {
         const parts = await api.getParts();
-        const mapped: DressPart[] = parts.map((p: any) => ({
-          id: String(p.id),
-          type: p.category as any,
-          name: p.name,
-          imageUrl: p.image_url,
-        }));
-        setDressParts(prev => mapped.length > 0 ? mapped : prev);
-      } catch { /* use fallback */ }
+        if (Array.isArray(parts)) {
+          const mapped: DressPart[] = parts.map((p: any) => ({
+            id: String(p.id),
+            type: p.category as any,
+            name: p.name || '',
+            imageUrl: p.image_url || '',
+          }));
+          setDressParts(prev => mapped.length > 0 ? mapped : prev);
+        }
+      } catch (e) {
+        console.error("Failed to load dress parts from API, using fallback", e);
+      }
 
       try {
         const links = await api.getSocialLinks();
-        if (links.length > 0) {
+        if (Array.isArray(links) && links.length > 0) {
           setSocialLinks(links.map((l: any) => ({
-            name: l.name,
+            name: l.name || '',
             href: l.href || '#',
-            icon: SOCIAL_LINKS.find(sl => sl.name.toLowerCase() === l.name.toLowerCase())?.icon || <span />,
-            isEnabled: l.is_enabled,
+            icon: SOCIAL_LINKS.find(sl => sl.name?.toLowerCase() === l.name?.toLowerCase())?.icon || <span />,
+            isEnabled: !!l.is_enabled,
           })));
         }
-      } catch { /* use fallback */ }
+      } catch (e) {
+        console.error("Failed to load social links from API, using fallback", e);
+      }
     };
     loadData();
   }, []);
@@ -96,17 +108,21 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated) {
       api.getOrders().then((o: any[]) => {
-        setOrders(o.map(ord => ({
-          id: String(ord.id),
-          customerId: String(ord.customer_id),
-          design: {} as any,
-          tailorId: String(ord.tailor_id || ''),
-          measurements: {} as any,
-          status: ord.status as any,
-          price: ord.total_price,
-          createdAt: new Date(ord.created_at || Date.now()),
-        })));
-      }).catch(() => {});
+        if (Array.isArray(o)) {
+          setOrders(o.map(ord => ({
+            id: String(ord.id),
+            customerId: String(ord.customer_id),
+            design: {} as any,
+            tailorId: String(ord.tailor_id || ''),
+            measurements: {} as any,
+            status: ord.status as any,
+            price: ord.total_price,
+            createdAt: new Date(ord.created_at || Date.now()),
+          })));
+        }
+      }).catch((e) => {
+        console.error("Failed to load orders from API", e);
+      });
     }
   }, [isAuthenticated]);
 
@@ -122,7 +138,7 @@ const AppContent: React.FC = () => {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  const navigate = (page: Page, anchor?: string) => {
+  const navigate = (page: Page, anchor?: string, category?: ShopCategory) => {
     const doScroll = (selector: string) => {
       const element = document.querySelector(selector);
       if (element) {
@@ -133,6 +149,10 @@ const AppContent: React.FC = () => {
         window.scrollTo({ top: offsetPosition, behavior: "smooth" });
       }
     };
+
+    if (page === 'shop' && category) {
+      setShopCategory(category);
+    }
 
     if (currentPage === page && anchor) {
       doScroll(anchor);
@@ -145,6 +165,11 @@ const AppContent: React.FC = () => {
         window.scrollTo(0, 0);
       }
     }
+  };
+
+  const navigateToShopCategory = (category: ShopCategory) => {
+    setShopCategory(category);
+    navigate('shop');
   };
 
   const handleAddToCart = (product: Product, size: string) => {
@@ -185,7 +210,7 @@ const AppContent: React.FC = () => {
 
   const userRole = (user?.role as UserRole) || 'customer';
 
-  if (isLoading) {
+  if (isLoading && currentPage === 'user-dashboard') {
     return (
       <LanguageProvider>
         <div className="min-h-screen flex items-center justify-center bg-brand-beige">
@@ -231,7 +256,7 @@ const AppContent: React.FC = () => {
             />
           )}
           {currentPage === 'about' && <AboutPage onNavigate={navigate} />}
-          {currentPage === 'shop' && <ShopPage onAddToCart={handleAddToCart} products={products} />}
+          {currentPage === 'shop' && <ShopPage onAddToCart={handleAddToCart} products={products} initialCategory={shopCategory} />}
           {currentPage === 'policy-shipping' && <ShippingPolicyPage onNavigate={navigate} />}
           {currentPage === 'user-dashboard' && (
             <UserDashboard 
@@ -254,7 +279,7 @@ const AppContent: React.FC = () => {
             />
           )}
         </main>
-        <Footer socialLinks={socialLinks} onNavigate={navigate} />
+        <Footer socialLinks={socialLinks} onNavigate={navigate} onShopCategory={navigateToShopCategory} />
       </div>
     </LanguageProvider>
   );

@@ -7,7 +7,7 @@ interface AboutProps {
 
 const About: React.FC<AboutProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
-  const [scale, setScale] = useState(2.0);
+  const [scale, setScale] = useState(1.0);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -17,9 +17,9 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
         const viewportHeight = window.innerHeight;
 
         const progress = Math.max(0, Math.min(1, top / viewportHeight));
-        const newScale = 1 + progress * 1.0;
+        const newScale = 1 + progress * 0.15;
         
-        setScale(Math.min(newScale, 2.0));
+        setScale(Math.min(newScale, 1.15));
       }
     };
 
@@ -35,12 +35,12 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
     <section className="bg-brand-beige py-20" id="about" ref={sectionRef}>
         <div className="w-full h-px bg-gray-200 mb-20"></div>
       <div className="container mx-auto px-6 grid md:grid-cols-3 gap-12 items-center">
-        <div className="w-full overflow-hidden md:col-span-2">
+        <div className="w-full overflow-hidden md:col-span-2 rounded-sm" style={{ height: '420px' }}>
           <img 
             src="https://static.wixstatic.com/media/11062b_d01649f4423b4f1d9ae3a0e14eaaa5c6~mv2.jpg/v1/fill/w_1093,h_618,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_d01649f4423b4f1d9ae3a0e14eaaa5c6~mv2.jpg" 
-            alt="About MODEYA" 
-            className="w-full h-auto object-cover transition-transform duration-200 ease-out"
-            style={{ transform: `scale(${scale})` }}
+            alt="About MODEYA - سحر القطرنجي" 
+            className="w-full h-full object-cover object-top transition-transform duration-200 ease-out"
+            style={{ transform: `scale(${scale})`, transformOrigin: 'top center' }}
           />
         </div>
         <div className="text-center md:text-start">

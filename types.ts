@@ -16,6 +16,8 @@ export interface Product {
   sizes?: string[];
   reviews?: Review[];
   stock?: { size: string, quantity: number }[];
+  videoUrl?: string;
+  category?: 'long' | 'short' | 'summer' | 'winter' | 'spring' | 'autumn';
 }
 
 export interface CartItem {
@@ -103,6 +105,7 @@ export interface PortfolioItem {
   description: string;
   price: number;
   imageUrls: string[]; // Updated to array
+  videoUrl?: string;
   status: 'pending' | 'approved' | 'rejected';
   stock?: { size: string, quantity: number }[];
 }
@@ -171,6 +174,7 @@ export interface ApiPortfolioItem {
   description?: string;
   price?: number;
   image_urls?: string[];
+  video_url?: string;
   stock?: Array<{ size: string; quantity: number }>;
   status: string;
   created_at?: string;

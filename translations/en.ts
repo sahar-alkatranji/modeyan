@@ -1,5 +1,6 @@
 
 export const en = {
+  unknown: 'Unknown',
   // Header
   header_shop: 'SHOP',
   header_about: 'ABOUT',
@@ -34,6 +35,7 @@ export const en = {
   customization_warning: 'Custom orders may take at least 7 extra working days, in addition to customization fees (if applicable). Our team may contact you to assist with your order.',
   customization_toggle_size: 'Do you want to customize the size?',
   customization_toggle_color: 'Do you want to change the color?',
+  customization_select_color: 'Select Color',
   customization_requests_label: 'Additional customization requests here.',
   customization_fee_note: 'Note: Additional fees may apply for delivery time and customization after confirmation with the designer.',
   customization_back_to_product: 'Back to Product',

@@ -57,6 +57,7 @@ export const PRODUCTS: Product[] = [
       'https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/Generated%20Image%20November%2013,%202025%20-%203_42AM%20(1).png?raw=true'
     ],
     sizes: STANDARD_SIZES,
+    category: 'long',
     reviews: [
       { author: 'Noor', rating: 5, comment: 'Absolutely stunning dress! The fabric is high quality and it fits perfectly. I received so many compliments.' },
       { author: 'Fatima', rating: 4, comment: 'Beautiful design and color. It\'s a little long for me, but nothing a small alteration can\'t fix. Overall, I love it.' },
@@ -70,6 +71,7 @@ export const PRODUCTS: Product[] = [
       price: 80.00, 
       imageUrls: ['https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/8b1facb8-f876-4bb6-9434-1184d39783bc.jpg?raw=true'],
       sizes: STANDARD_SIZES,
+      category: 'short',
   },
   { 
       id: 3, 
@@ -78,6 +80,7 @@ export const PRODUCTS: Product[] = [
       price: 120.00, 
       imageUrls: ['https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/WhatsApp%20Image%202025-11-13%20at%202.22.11%20AM.jpeg?raw=true'],
       sizes: STANDARD_SIZES,
+      category: 'summer',
   },
   { 
       id: 4, 
@@ -86,6 +89,7 @@ export const PRODUCTS: Product[] = [
       price: 250.00, 
       imageUrls: ['https://github.com/boshrasaman/PHOTO_DESGAIN/blob/main/9d86cb91-bae4-4c50-b229-260ea30b6827.jpg?raw=true'],
       sizes: STANDARD_SIZES,
+      category: 'winter',
   },
 ];
 

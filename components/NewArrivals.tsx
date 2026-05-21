@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import ProductCard from './ProductCard';
 import ProductModal from './ProductModal';
 import { useTranslation } from '../hooks/useTranslation';
@@ -18,9 +18,9 @@ const NewArrivals: React.FC<NewArrivalsProps> = ({ onNavigate, onAddToCart, prod
     setSelectedProduct(product);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setSelectedProduct(null);
-  };
+  }, []);
 
   // Only show first 4 products
   const displayProducts = products.slice(0, 4);

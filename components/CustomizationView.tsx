@@ -152,7 +152,7 @@ const CustomizationView: React.FC<CustomizationViewProps> = ({
                   />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium text-gray-900 mb-1">Select Color</span>
+                  <span className="text-sm font-medium text-gray-900 mb-1">{t('customization_select_color')}</span>
                   <span className="text-xs text-gray-500 font-mono bg-white px-2 py-1 rounded border">{customColor}</span>
                 </div>
               </div>

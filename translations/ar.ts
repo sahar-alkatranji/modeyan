@@ -1,5 +1,6 @@
 
 export const ar = {
+  unknown: 'غير معروف',
   // Header
   header_shop: 'المتجر',
   header_about: 'عنا',
@@ -34,6 +35,7 @@ export const ar = {
   customization_warning: 'قد تستغرق الطلبات المُخصصة سبعة أيام عمل إضافية على الأقل، بالإضافة إلى رسوم التخصيص (إن وجدت). قد يتواصل فريقنا معك لمساعدتك في طلبك.',
   customization_toggle_size: 'هل تريد تخصيص الحجم ؟',
   customization_toggle_color: 'هل تريد تغيير اللون ؟',
+  customization_select_color: 'اختر اللون',
   customization_requests_label: 'طلبات التخصيص الإضافية هنا.',
   customization_fee_note: 'ملحوظة: قد يتم تطبيق رسوم إضافية لوقت التسليم والتخصيص بعد التأكيد مع المصمم.',
   customization_back_to_product: 'العودة للمنتج',

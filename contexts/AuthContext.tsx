@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { api, ApiUser } from '../services/api';
 
-interface AuthContextType {
+export interface AuthContextType {
   user: ApiUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -11,7 +11,7 @@ interface AuthContextType {
   refreshUser: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<ApiUser | null>(null);
@@ -71,6 +71,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 };
 
+// ✅ useAuth is now in a separate file: contexts/useAuth.ts
+// Keeping it here as well for backward compatibility with existing imports
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
