@@ -13,7 +13,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
       className="relative h-[80vh] bg-cover bg-no-repeat bg-fixed"
       style={{ 
         backgroundImage: "url('https://static.wixstatic.com/media/88aac0_a61bd9903e7942cba653459562a80d35~mv2.jpeg')",
-        backgroundPosition: 'center calc(50% + 100px)'
+        backgroundPosition: 'center top'
       }}
     >
       <div className="absolute inset-0 bg-black bg-opacity-20"></div>

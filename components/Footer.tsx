@@ -5,9 +5,10 @@ import { SocialLink } from '../types';
 
 interface FooterProps {
   socialLinks: SocialLink[];
+  onNavigate?: (page: string) => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
+const Footer: React.FC<FooterProps> = ({ socialLinks, onNavigate }) => {
   const { t } = useTranslation();
 
   return (
@@ -39,9 +40,9 @@ const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
           </div>
           <div>
             <h4 className="font-bold text-black mb-4 tracking-widest">{t('footer_store_title')}</h4>
-            <p className="mb-2">123-456-7890</p>
-            <p className="mb-2">info@mysite.com</p>
-            <p className="mb-4">123 Street Name, City, State, 12345</p>
+            <p className="mb-2">+0969656346</p>
+            <p className="mb-2">bsaman710@gmail.com</p>
+            <p className="mb-4">حماة، سوريا</p>
              <ul>
               {FOOTER_LINKS.store.map(link => (
                 <li key={link.key} className="mb-2">
@@ -55,7 +56,13 @@ const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
             <ul>
               {FOOTER_LINKS.policy.map(link => (
                 <li key={link.key} className="mb-2">
-                  <a href={link.href} className="hover:text-black">{t(link.key as any)}</a>
+                  <a 
+                    href={link.href} 
+                    onClick={link.key === 'footer_policy_shipping' && onNavigate ? (e) => { e.preventDefault(); onNavigate('policy-shipping'); } : undefined}
+                    className="hover:text-black cursor-pointer"
+                  >
+                    {t(link.key as any)}
+                  </a>
                 </li>
               ))}
             </ul>

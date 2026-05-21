@@ -132,11 +132,12 @@ export const TAILORS: Tailor[] = [
 
 export const FOOTER_LINKS = {
     shop: [
-        { key: 'footer_shop_dresses', href: '#' },
-        { key: 'footer_shop_tops', href: '#' },
-        { key: 'footer_shop_skirts', href: '#' },
-        { key: 'footer_shop_jackets', href: '#' },
-        { key: 'footer_shop_shoes', href: '#' },
+        { key: 'footer_shop_long', href: '#' },
+        { key: 'footer_shop_short', href: '#' },
+        { key: 'footer_shop_summer', href: '#' },
+        { key: 'footer_shop_winter', href: '#' },
+        { key: 'footer_shop_spring', href: '#' },
+        { key: 'footer_shop_autumn', href: '#' },
     ],
     store: [
         { key: 'footer_store_hours_1', href: null },

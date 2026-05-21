@@ -16,7 +16,9 @@ import UserDashboard from './components/UserDashboard';
 import { PRODUCTS, SOCIAL_LINKS, DRESS_PARTS } from './constants';
 import { api } from './services/api';
 
-type Page = 'home' | 'login' | 'about' | 'shop' | 'user-dashboard';
+import ShippingPolicyPage from './components/ShippingPolicyPage';
+
+type Page = 'home' | 'login' | 'about' | 'shop' | 'user-dashboard' | 'policy-shipping';
 
 const AppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -230,6 +232,7 @@ const AppContent: React.FC = () => {
           )}
           {currentPage === 'about' && <AboutPage onNavigate={navigate} />}
           {currentPage === 'shop' && <ShopPage onAddToCart={handleAddToCart} products={products} />}
+          {currentPage === 'policy-shipping' && <ShippingPolicyPage onNavigate={navigate} />}
           {currentPage === 'user-dashboard' && (
             <UserDashboard 
               onNavigate={navigate}
@@ -251,7 +254,7 @@ const AppContent: React.FC = () => {
             />
           )}
         </main>
-        <Footer socialLinks={socialLinks} />
+        <Footer socialLinks={socialLinks} onNavigate={navigate} />
       </div>
     </LanguageProvider>
   );
