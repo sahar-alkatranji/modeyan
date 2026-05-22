@@ -11,12 +11,18 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
+  const [language, setLanguage] = useState<Language>(() => {
+    try {
+      const saved = localStorage.getItem('modeya_language');
+      return (saved === 'ar' || saved === 'en') ? saved : 'en';
+    } catch { return 'en'; }
+  });
   const direction = language === 'ar' ? 'rtl' : 'ltr';
 
   React.useEffect(() => {
     document.documentElement.lang = language;
     document.documentElement.dir = direction;
+    try { localStorage.setItem('modeya_language', language); } catch {}
   }, [language, direction]);
 
   return (

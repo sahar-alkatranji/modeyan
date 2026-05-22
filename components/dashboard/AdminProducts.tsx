@@ -221,7 +221,7 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ products, setProdu
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <form
             onSubmit={handleSubmit}
-            className={glassCardClass + " p-8 max-w-lg w-full text-start space-y-4 my-8"}
+            className={glassCardClass + " p-6 sm:p-8 max-w-lg w-full text-start space-y-4 my-4 max-h-[85vh] overflow-y-auto"}
           >
             <h3 className="font-serif text-2xl text-white mb-4">
               {isEditing ? t('admin_products_edit_title' as any) || 'Edit Product Details' : t('admin_products_add_modal_title' as any) || 'Add New Product'}

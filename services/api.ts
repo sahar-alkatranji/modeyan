@@ -1,5 +1,5 @@
 
-const API_BASE = 'http://localhost:8000/api/v1';
+const API_BASE = '/api/v1';
 
 interface TokenResponse {
   access_token: string;
@@ -162,9 +162,31 @@ class ApiClient {
     });
   }
 
+  async paymentTopup(amount: number, payment_method_id: number, receipt_url?: string) {
+    return this.request<any>('/wallet/payment-topup', {
+      method: 'POST',
+      body: JSON.stringify({ amount, payment_method_id, receipt_url }),
+    });
+  }
+
+  async getPendingTopups() {
+    return this.request<any[]>('/wallet/pending-topups');
+  }
+
+  async approveTopup(transactionId: number, approve: boolean, admin_note?: string) {
+    return this.request<any>(`/wallet/approve-topup/${transactionId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ approve, admin_note }),
+    });
+  }
+
   async getParts(category?: string): Promise<any[]> {
     const params = category ? `?category=${category}` : '';
     return this.request<any[]>(`/parts${params}`);
+  }
+
+  async getScannerParts(category: string): Promise<any[]> {
+    return this.request<any[]>(`/parts/scanner/${category}`);
   }
 
   async getDesigns(isPublic: boolean = true): Promise<any[]> {
@@ -338,7 +360,7 @@ class ApiClient {
 
   // User Management
   async createUser(data: Record<string, unknown>): Promise<any> {
-    return this.request<any>('/users', {
+    return this.request<any>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
     });

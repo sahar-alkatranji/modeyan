@@ -8,7 +8,7 @@ interface PaymentMethod {
   translationKey: string;
   isActive: boolean;
   imgUrl: string;
-  type: 'mobile_transfer' | 'remittance' | 'bank_transfer' | 'paypal' | 'stripe' | 'cash_location';
+  type: 'mobile_transfer' | 'remittance' | 'bank_transfer' | 'paypal' | 'stripe' | 'cash_location' | 'wallet_qr';
   details: any;
 }
 
@@ -26,10 +26,13 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
   const [detailsForm, setDetailsForm] = useState<Record<string, string>>({});
   const [isConfiguring, setIsConfiguring] = useState(false);
 
+  // Update image state for configure modal
+  const [configureImgUrl, setConfigureImgUrl] = useState('');
+
   // Add Payment Method State
   const [isAddMethodOpen, setIsAddMethodOpen] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newType, setNewType] = useState<'mobile_transfer' | 'remittance' | 'bank_transfer' | 'paypal' | 'stripe' | 'cash_location'>('bank_transfer');
+  const [newType, setNewType] = useState<'mobile_transfer' | 'remittance' | 'bank_transfer' | 'paypal' | 'stripe' | 'cash_location' | 'wallet_qr'>('bank_transfer');
   const [newImgUrl, setNewImgUrl] = useState('');
   const [isAdding, setIsAdding] = useState(false);
 
@@ -85,17 +88,20 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
 
   const handleOpenConfigure = (method: PaymentMethod) => {
     setSelectedMethod(method);
+    setConfigureImgUrl(method.imgUrl || '');
     
     // Convert details structure to a list of key-values in state
     const currentDetails = method.details || {};
     const form: Record<string, string> = {};
     
-    if (method.type === 'mobile_transfer') {
+    if (method.type === 'mobile_transfer' || method.type === 'wallet_qr') {
       form.phoneNumber = currentDetails.phoneNumber || '';
+      form.paymentCode = currentDetails.paymentCode || '';
     } else if (method.type === 'remittance') {
       form.accountName = currentDetails.accountName || '';
       form.phoneNumber = currentDetails.phoneNumber || '';
       form.city = currentDetails.city || '';
+      form.paymentCode = currentDetails.paymentCode || '';
     } else if (method.type === 'paypal') {
       form.email = currentDetails.email || '';
     } else if (method.type === 'cash_location') {
@@ -118,10 +124,11 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
     try {
       await api.updatePaymentMethod(parseInt(selectedMethod.id), {
         details: detailsForm,
+        img_url: configureImgUrl || null,
       });
 
       setPaymentMethods(prev =>
-        prev.map(m => (m.id === selectedMethod.id ? { ...m, details: detailsForm } : m))
+        prev.map(m => (m.id === selectedMethod.id ? { ...m, details: detailsForm, imgUrl: configureImgUrl } : m))
       );
 
       setIsConfigureOpen(false);
@@ -246,10 +253,10 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
 
       {/* Configure Payment Details Overlay (BUG-05) */}
       {isConfigureOpen && selectedMethod && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <form
             onSubmit={handleConfigureSubmit}
-            className={glassCardClass + " p-8 max-w-md w-full text-start space-y-4"}
+            className={glassCardClass + " p-6 sm:p-8 max-w-md w-full text-start space-y-4 my-4 max-h-[85vh] overflow-y-auto"}
           >
             <div className="flex items-center gap-3 border-b border-white/10 pb-4 mb-4">
               {getFallbackIcon(selectedMethod.type)}
@@ -263,20 +270,54 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
               </div>
             </div>
 
+            {/* Logo / Image URL */}
+            <div className="border-b border-white/10 pb-4">
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                {t('admin_payments_field_icon' as any) || 'Logo / Image URL'}
+              </label>
+              {configureImgUrl && (
+                <div className="mb-3 flex items-center gap-3">
+                  <img src={configureImgUrl} alt="Payment logo" className="h-10 w-auto max-w-[120px] object-contain rounded bg-white/10 p-1" onError={e => { (e.target as HTMLElement).style.display = 'none'; }} />
+                </div>
+              )}
+              <input
+                type="text"
+                value={configureImgUrl}
+                onChange={e => setConfigureImgUrl(e.target.value)}
+                className={glassInputClass}
+                placeholder="https://example.com/logo.png"
+              />
+            </div>
+
             {/* Dynamic configure fields depending on payment channel type */}
-            {selectedMethod.type === 'mobile_transfer' && (
-              <div>
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                  {t('signup_form_phone_label')}
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={detailsForm.phoneNumber || ''}
-                  onChange={e => setDetailsForm({ ...detailsForm, phoneNumber: e.target.value })}
-                  className={glassInputClass}
-                  placeholder="09xx xxx xxx"
-                />
+            {(selectedMethod.type === 'mobile_transfer' || selectedMethod.type === 'wallet_qr') && (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                    {t('signup_form_phone_label')}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={detailsForm.phoneNumber || ''}
+                    onChange={e => setDetailsForm({ ...detailsForm, phoneNumber: e.target.value })}
+                    className={glassInputClass}
+                    placeholder="09xx xxx xxx"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                    {(t('admin_payments_field_payment_code' as any) as string) || 'Payment Code / رمز الدفع'}
+                  </label>
+                  <input
+                    type="text"
+                    value={detailsForm.paymentCode || ''}
+                    onChange={e => setDetailsForm({ ...detailsForm, paymentCode: e.target.value })}
+                    className={glassInputClass}
+                    placeholder="المستخدم يرسل لهذا الرمز"
+                  />
+                  <p className="text-[9px] text-gray-500 mt-1">هاد الرمز بيظهر للمستخدم بصفحة الدفع</p>
+                </div>
               </div>
             )}
 
@@ -317,6 +358,19 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                     onChange={e => setDetailsForm({ ...detailsForm, city: e.target.value })}
                     className={glassInputClass}
                   />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                    {(t('admin_payments_field_payment_code' as any) as string) || 'Payment Code / رمز الدفع'}
+                  </label>
+                  <input
+                    type="text"
+                    value={detailsForm.paymentCode || ''}
+                    onChange={e => setDetailsForm({ ...detailsForm, paymentCode: e.target.value })}
+                    className={glassInputClass}
+                    placeholder="المستخدم يرسل لهذا الرمز"
+                  />
+                  <p className="text-[9px] text-gray-500 mt-1">هاد الرمز بيظهر للمستخدم بصفحة الدفع</p>
                 </div>
               </div>
             )}
@@ -423,10 +477,10 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
 
       {/* Add Gateway Modal */}
       {isAddMethodOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <form
             onSubmit={handleAddPaymentSubmit}
-            className={glassCardClass + " p-8 max-w-md w-full text-start space-y-4"}
+            className={glassCardClass + " p-6 sm:p-8 max-w-md w-full text-start space-y-4 my-4 max-h-[85vh] overflow-y-auto"}
           >
             <h3 className="font-serif text-2xl text-white mb-4">
               {t('admin_payments_add_modal_title' as any) || 'Create Payment Method'}
@@ -457,6 +511,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
               >
                 <option value="bank_transfer" className="bg-gray-800 text-white">Bank Transfer</option>
                 <option value="mobile_transfer" className="bg-gray-800 text-white">Mobile Wallet Transfer</option>
+                <option value="wallet_qr" className="bg-gray-800 text-white">Wallet QR (شام كاش / Usend)</option>
                 <option value="remittance" className="bg-gray-800 text-white">Remittance Agency</option>
                 <option value="cash_location" className="bg-gray-800 text-white">Cash / Head Office</option>
                 <option value="paypal" className="bg-gray-800 text-white">PayPal</option>

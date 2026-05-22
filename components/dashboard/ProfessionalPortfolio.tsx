@@ -206,10 +206,10 @@ export const ProfessionalPortfolio: React.FC<ProfessionalPortfolioProps> = ({
 
       {/* Add Portfolio Item Modal */}
       {isAddOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <form
             onSubmit={handleAddSubmit}
-            className={glassCardClass + " p-8 max-w-md w-full text-start space-y-4"}
+            className={glassCardClass + " p-6 sm:p-8 max-w-md w-full text-start space-y-4 my-4 max-h-[85vh] overflow-y-auto"}
           >
             <h3 className="font-serif text-2xl text-white mb-4">
               {t('tailor_portfolio_add_modal_title' as any) || 'Add Showcase Work'}

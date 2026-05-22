@@ -11,9 +11,11 @@ interface HeaderProps {
   socialLinks: SocialLink[];
   isAuthenticated: boolean;
   onLogout: () => void;
+  hidden?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ onNavigate, cartItemCount, onCartClick, socialLinks, isAuthenticated, onLogout }) => {
+const Header: React.FC<HeaderProps> = ({ onNavigate, cartItemCount, onCartClick, socialLinks, isAuthenticated, onLogout, hidden }) => {
+  if (hidden) return null;
   const { language, setLanguage } = useLanguage();
   const { t } = useTranslation();
 

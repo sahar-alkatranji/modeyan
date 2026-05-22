@@ -6,6 +6,7 @@ export default defineConfig({
   server: {
     port: 3000,
     host: '0.0.0.0',
+    allowedHosts: ['modeya.abdalgani.com', '72.60.130.170'],
   },
   plugins: [react()],
   resolve: {
@@ -14,4 +15,3 @@ export default defineConfig({
     }
   }
 });
-

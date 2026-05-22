@@ -22,7 +22,11 @@ type Page = 'home' | 'login' | 'about' | 'shop' | 'user-dashboard' | 'policy-shi
 type ShopCategory = 'all' | 'long' | 'short' | 'summer' | 'winter' | 'spring' | 'autumn';
 
 const AppContent: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [currentPage, setCurrentPage] = useState<Page>(() => {
+    const path = window.location.pathname.replace('/', '');
+    const validPages: Page[] = ['home', 'login', 'about', 'shop', 'user-dashboard', 'policy-shipping'];
+    return (validPages.includes(path as Page) ? path : 'home') as Page;
+  });
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [shopCategory, setShopCategory] = useState<ShopCategory>('all');
@@ -74,18 +78,30 @@ const AppContent: React.FC = () => {
       }
 
       try {
-        const parts = await api.getParts();
-        if (Array.isArray(parts)) {
-          const mapped: DressPart[] = parts.map((p: any) => ({
-            id: String(p.id),
-            type: p.category as any,
-            name: p.name || '',
-            imageUrl: p.image_url || '',
-          }));
-          setDressParts(prev => mapped.length > 0 ? mapped : prev);
+        const categories = ['front_neckline', 'back_neckline', 'fabrics', 'skirt_styles', 'train'];
+        const allParts: DressPart[] = [];
+        for (const cat of categories) {
+          try {
+            const scanParts = await api.getScannerParts(cat);
+            if (Array.isArray(scanParts)) {
+              for (const p of scanParts) {
+                allParts.push({
+                  id: String(p.id),
+                  type: p.category as any,
+                  name: p.name || '',
+                  imageUrl: p.imageUrl || '',
+                });
+              }
+            }
+          } catch (err) {
+            console.error(`Failed to load scanner parts for ${cat}`, err);
+          }
+        }
+        if (allParts.length > 0) {
+          setDressParts(allParts);
         }
       } catch (e) {
-        console.error("Failed to load dress parts from API, using fallback", e);
+        console.error("Failed to load dress parts from scanner, using fallback", e);
       }
 
       try {
@@ -125,6 +141,15 @@ const AppContent: React.FC = () => {
       });
     }
   }, [isAuthenticated]);
+
+  // Redirect to dashboard if authenticated and on login page, or restore session
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      if (currentPage === 'login') {
+        navigate('user-dashboard');
+      }
+    }
+  }, [isLoading, isAuthenticated]);
 
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
@@ -222,14 +247,15 @@ const AppContent: React.FC = () => {
 
   return (
     <LanguageProvider>
-      <div className="bg-brand-beige text-gray-800 font-sans">
-        <Header 
+      <div className="bg-brand-beige text-gray-800 font-sans overflow-x-hidden max-w-[100vw]">
+        <Header
           onNavigate={navigate}
           cartItemCount={cartItemCount}
           onCartClick={() => setIsCartOpen(true)}
           socialLinks={socialLinks}
           isAuthenticated={isAuthenticated}
           onLogout={logout}
+          hidden={currentPage === 'user-dashboard'}
         />
         <CartSidebar 
           isOpen={isCartOpen}

@@ -153,22 +153,22 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   const dashboardBackgroundImage = ROLE_IMAGES[userRole] || ROLE_IMAGES.default;
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row relative text-white">
+    <div className="fixed inset-0 flex flex-col md:flex-row text-white overflow-hidden">
       {/* Dynamic Background */}
-      <div className="fixed inset-0 z-0">
+      <div className="absolute inset-0 z-0">
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url('${dashboardBackgroundImage}')` }}
           />
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px]"></div>
       </div>
 
-      {/* MOBILE HEADER & HAMBURGER (CR-06) */}
-      <header className="md:hidden flex items-center justify-between p-4 bg-black/40 backdrop-blur-xl border-b border-white/10 relative z-50">
+      {/* MOBILE HEADER & HAMBURGER - fixed at top */}
+      <header className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between p-4 bg-black/80 backdrop-blur-xl border-b border-white/10 z-[100]">
         <h1 className="font-serif text-lg font-black tracking-[0.15em] text-white">MODEYA</h1>
         <button
           onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-          className="p-2 text-white hover:text-brand-gold transition-colors focus:outline-none"
+          className="p-2 text-white hover:text-brand-gold transition-colors focus:outline-none relative z-[110]"
         >
           {isMobileSidebarOpen ? (
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -182,8 +182,16 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         </button>
       </header>
 
+      {/* Mobile overlay when sidebar is open */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-[90] md:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
       {/* FIXED SIDEBAR DESKTOP */}
-      <aside className="fixed top-0 bottom-0 w-64 bg-black/20 backdrop-blur-xl border-r border-white/10 flex-shrink-0 flex-col h-full overflow-y-auto custom-scrollbar z-40 hidden md:flex">
+      <aside className="hidden md:flex fixed top-0 bottom-0 left-0 w-64 bg-gray-950/80 backdrop-blur-xl border-r border-white/10 flex-col h-full overflow-y-auto custom-scrollbar z-[80]">
           <div className="p-8 pb-0 text-center">
              <h1 className="font-serif text-xl font-black tracking-[0.15em] text-white mb-1">MODEYA</h1>
              <p className="text-[8px] font-bold text-brand-gold uppercase tracking-[0.2em]">{t('dashboard_management_suite')}</p>
@@ -255,8 +263,8 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
           </div>
       </aside>
 
-      {/* MOBILE DRAWER SIDEBAR TRAY (CR-06) */}
-      <aside className={`fixed top-[60px] bottom-0 left-0 w-64 bg-black/90 backdrop-blur-2xl border-r border-white/10 flex flex-col h-[calc(100vh-60px)] overflow-y-auto custom-scrollbar z-40 transition-transform duration-300 md:hidden ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      {/* MOBILE DRAWER SIDEBAR */}
+      <aside className={`fixed top-[56px] bottom-0 left-0 w-64 bg-gray-950/95 backdrop-blur-2xl border-r border-white/10 flex flex-col h-[calc(100vh-56px)] overflow-y-auto custom-scrollbar z-[95] transition-transform duration-300 md:hidden ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <div className="p-4 flex-grow">
               <nav className="space-y-1">
                   <SidebarItem view="overview" icon="grid" label={t('dashboard_menu_overview')} />
@@ -318,9 +326,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
           </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-grow relative min-h-screen md:ms-64 transition-all duration-300 overflow-x-hidden">
-          <div className="relative z-10 p-6 md:p-10 max-w-6xl mx-auto">
+      {/* Main Content Area - scrollable */}
+      <main className="flex-grow relative md:ml-64 overflow-y-auto overflow-x-hidden pt-[56px] md:pt-0">
+          <div className="relative z-10 p-4 sm:p-6 md:p-10 max-w-6xl mx-auto min-h-full">
               {currentView === 'overview' && (
                 <ManagerOverview
                   userRole={userRole}
@@ -408,6 +416,50 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                       <p className="text-2xl font-serif text-white font-bold">${authUser?.pending_balance?.toFixed(2) || '0.00'}</p>
                     </div>
                   </div>
+
+                  {/* Payment Methods for top-up */}
+                  {paymentMethods.filter(m => m.isActive).length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-serif text-white mb-4">{t('wallet_payment_methods' as any) || 'طرق الدفع المتاحة'}</h3>
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {paymentMethods.filter(m => m.isActive).map(method => (
+                          <div key={method.id} className={glassCardClass + " p-5"}>
+                            <div className="flex items-center gap-3 mb-3">
+                              {method.imgUrl ? (
+                                <img src={method.imgUrl} alt={method.translationKey} className="h-8 w-auto max-w-[80px] object-contain" onError={e => { (e.target as HTMLElement).style.display = 'none'; }} />
+                              ) : null}
+                              <span className="font-bold text-white text-xs uppercase tracking-wider">{t(method.translationKey as any)}</span>
+                            </div>
+                            {method.details?.phoneNumber && (
+                              <p className="text-[10px] text-gray-400 mb-1">
+                                <span className="text-gray-500">رقم الهاتف:</span> {method.details.phoneNumber}
+                              </p>
+                            )}
+                            {method.details?.paymentCode && (
+                              <p className="text-[10px] text-gray-300 font-bold bg-white/5 rounded-lg px-3 py-2 mt-2 border border-white/10">
+                                رمز الدفع: <span className="text-brand-gold">{method.details.paymentCode}</span>
+                              </p>
+                            )}
+                            {method.details?.accountName && (
+                              <p className="text-[10px] text-gray-400 mb-1">
+                                <span className="text-gray-500">اسم الحساب:</span> {method.details.accountName}
+                              </p>
+                            )}
+                            {method.details?.bankName && (
+                              <p className="text-[10px] text-gray-400 mb-1">
+                                <span className="text-gray-500">البنك:</span> {method.details.bankName}
+                              </p>
+                            )}
+                            {method.details?.accountNumber && (
+                              <p className="text-[10px] text-gray-400 mb-1">
+                                <span className="text-gray-500">رقم الحساب:</span> {method.details.accountNumber}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

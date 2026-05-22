@@ -87,7 +87,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
       </div>
 
       <div className={glassCardClass + " overflow-x-auto mb-6"}>
-        <table className="w-full text-start min-w-[700px]">
+        <table className="w-full text-start min-w-0 sm:min-w-[700px]">
           <thead className="bg-white/5 text-gray-300 uppercase text-[9px] font-bold tracking-[0.15em] border-b border-white/10">
             <tr>
               <th className="px-6 py-4 text-start">{t('admin_orders_table_id')}</th>

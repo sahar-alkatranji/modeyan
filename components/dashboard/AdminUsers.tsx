@@ -96,14 +96,15 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
         role: addRole,
       });
 
+      const userData = newUserRes.user || newUserRes;
       const newUser: User = {
-        id: String(newUserRes.id),
-        firstName: newUserRes.first_name,
-        lastName: newUserRes.last_name,
-        email: newUserRes.email,
-        role: newUserRes.role as UserRole,
-        balance: Number(newUserRes.balance || 0),
-        joinedDate: new Date(newUserRes.created_at || Date.now()),
+        id: String(userData.id),
+        firstName: userData.first_name,
+        lastName: userData.last_name,
+        email: userData.email,
+        role: userData.role as UserRole,
+        balance: Number(userData.balance || 0),
+        joinedDate: new Date(userData.created_at || Date.now()),
       };
 
       setUsers(prev => [...prev, newUser]);
@@ -176,7 +177,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
       </div>
 
       <div className={glassCardClass + " overflow-x-auto"}>
-        <table className="w-full text-start min-w-[600px]">
+        <table className="w-full text-start min-w-0 sm:min-w-[600px]">
           <thead className="bg-white/5 text-gray-300 uppercase text-[9px] font-bold tracking-[0.15em] border-b border-white/10">
             <tr>
               <th className="px-6 py-4 text-start">{t('admin_users_table_name')}</th>
@@ -248,8 +249,8 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
 
       {/* Wallet Deposit/Deduction Modal */}
       {isWalletModalOpen && selectedUserForWallet && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
-          <div className={glassCardClass + " p-8 max-w-md w-full text-start"}>
+        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
+          <div className={glassCardClass + " p-6 sm:p-8 max-w-md w-full text-start my-4 max-h-[85vh] overflow-y-auto"}>
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-brand-gold font-bold text-xl">
                 {selectedUserForWallet.firstName ? selectedUserForWallet.firstName[0] : ''}
@@ -321,10 +322,10 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
 
       {/* Add User Modal */}
       {isAddUserModalOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <form
             onSubmit={handleAddUserSubmit}
-            className={glassCardClass + " p-8 max-w-md w-full text-start space-y-4"}
+            className={glassCardClass + " p-6 sm:p-8 max-w-md w-full text-start space-y-4 my-4 max-h-[85vh] overflow-y-auto"}
           >
             <h3 className="font-serif text-2xl text-white mb-4">
               {t('admin_users_add_modal_title' as any) || 'Create New Account'}
