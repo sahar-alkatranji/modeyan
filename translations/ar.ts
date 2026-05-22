@@ -6,9 +6,10 @@ export const ar = {
   header_about: 'عنا',
   header_contact: 'اتصل بنا',
   header_login: 'تسجيل الدخول',
+  header_logout: 'تسجيل الخروج',
+  header_dashboard: 'لوحة التحكم',
   header_lang_switch_en: 'English',
   header_lang_switch_ar: 'عربي',
-  header_dashboard: 'لوحة التحكم',
 
   // Hero
   hero_subtitle: 'أناقة المرأة',
@@ -172,6 +173,15 @@ export const ar = {
   payment_wallet_address: 'عنوان المحفظة',
   payment_barcode: 'باركود المدير',
 
+  wallet_payment_methods: 'طرق الدفع المتاحة',
+  wallet_payment_phone: 'رقم الهاتف:',
+  wallet_payment_code: 'رمز الدفع:',
+  wallet_payment_account_name: 'اسم الحساب:',
+  wallet_payment_bank: 'البنك:',
+  wallet_payment_account_number: 'رقم الحساب:',
+  admin_payments_field_payment_code: 'رمز الدفع',
+  admin_payments_payment_code_hint: 'هذا الرمز يظهر للمستخدم في صفحة الدفع',
+
   wallet_confirm_payment: 'تأكيد الدفع',
   wallet_processing: 'جاري المعالجة...',
   wallet_success_message: 'تم إرسال طلب الشحن بنجاح!',
@@ -313,6 +323,14 @@ export const ar = {
   admin_assets_modal_edit: 'تعديل جزء التصميم',
   admin_assets_delete_confirm: 'هل أنت متأكد من حذف هذا الجزء؟',
 
+  // Product Categories
+  category_long: 'فساتين طويلة',
+  category_short: 'فساتين قصيرة',
+  category_summer: 'فساتين صيفية',
+  category_winter: 'فساتين شتوية',
+  category_spring: 'فساتين ربيعية',
+  category_autumn: 'فساتين خريفية',
+
   // Admin Orders
   admin_orders_title: 'إدارة طلبات العملاء',
   admin_orders_table_id: 'رقم الطلب',
@@ -321,7 +339,15 @@ export const ar = {
   admin_orders_table_tailor: 'الخياط',
   admin_orders_table_price: 'السعر',
   admin_orders_table_status: 'الحالة',
+  admin_orders_table_date: 'التاريخ',
   admin_orders_table_actions: 'إجراءات',
+  admin_orders_action_approve_quote: 'موافقة على السعر',
+  admin_orders_action_reject: 'رفض',
+  admin_orders_action_mark_completed: 'إتمام الطلب',
+  admin_orders_pagination_previous: 'السابق',
+  admin_orders_pagination_next: 'التالي',
+  portfolio_action_approve: 'موافقة',
+  portfolio_action_reject: 'رفض',
   admin_orders_action_view: 'عرض التصميم',
   admin_orders_action_edit: 'تعديل الطلب',
   admin_orders_action_cancel: 'إلغاء / استرداد',

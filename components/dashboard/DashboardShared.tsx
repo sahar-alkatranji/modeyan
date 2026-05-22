@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '../../hooks/useTranslation';
 
 export const ROLE_IMAGES = {
   customer: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop', // Fashion/Shopping
@@ -33,52 +34,63 @@ export const Icon = ({ name, className = "w-3 h-3" }: { name: string, className?
 };
 
 export const StatusPill = ({ status }: { status: string }) => {
+  const { t } = useTranslation();
   const styles: Record<string, string> = {
       approved: 'bg-green-500/20 text-green-300 border-green-500/30',
       pending: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
       rejected: 'bg-red-500/20 text-red-300 border-red-500/30',
       completed: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
       cancelled: 'bg-gray-500/20 text-gray-300 border-gray-500/30',
+      pending_quote: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
   };
+  const key = status.toLowerCase();
   return (
-      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase border tracking-wider ${styles[status.toLowerCase()] || 'bg-gray-500/20 text-gray-300'}`}>
-          {status.toLowerCase()}
+      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase border tracking-wider ${styles[key] || 'bg-gray-500/20 text-gray-300'}`}>
+          {t(`status_${key}` as any) || key}
       </span>
   );
 };
 
-export const MetricCard = ({ title, value, icon, trend }: { title: string, value: string | number, icon: string, trend?: string }) => (
-  <div className={glassCardClass + " p-6 flex flex-col justify-between group hover:border-brand-gold"}>
-      <div className="flex items-start justify-between mb-4">
-          <div className="p-2.5 rounded-xl bg-white/10 text-gray-300 group-hover:bg-brand-gold group-hover:text-white transition-colors duration-300">
-              <Icon name={icon} className="w-4 h-4" />
-          </div>
-          {trend && <span className="text-[10px] font-bold text-green-400 bg-green-500/20 px-2 py-1 rounded-md">+{trend}</span>}
-      </div>
-      <div>
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{title}</p>
-          <h3 className="text-2xl font-serif text-white">{value}</h3>
-      </div>
-  </div>
-);
+export const MetricCard = ({ title, value, icon, trend }: { title: string, value: string | number, icon: string, trend?: string }) => {
+  const isNegative = trend && (trend.startsWith('-') || parseFloat(trend) < 0);
+  return (
+    <div className={glassCardClass + " p-6 flex flex-col justify-between group hover:border-brand-gold"}>
+        <div className="flex items-start justify-between mb-4">
+            <div className="p-2.5 rounded-xl bg-white/10 text-gray-300 group-hover:bg-brand-gold group-hover:text-white transition-colors duration-300">
+                <Icon name={icon} className="w-4 h-4" />
+            </div>
+            {trend && (
+              <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${isNegative ? 'text-red-400 bg-red-500/20' : 'text-green-400 bg-green-500/20'}`}>
+                {isNegative ? '' : '+'}{trend}
+              </span>
+            )}
+        </div>
+        <div>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{title}</p>
+            <h3 className="text-2xl font-serif text-white">{value}</h3>
+        </div>
+    </div>
+  );
+};
 
-export const ConfirmDialog = ({ 
-  isOpen, 
-  title, 
-  message, 
-  onConfirm, 
+export const ConfirmDialog = ({
+  isOpen,
+  title,
+  message,
+  onConfirm,
   onCancel,
-  confirmText = "Confirm",
-  cancelText = "Cancel"
-}: { 
-  isOpen: boolean, 
-  title: string, 
-  message: string, 
-  onConfirm: () => void, 
+  confirmText,
+  cancelText
+}: {
+  isOpen: boolean,
+  title: string,
+  message: string,
+  onConfirm: () => void,
   onCancel: () => void,
   confirmText?: string,
   cancelText?: string
 }) => {
+  const { t } = useTranslation();
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
@@ -91,11 +103,10 @@ export const ConfirmDialog = ({
         <h4 className="font-serif text-lg text-white mb-2">{title}</h4>
         <p className="text-xs text-gray-300 mb-6">{message}</p>
         <div className="flex gap-3">
-          <button onClick={onCancel} className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-[9px] hover:text-white transition-colors">{cancelText}</button>
-          <button onClick={onConfirm} className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold uppercase tracking-widest text-[9px] transition-colors shadow-lg">{confirmText}</button>
+          <button onClick={onCancel} className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-[9px] hover:text-white transition-colors">{cancelText || t('modal_cancel')}</button>
+          <button onClick={onConfirm} className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold uppercase tracking-widest text-[9px] transition-colors shadow-lg">{confirmText || t('admin_action_approve')}</button>
         </div>
       </div>
     </div>
   );
 };
-

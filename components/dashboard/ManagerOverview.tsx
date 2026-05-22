@@ -48,7 +48,7 @@ export const ManagerOverview: React.FC<ManagerOverviewProps> = ({
             icon="shopping-bag"
           />
           <MetricCard
-            title={userRole === 'customer' ? t('wallet_current_balance') : t('wallet_pending_balance')}
+            title={t('wallet_current_balance')}
             value={`$${Number(authUser?.balance || 0).toFixed(2)}`}
             icon="credit-card"
           />

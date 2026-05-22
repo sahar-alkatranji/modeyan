@@ -72,6 +72,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
       setIsWalletModalOpen(false);
       setWalletAmount('');
       setSelectedUserForWallet(null);
+      alert(t('admin_wallet_success'));
     } catch (err: any) {
       alert(err.message || 'Failed to update user wallet balance');
     } finally {
@@ -212,7 +213,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
                   ${Number(u.balance).toFixed(2)}
                 </td>
                 <td className="px-6 py-4 text-end">
-                  <div className="flex justify-end gap-3 md:opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <div className="flex justify-end gap-3">
                     <button
                       onClick={() => {
                         setSelectedUserForWallet(u);

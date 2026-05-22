@@ -6,7 +6,6 @@ import { api } from '../services/api';
 
 // Decomposed Component Imports
 import { glassCardClass, glassInputClass, glassButtonClass, Icon, StatusPill } from './dashboard/DashboardShared';
-import { StripePaymentForm } from './dashboard/StripePaymentForm';
 import { DesignStudio } from './dashboard/DesignStudio';
 import { MyDesigns } from './dashboard/MyDesigns';
 import { ManagerOverview } from './dashboard/ManagerOverview';
@@ -191,7 +190,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       )}
 
       {/* FIXED SIDEBAR DESKTOP */}
-      <aside className="hidden md:flex fixed top-0 bottom-0 left-0 w-64 bg-gray-950/80 backdrop-blur-xl border-r border-white/10 flex-col h-full overflow-y-auto custom-scrollbar z-[80]">
+      <aside className="hidden md:flex fixed top-0 bottom-0 start-0 w-64 bg-gray-950/80 backdrop-blur-xl border-r border-white/10 flex-col h-full overflow-y-auto custom-scrollbar z-[80]">
           <div className="p-8 pb-0 text-center">
              <h1 className="font-serif text-xl font-black tracking-[0.15em] text-white mb-1">MODEYA</h1>
              <p className="text-[8px] font-bold text-brand-gold uppercase tracking-[0.2em]">{t('dashboard_management_suite')}</p>
@@ -242,7 +241,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
              <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2 text-start">
                     <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-[10px] font-bold">
-                        {userRole === 'manager' ? 'AD' : 'US'}
+                        {authUser?.first_name?.[0] || ''}{authUser?.last_name?.[0] || ''}
                     </div>
                     <div>
                         <p className="text-[9px] font-bold text-white leading-none mb-1">{userRole === 'manager' ? t('dashboard_admin_access') : t('dashboard_user_account')}</p>
@@ -264,7 +263,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       </aside>
 
       {/* MOBILE DRAWER SIDEBAR */}
-      <aside className={`fixed top-[56px] bottom-0 left-0 w-64 bg-gray-950/95 backdrop-blur-2xl border-r border-white/10 flex flex-col h-[calc(100vh-56px)] overflow-y-auto custom-scrollbar z-[95] transition-transform duration-300 md:hidden ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed top-[56px] bottom-0 start-0 w-64 bg-gray-950/95 backdrop-blur-2xl border-r border-white/10 flex flex-col h-[calc(100vh-56px)] overflow-y-auto custom-scrollbar z-[95] transition-transform duration-300 md:hidden ${isMobileSidebarOpen ? 'translate-x-0' : 'ltr:-translate-x-full rtl:translate-x-full'}`}>
           <div className="p-4 flex-grow">
               <nav className="space-y-1">
                   <SidebarItem view="overview" icon="grid" label={t('dashboard_menu_overview')} />
@@ -307,7 +306,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-start">
                     <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-[10px] font-bold">
-                        {userRole === 'manager' ? 'AD' : 'US'}
+                        {authUser?.first_name?.[0] || ''}{authUser?.last_name?.[0] || ''}
                     </div>
                     <div>
                         <p className="text-[9px] font-bold text-white leading-none mb-1">{userRole === 'manager' ? t('dashboard_admin_access') : t('dashboard_user_account')}</p>
@@ -327,7 +326,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       </aside>
 
       {/* Main Content Area - scrollable */}
-      <main className="flex-grow relative md:ml-64 overflow-y-auto overflow-x-hidden pt-[56px] md:pt-0">
+      <main className="flex-grow relative md:ms-64 overflow-y-auto overflow-x-hidden pt-[56px] md:pt-0">
           <div className="relative z-10 p-4 sm:p-6 md:p-10 max-w-6xl mx-auto min-h-full">
               {currentView === 'overview' && (
                 <ManagerOverview
@@ -432,27 +431,27 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                             </div>
                             {method.details?.phoneNumber && (
                               <p className="text-[10px] text-gray-400 mb-1">
-                                <span className="text-gray-500">رقم الهاتف:</span> {method.details.phoneNumber}
+                                <span className="text-gray-500">{t('wallet_payment_phone' as any)}</span> {method.details.phoneNumber}
                               </p>
                             )}
                             {method.details?.paymentCode && (
                               <p className="text-[10px] text-gray-300 font-bold bg-white/5 rounded-lg px-3 py-2 mt-2 border border-white/10">
-                                رمز الدفع: <span className="text-brand-gold">{method.details.paymentCode}</span>
+                                {t('wallet_payment_code' as any)} <span className="text-brand-gold">{method.details.paymentCode}</span>
                               </p>
                             )}
                             {method.details?.accountName && (
                               <p className="text-[10px] text-gray-400 mb-1">
-                                <span className="text-gray-500">اسم الحساب:</span> {method.details.accountName}
+                                <span className="text-gray-500">{t('wallet_payment_account_name' as any)}</span> {method.details.accountName}
                               </p>
                             )}
                             {method.details?.bankName && (
                               <p className="text-[10px] text-gray-400 mb-1">
-                                <span className="text-gray-500">البنك:</span> {method.details.bankName}
+                                <span className="text-gray-500">{t('wallet_payment_bank' as any)}</span> {method.details.bankName}
                               </p>
                             )}
                             {method.details?.accountNumber && (
                               <p className="text-[10px] text-gray-400 mb-1">
-                                <span className="text-gray-500">رقم الحساب:</span> {method.details.accountNumber}
+                                <span className="text-gray-500">{t('wallet_payment_account_number' as any)}</span> {method.details.accountNumber}
                               </p>
                             )}
                           </div>
@@ -490,7 +489,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                       </div>
                     </div>
                     <div className="mt-6">
-                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Bio</label>
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('profile_label_bio' as any)}</label>
                       <textarea defaultValue={authUser?.bio || ''} id="profile-bio" rows={3} className={glassInputClass + " resize-none"} />
                     </div>
                     <button onClick={async () => { try { const first_name = (document.getElementById('profile-first-name') as HTMLInputElement)?.value; const last_name = (document.getElementById('profile-last-name') as HTMLInputElement)?.value; const phone = (document.getElementById('profile-phone') as HTMLInputElement)?.value; const bio = (document.getElementById('profile-bio') as HTMLTextAreaElement)?.value; await api.updateMe({ first_name, last_name, phone, bio }); await refreshUser(); alert(t('profile_save_success')); } catch (err: any) { alert(err.message || 'Failed to update profile'); } }} className={glassButtonClass + " mt-6 w-auto px-8"}>{t('profile_save_button' as any)}</button>
@@ -505,18 +504,18 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                     <h2 className="text-3xl font-serif text-white mb-1">{t('dashboard_menu_orders')}</h2>
                     <p className="text-sm text-gray-300">{t('orders_subtitle' as any)}</p>
                   </div>
-                  <div className={glassCardClass + " overflow-hidden"}>
-                    <table className="w-full text-start">
+                  <div className={glassCardClass + " overflow-hidden overflow-x-auto"}>
+                    <table className="w-full text-start min-w-[480px]">
                       <thead className="bg-white/5 text-gray-300 uppercase text-[9px] font-bold tracking-[0.15em] border-b border-white/10">
                         <tr>
                           <th className="px-6 py-4">{t('admin_orders_table_id')}</th>
                           <th className="px-6 py-4">{t('admin_orders_table_status')}</th>
                           <th className="px-6 py-4">{t('admin_orders_table_price')}</th>
-                          <th className="px-6 py-4">Date</th>
+                          <th className="px-6 py-4">{t('admin_orders_table_date' as any)}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/10">
-                        {orders.filter(o => o.customerId === authUser?.id).map(order => (
+                        {orders.filter(o => String(o.customerId) === String(authUser?.id)).map(order => (
                           <tr key={order.id} className="hover:bg-white/5 transition-colors">
                             <td className="px-6 py-4 font-mono text-xs text-gray-300">#{String(order.id || '').slice(-6)}</td>
                             <td className="px-6 py-4"><StatusPill status={order.status} /></td>
@@ -524,7 +523,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                             <td className="px-6 py-4 text-xs text-gray-400">{new Date(order.createdAt).toLocaleDateString()}</td>
                           </tr>
                         ))}
-                        {orders.filter(o => o.customerId === authUser?.id).length === 0 && (
+                        {orders.filter(o => String(o.customerId) === String(authUser?.id)).length === 0 && (
                           <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-400 text-xs">{t('dashboard_no_orders')}</td></tr>
                         )}
                       </tbody>
@@ -540,8 +539,8 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                     <h2 className="text-3xl font-serif text-white mb-1">{t('dashboard_menu_requests')}</h2>
                     <p className="text-sm text-gray-300">{t('requests_subtitle' as any)}</p>
                   </div>
-                  <div className={glassCardClass + " overflow-hidden"}>
-                    <table className="w-full text-start">
+                  <div className={glassCardClass + " overflow-hidden overflow-x-auto"}>
+                    <table className="w-full text-start min-w-[480px]">
                       <thead className="bg-white/5 text-gray-300 uppercase text-[9px] font-bold tracking-[0.15em] border-b border-white/10">
                         <tr>
                           <th className="px-6 py-4">{t('admin_orders_table_id')}</th>

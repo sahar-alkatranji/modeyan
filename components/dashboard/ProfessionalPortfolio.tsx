@@ -33,10 +33,10 @@ export const ProfessionalPortfolio: React.FC<ProfessionalPortfolioProps> = ({
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   // Filter items
-  // Manager: sees all items to approve
+  // Manager: sees only pending items for approval
   // Tailor/Designer: sees only their own items
-  const displayItems = userRole === 'manager' 
-    ? portfolioItems 
+  const displayItems = userRole === 'manager'
+    ? portfolioItems.filter(item => item.status === 'pending')
     : portfolioItems.filter(item => item.tailorId === currentUserId);
 
   const handleAddSubmit = async (e: React.FormEvent) => {
@@ -179,14 +179,14 @@ export const ProfessionalPortfolio: React.FC<ProfessionalPortfolioProps> = ({
                         disabled={isProcessing}
                         className="px-2 py-1 bg-green-500 hover:bg-green-600 text-white text-[9px] font-bold uppercase rounded disabled:opacity-50 transition-colors"
                       >
-                        Approve
+                        {t('portfolio_action_approve' as any)}
                       </button>
                       <button
                         onClick={() => handleApproveReject(item.id, 'rejected')}
                         disabled={isProcessing}
                         className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white text-[9px] font-bold uppercase rounded disabled:opacity-50 transition-colors"
                       >
-                        Reject
+                        {t('portfolio_action_reject' as any)}
                       </button>
                     </div>
                   )}

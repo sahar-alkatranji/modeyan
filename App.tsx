@@ -149,7 +149,7 @@ const AppContent: React.FC = () => {
         navigate('user-dashboard');
       }
     }
-  }, [isLoading, isAuthenticated]);
+  }, [isLoading, isAuthenticated, currentPage]);
 
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
@@ -305,7 +305,9 @@ const AppContent: React.FC = () => {
             />
           )}
         </main>
-        <Footer socialLinks={socialLinks} onNavigate={navigate} onShopCategory={navigateToShopCategory} />
+        {currentPage !== 'user-dashboard' && (
+          <Footer socialLinks={socialLinks} onNavigate={navigate} onShopCategory={navigateToShopCategory} />
+        )}
       </div>
     </LanguageProvider>
   );

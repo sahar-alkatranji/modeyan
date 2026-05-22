@@ -25,11 +25,11 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const assetTypes = [
-    { id: 'front_neckline', label: 'Front Neckline' },
-    { id: 'back_neckline', label: 'Back Neckline' },
-    { id: 'fabrics', label: 'Fabric / Material' },
-    { id: 'skirt_styles', label: 'Skirt Style' },
-    { id: 'train', label: 'Train / Tail' },
+    { id: 'front_neckline', labelKey: 'design_part_front_neckline' },
+    { id: 'back_neckline', labelKey: 'design_part_back_neckline' },
+    { id: 'fabrics', labelKey: 'design_part_fabrics' },
+    { id: 'skirt_styles', labelKey: 'design_part_skirt_styles' },
+    { id: 'train', labelKey: 'design_part_train' },
   ];
 
   // Filters logic
@@ -116,7 +116,7 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
               : 'bg-white/5 border-white/10 text-gray-300 hover:border-white/30'
           }`}
         >
-          All Options
+          {t('design_part_all')}
         </button>
         {assetTypes.map(tOption => (
           <button
@@ -128,7 +128,7 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
                 : 'bg-white/5 border-white/10 text-gray-300 hover:border-white/30'
             }`}
           >
-            {tOption.label}
+            {t(tOption.labelKey as any)}
           </button>
         ))}
       </div>
@@ -157,7 +157,7 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
                 </button>
               </div>
               <p className="text-[10px] uppercase font-bold text-brand-gold tracking-widest leading-none mb-1">
-                {part.type.replace('_', ' ')}
+                {part.type.split('_').join(' ')}
               </p>
               <h4 className="font-bold text-white text-xs truncate mb-2">{t(part.name as any)}</h4>
             </div>
@@ -204,11 +204,11 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
                 value={type}
                 onChange={e => setType(e.target.value as any)}
               >
-                <option value="front_neckline" className="bg-gray-800 text-white">Front Neckline Option</option>
-                <option value="back_neckline" className="bg-gray-800 text-white">Back Neckline Option</option>
-                <option value="fabrics" className="bg-gray-800 text-white">Fabric Option</option>
-                <option value="skirt_styles" className="bg-gray-800 text-white">Skirt Option</option>
-                <option value="train" className="bg-gray-800 text-white">Train Option</option>
+                <option value="front_neckline" className="bg-gray-800 text-white">{t('design_part_front_neckline')}</option>
+                <option value="back_neckline" className="bg-gray-800 text-white">{t('design_part_back_neckline')}</option>
+                <option value="fabrics" className="bg-gray-800 text-white">{t('design_part_fabrics')}</option>
+                <option value="skirt_styles" className="bg-gray-800 text-white">{t('design_part_skirt_styles')}</option>
+                <option value="train" className="bg-gray-800 text-white">{t('design_part_train')}</option>
               </select>
             </div>
 
@@ -251,7 +251,7 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
         isOpen={isDeleteOpen}
         title={t('admin_design_assets_delete_confirm' as any) || 'Remove Design Element'}
         message={`${t('admin_design_assets_delete_warning' as any) || 'Are you sure you want to permanently delete this dress design component option from the AI Studio selections catalog?'}`}
-        confirmText={t('admin_design_assets_delete_confirm' as any) || 'Delete Element'}
+        confirmText={t('admin_products_action_delete')}
         cancelText={t('modal_cancel')}
         onConfirm={handleDeleteConfirm}
         onCancel={() => {

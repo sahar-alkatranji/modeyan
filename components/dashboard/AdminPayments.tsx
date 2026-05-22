@@ -210,13 +210,17 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                     className="h-10 w-auto max-w-[120px] object-contain"
                     alt={t(method.translationKey as any)}
                     onError={e => {
-                      // Broken CDN fallback (BUG-06)
                       (e.target as HTMLElement).style.display = 'none';
+                      const next = (e.target as HTMLElement).nextElementSibling as HTMLElement | null;
+                      if (next) next.style.display = 'flex';
                     }}
                   />
                 ) : null}
-                {/* Fallback Icon if missing/errored */}
-                <div className="p-1 bg-white/5 rounded-lg border border-white/10">
+                {/* Fallback Icon — shown only when no imgUrl or image fails */}
+                <div
+                  className="p-1 bg-white/5 rounded-lg border border-white/10"
+                  style={{ display: method.imgUrl ? 'none' : 'flex' }}
+                >
                   {getFallbackIcon(method.type)}
                 </div>
 
@@ -227,7 +231,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                     onChange={() => handleToggleActive(method)}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-gold"></div>
+                  <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-gold"></div>
                 </label>
               </div>
 
@@ -307,16 +311,15 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
-                    {(t('admin_payments_field_payment_code' as any) as string) || 'Payment Code / رمز الدفع'}
+                    {t('admin_payments_field_payment_code' as any)}
                   </label>
                   <input
                     type="text"
                     value={detailsForm.paymentCode || ''}
                     onChange={e => setDetailsForm({ ...detailsForm, paymentCode: e.target.value })}
                     className={glassInputClass}
-                    placeholder="المستخدم يرسل لهذا الرمز"
                   />
-                  <p className="text-[9px] text-gray-500 mt-1">هاد الرمز بيظهر للمستخدم بصفحة الدفع</p>
+                  <p className="text-[9px] text-gray-500 mt-1">{t('admin_payments_payment_code_hint' as any)}</p>
                 </div>
               </div>
             )}
@@ -361,16 +364,15 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
-                    {(t('admin_payments_field_payment_code' as any) as string) || 'Payment Code / رمز الدفع'}
+                    {t('admin_payments_field_payment_code' as any)}
                   </label>
                   <input
                     type="text"
                     value={detailsForm.paymentCode || ''}
                     onChange={e => setDetailsForm({ ...detailsForm, paymentCode: e.target.value })}
                     className={glassInputClass}
-                    placeholder="المستخدم يرسل لهذا الرمز"
                   />
-                  <p className="text-[9px] text-gray-500 mt-1">هاد الرمز بيظهر للمستخدم بصفحة الدفع</p>
+                  <p className="text-[9px] text-gray-500 mt-1">{t('admin_payments_payment_code_hint' as any)}</p>
                 </div>
               </div>
             )}

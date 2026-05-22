@@ -10,7 +10,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
 
   return (
     <section 
-      className="relative h-[80vh] bg-cover bg-no-repeat bg-fixed overflow-hidden"
+      className="relative h-[80vh] bg-cover bg-no-repeat bg-scroll overflow-hidden"
       style={{ 
         backgroundImage: "url('https://static.wixstatic.com/media/88aac0_a61bd9903e7942cba653459562a80d35~mv2.jpeg')",
         backgroundPosition: 'center 15%'

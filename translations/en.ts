@@ -6,6 +6,8 @@ export const en = {
   header_about: 'ABOUT',
   header_contact: 'CONTACT',
   header_login: 'Log In',
+  header_logout: 'Log Out',
+  header_dashboard: 'Dashboard',
   header_lang_switch_en: 'English',
   header_lang_switch_ar: 'عربي',
 
@@ -171,6 +173,15 @@ export const en = {
   payment_wallet_address: 'Wallet address',
   payment_barcode: 'Admin barcode',
 
+  wallet_payment_methods: 'Available Payment Methods',
+  wallet_payment_phone: 'Phone Number:',
+  wallet_payment_code: 'Payment Code:',
+  wallet_payment_account_name: 'Account Name:',
+  wallet_payment_bank: 'Bank:',
+  wallet_payment_account_number: 'Account Number:',
+  admin_payments_field_payment_code: 'Payment Code',
+  admin_payments_payment_code_hint: 'This code is shown to the user on the payment page',
+
   wallet_confirm_payment: 'Confirm Payment',
   wallet_processing: 'Processing...',
   wallet_success_message: 'Top-up request sent successfully!',
@@ -311,6 +322,14 @@ export const en = {
   admin_assets_modal_edit: 'Edit Design Part',
   admin_assets_delete_confirm: 'Are you sure you want to delete this design part?',
 
+  // Product Categories
+  category_long: 'Long Dresses',
+  category_short: 'Short Dresses',
+  category_summer: 'Summer Dresses',
+  category_winter: 'Winter Dresses',
+  category_spring: 'Spring Dresses',
+  category_autumn: 'Autumn Dresses',
+
   // Admin Orders
   admin_orders_title: 'Manage Customer Orders',
   admin_orders_table_id: 'Order ID',
@@ -319,7 +338,16 @@ export const en = {
   admin_orders_table_tailor: 'Tailor',
   admin_orders_table_price: 'Price',
   admin_orders_table_status: 'Status',
+  admin_orders_table_date: 'Date',
   admin_orders_table_actions: 'Actions',
+  admin_orders_action_approve_quote: 'Approve Quote',
+  admin_orders_action_reject: 'Reject',
+  admin_orders_action_mark_completed: 'Mark Completed',
+  admin_orders_pagination_previous: 'Previous',
+  admin_orders_pagination_next: 'Next',
+  portfolio_action_approve: 'Approve',
+  portfolio_action_reject: 'Reject',
+  dashboard_menu_admin_products_subtitle: 'Manage store inventory.',
   admin_orders_action_view: 'View Design',
   admin_orders_action_edit: 'Edit Order',
   admin_orders_action_cancel: 'Cancel/Refund',

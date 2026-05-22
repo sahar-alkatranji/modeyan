@@ -66,7 +66,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
         </div>
 
         {/* Status Filter (H-17) */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {['all', 'pending', 'pending_quote', 'approved', 'completed', 'cancelled'].map(status => (
             <button
               key={status}
@@ -94,8 +94,8 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
               <th className="px-6 py-4 text-start">{t('admin_orders_table_customer')}</th>
               <th className="px-6 py-4 text-start">{t('admin_orders_table_price')}</th>
               <th className="px-6 py-4 text-start">{t('admin_orders_table_status')}</th>
-              <th className="px-6 py-4 text-start">Date</th>
-              <th className="px-6 py-4 text-end">Actions</th>
+              <th className="px-6 py-4 text-start">{t('admin_orders_table_date' as any)}</th>
+              <th className="px-6 py-4 text-end">{t('admin_orders_table_actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/10">
@@ -130,14 +130,14 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
                             disabled={isUpdating}
                             className="px-2 py-1 bg-green-500 hover:bg-green-600 text-white text-[9px] font-bold uppercase rounded transition-colors disabled:opacity-50"
                           >
-                            Approve Quote
+                            {t('admin_orders_action_approve_quote' as any)}
                           </button>
                           <button
                             onClick={() => handleUpdateStatus(order.id, 'cancelled')}
                             disabled={isUpdating}
                             className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white text-[9px] font-bold uppercase rounded transition-colors disabled:opacity-50"
                           >
-                            Reject
+                            {t('admin_orders_action_reject' as any)}
                           </button>
                         </>
                       )}
@@ -148,7 +148,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
                           disabled={isUpdating}
                           className="px-2.5 py-1 bg-blue-500 hover:bg-blue-600 text-white text-[9px] font-bold uppercase rounded transition-colors disabled:opacity-50"
                         >
-                          Mark Completed
+                          {t('admin_orders_action_mark_completed' as any)}
                         </button>
                       )}
 
@@ -158,7 +158,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
                           disabled={isUpdating}
                           className="px-2.5 py-1 bg-white/10 hover:bg-red-500/20 text-red-400 hover:text-white border border-red-500/20 text-[9px] font-bold uppercase rounded transition-all disabled:opacity-50"
                         >
-                          Cancel
+                          {t('admin_orders_action_cancel' as any)}
                         </button>
                       )}
                     </div>
@@ -185,17 +185,17 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
             disabled={currentPage === 1}
             className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-30 disabled:hover:bg-white/5"
           >
-            Previous
+            {t('admin_orders_pagination_previous' as any)}
           </button>
           <span className="text-xs text-gray-300">
-            Page {currentPage} of {totalPages}
+            {currentPage} / {totalPages}
           </span>
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
             className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-30 disabled:hover:bg-white/5"
           >
-            Next
+            {t('admin_orders_pagination_next' as any)}
           </button>
         </div>
       )}

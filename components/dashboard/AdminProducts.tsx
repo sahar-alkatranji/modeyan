@@ -180,7 +180,7 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ products, setProdu
               <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded text-[9px] uppercase tracking-wider font-bold border border-white/10 text-brand-gold">
                 {t((categories.find(c => c.id === (product as any).category)?.labelKey || 'category_long') as any)}
               </div>
-              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                 <button
                   onClick={() => handleOpenEdit(product)}
                   className="px-6 py-2 bg-white text-brand-dark font-bold uppercase tracking-widest text-[9px] rounded-lg hover:bg-brand-gold hover:text-white transition-colors w-32"
