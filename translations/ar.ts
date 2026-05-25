@@ -287,7 +287,7 @@ export const ar = {
   // Admin User Management
   admin_users_title: 'إدارة المستخدمين',
   admin_users_subtitle: 'الإشراف على ملفات أعضاء البوتيك وحساباتهم المالية.',
-  admin_users_add_button: 'إضافة مستخدم (تجريبي)',
+  admin_users_add_button: 'إضافة مستخدم جديد',
   admin_users_table_name: 'الاسم',
   admin_users_table_email: 'البريد الإلكتروني',
   admin_users_table_role: 'الدور',
@@ -595,5 +595,4 @@ export const ar = {
   tailor_portfolio_field_video: 'رابط الفيديو',
   admin_users_action_edit: 'تعديل',
   admin_users_edit_modal_title: 'تعديل بيانات المستخدم',
-  admin_users_add_button: 'إضافة مستخدم جديد',
 };

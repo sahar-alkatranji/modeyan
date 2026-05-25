@@ -286,7 +286,7 @@ export const en = {
   // Admin User Management
   admin_users_title: 'Manage Users',
   admin_users_subtitle: 'Oversee boutique member profiles and financial accounts.',
-  admin_users_add_button: 'Add User (Mock)',
+  admin_users_add_button: 'Add New User',
   admin_users_table_name: 'Name',
   admin_users_table_email: 'Email',
   admin_users_table_role: 'Role',
@@ -595,5 +595,4 @@ export const en = {
   tailor_portfolio_field_video: 'Video URL',
   admin_users_action_edit: 'Edit',
   admin_users_edit_modal_title: 'Edit User Details',
-  admin_users_add_button: 'Add New User',
 };
