@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { DressPart } from '../../types';
 import { api } from '../../services/api';
-import { glassCardClass, glassInputClass, ConfirmDialog } from './DashboardShared';
+import { glassCardClass, glassInputClass, ConfirmDialog, GlassDropdown } from './DashboardShared';
 
 interface AdminDesignAssetsProps {
   dressParts: DressPart[];
@@ -200,18 +200,18 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
               <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('admin_design_assets_field_type' as any) || 'Element Type'}
               </label>
-              <select
-                className={glassInputClass}
+              <GlassDropdown
+                options={[
+                  { value: 'front_neckline', label: t('design_part_front_neckline') },
+                  { value: 'back_neckline', label: t('design_part_back_neckline') },
+                  { value: 'fabrics', label: t('design_part_fabrics') },
+                  { value: 'skirt_styles', label: t('design_part_skirt_styles') },
+                  { value: 'train', label: t('design_part_train') },
+                  { value: 'ornaments', label: t('design_part_ornaments') },
+                ]}
                 value={type}
-                onChange={e => setType(e.target.value as any)}
-              >
-                <option value="front_neckline" className="bg-gray-800 text-white">{t('design_part_front_neckline')}</option>
-                <option value="back_neckline" className="bg-gray-800 text-white">{t('design_part_back_neckline')}</option>
-                <option value="fabrics" className="bg-gray-800 text-white">{t('design_part_fabrics')}</option>
-                <option value="skirt_styles" className="bg-gray-800 text-white">{t('design_part_skirt_styles')}</option>
-                <option value="train" className="bg-gray-800 text-white">{t('design_part_train')}</option>
-                <option value="ornaments" className="bg-gray-800 text-white">{t('design_part_ornaments')}</option>
-              </select>
+                onChange={(v) => setType(v as any)}
+              />
             </div>
 
             <div>

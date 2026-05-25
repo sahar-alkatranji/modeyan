@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { Product } from '../../types';
 import { api } from '../../services/api';
-import { glassCardClass, glassInputClass, ConfirmDialog } from './DashboardShared';
+import { glassCardClass, glassInputClass, ConfirmDialog, GlassDropdown } from './DashboardShared';
 
 interface AdminProductsProps {
   products: Product[];
@@ -341,17 +341,11 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ products, setProdu
               <label className="block text-sm font-bold text-gray-200 uppercase tracking-widest mb-2">
                 التصنيف
               </label>
-              <select
-                className={glassInputClass + ' text-base'}
+              <GlassDropdown
+                options={categories.map(cat => ({ value: cat.id, label: t(cat.labelKey as any) }))}
                 value={formCategory}
-                onChange={e => setFormCategory(e.target.value)}
-              >
-                {categories.map(cat => (
-                  <option key={cat.id} value={cat.id} className="bg-gray-800 text-white">
-                    {t(cat.labelKey as any)}
-                  </option>
-                ))}
-              </select>
+                onChange={setFormCategory}
+              />
             </div>
 
             <div>

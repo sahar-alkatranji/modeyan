@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { api } from '../../services/api';
-import { glassCardClass, glassInputClass } from './DashboardShared';
+import { glassCardClass, glassInputClass, GlassDropdown } from './DashboardShared';
 
 interface PaymentMethod {
   id: string;
@@ -506,19 +506,19 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
               <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('admin_payments_field_type' as any) || 'Gateway Type'}
               </label>
-              <select
-                className={glassInputClass}
+              <GlassDropdown
+                options={[
+                  { value: 'bank_transfer', label: 'Bank Transfer' },
+                  { value: 'mobile_transfer', label: 'Mobile Wallet Transfer' },
+                  { value: 'wallet_qr', label: 'Wallet QR (شام كاش / Usend)' },
+                  { value: 'remittance', label: 'Remittance Agency' },
+                  { value: 'cash_location', label: 'Cash / Head Office' },
+                  { value: 'paypal', label: 'PayPal' },
+                  { value: 'stripe', label: 'Stripe Card Element' },
+                ]}
                 value={newType}
-                onChange={e => setNewType(e.target.value as any)}
-              >
-                <option value="bank_transfer" className="bg-gray-800 text-white">Bank Transfer</option>
-                <option value="mobile_transfer" className="bg-gray-800 text-white">Mobile Wallet Transfer</option>
-                <option value="wallet_qr" className="bg-gray-800 text-white">Wallet QR (شام كاش / Usend)</option>
-                <option value="remittance" className="bg-gray-800 text-white">Remittance Agency</option>
-                <option value="cash_location" className="bg-gray-800 text-white">Cash / Head Office</option>
-                <option value="paypal" className="bg-gray-800 text-white">PayPal</option>
-                <option value="stripe" className="bg-gray-800 text-white">Stripe Card Element</option>
-              </select>
+                onChange={(v) => setNewType(v as any)}
+              />
             </div>
 
             <div>

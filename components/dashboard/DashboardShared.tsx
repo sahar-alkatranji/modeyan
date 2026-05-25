@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 
 export const ROLE_IMAGES = {
@@ -12,6 +12,58 @@ export const ROLE_IMAGES = {
 export const glassCardClass = "bg-black/30 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl transition-all duration-300";
 export const glassInputClass = "w-full p-4 border border-white/20 bg-white/5 text-white text-base placeholder-gray-400 focus:bg-white/10 focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-all rounded-xl";
 export const glassButtonClass = "w-full py-4 bg-white text-brand-dark font-bold tracking-[0.14em] text-sm hover:bg-brand-gold hover:text-white transition-all duration-300 rounded-xl uppercase shadow-lg transform hover:-translate-y-1";
+
+export const GlassDropdown: React.FC<{
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+}> = ({ options, value, onChange, placeholder, className = '' }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const selected = options.find(o => o.value === value);
+
+  return (
+    <div className={`relative ${className}`}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-4 border border-white/20 bg-white/5 text-white text-base text-start flex items-center justify-between focus:bg-white/10 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold/50 transition-all rounded-xl cursor-pointer"
+      >
+        <span className="truncate">{selected?.label || placeholder || value}</span>
+        <svg className={`w-4 h-4 text-brand-gold transition-transform duration-200 flex-shrink-0 ml-2 ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+          <div className="absolute top-full mt-2 left-0 right-0 z-20 bg-black/90 backdrop-blur-xl border border-white/15 rounded-xl shadow-2xl overflow-hidden animate-fade-in max-h-64 overflow-y-auto">
+            {options.map(opt => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => { onChange(opt.value); setIsOpen(false); }}
+                className={`w-full px-5 py-3 text-start text-sm font-medium transition-all flex items-center gap-3 ${
+                  value === opt.value
+                    ? 'bg-brand-gold/20 text-brand-gold border-l-2 border-brand-gold'
+                    : 'text-gray-300 hover:bg-white/10 hover:text-white border-l-2 border-transparent'
+                }`}
+              >
+                {value === opt.value && (
+                  <svg className="w-4 h-4 text-brand-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+                <span>{opt.label}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
 
 export const Icon = ({ name, className = "w-3 h-3" }: { name: string, className?: string }) => {
     switch (name) {
@@ -80,7 +132,8 @@ export const ConfirmDialog = ({
   onConfirm,
   onCancel,
   confirmText,
-  cancelText
+  cancelText,
+  variant = 'danger'
 }: {
   isOpen: boolean,
   title: string,
@@ -88,23 +141,31 @@ export const ConfirmDialog = ({
   onConfirm: () => void,
   onCancel: () => void,
   confirmText?: string,
-  cancelText?: string
+  cancelText?: string,
+  variant?: 'danger' | 'warning' | 'info'
 }) => {
   const { t } = useTranslation();
   if (!isOpen) return null;
+
+  const iconColor = variant === 'danger' ? 'red' : variant === 'warning' ? 'amber' : 'blue';
+  const btnBg = variant === 'danger' ? 'bg-red-500 hover:bg-red-600' : variant === 'warning' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-500 hover:bg-blue-600';
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
-      <div className={glassCardClass + " p-6 max-w-sm w-full text-center border-red-500/30"}>
-        <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4 border border-red-500/30">
-          <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      <div className={glassCardClass + " p-8 max-w-sm w-full text-center border-" + iconColor + "-500/30"}>
+        {/* Animated warning icon */}
+        <div className={`w-16 h-16 rounded-full bg-${iconColor}-500/10 flex items-center justify-center mx-auto mb-5 border border-${iconColor}-500/20 animate-pulse`}>
+          <svg className={`w-8 h-8 text-${iconColor}-400`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <h4 className="font-serif text-lg text-white mb-2">{title}</h4>
-        <p className="text-sm text-gray-200 mb-6 leading-7">{message}</p>
+
+        <h4 className="font-serif text-xl text-white mb-2">{title}</h4>
+        <p className="text-sm text-gray-300 mb-8 leading-7">{message}</p>
+
         <div className="flex gap-3">
-          <button onClick={onCancel} className="flex-1 py-3 text-gray-300 font-bold uppercase tracking-wide text-sm hover:text-white transition-colors">{cancelText || t('modal_cancel')}</button>
-          <button onClick={onConfirm} className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold uppercase tracking-wide text-sm transition-colors shadow-lg">{confirmText || t('admin_action_approve')}</button>
+          <button onClick={onCancel} className="flex-1 py-4 border border-white/20 text-gray-300 font-bold uppercase tracking-widest text-xs rounded-xl hover:bg-white/10 hover:text-white transition-all">{cancelText || t('modal_cancel')}</button>
+          <button onClick={onConfirm} className={`flex-1 py-4 ${btnBg} text-white rounded-xl font-bold uppercase tracking-widest text-xs transition-all shadow-lg`}>{confirmText || t('admin_action_approve')}</button>
         </div>
       </div>
     </div>
