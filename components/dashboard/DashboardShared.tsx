@@ -10,8 +10,8 @@ export const ROLE_IMAGES = {
 };
 
 export const glassCardClass = "bg-black/30 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl transition-all duration-300";
-export const glassInputClass = "w-full p-4 border border-white/20 bg-white/5 text-white placeholder-gray-400 focus:bg-white/10 focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-all rounded-xl";
-export const glassButtonClass = "w-full py-4 bg-white text-brand-dark font-bold tracking-[0.2em] text-xs hover:bg-brand-gold hover:text-white transition-all duration-300 rounded-xl uppercase shadow-lg transform hover:-translate-y-1";
+export const glassInputClass = "w-full p-4 border border-white/20 bg-white/5 text-white text-base placeholder-gray-400 focus:bg-white/10 focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-all rounded-xl";
+export const glassButtonClass = "w-full py-4 bg-white text-brand-dark font-bold tracking-[0.14em] text-sm hover:bg-brand-gold hover:text-white transition-all duration-300 rounded-xl uppercase shadow-lg transform hover:-translate-y-1";
 
 export const Icon = ({ name, className = "w-3 h-3" }: { name: string, className?: string }) => {
     switch (name) {
@@ -45,7 +45,7 @@ export const StatusPill = ({ status }: { status: string }) => {
   };
   const key = status.toLowerCase();
   return (
-      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase border tracking-wider ${styles[key] || 'bg-gray-500/20 text-gray-300'}`}>
+      <span className={`px-3 py-1 rounded-full text-sm font-bold uppercase border tracking-wide ${styles[key] || 'bg-gray-500/20 text-gray-300'}`}>
           {t(`status_${key}` as any) || key}
       </span>
   );
@@ -60,13 +60,13 @@ export const MetricCard = ({ title, value, icon, trend }: { title: string, value
                 <Icon name={icon} className="w-4 h-4" />
             </div>
             {trend && (
-              <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${isNegative ? 'text-red-400 bg-red-500/20' : 'text-green-400 bg-green-500/20'}`}>
+              <span className={`text-sm font-bold px-3 py-1 rounded-md ${isNegative ? 'text-red-400 bg-red-500/20' : 'text-green-400 bg-green-500/20'}`}>
                 {isNegative ? '' : '+'}{trend}
               </span>
             )}
         </div>
         <div>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">{title}</p>
+            <p className="text-sm font-bold text-gray-200 uppercase tracking-wide mb-1">{title}</p>
             <h3 className="text-2xl font-serif text-white">{value}</h3>
         </div>
     </div>
@@ -101,10 +101,10 @@ export const ConfirmDialog = ({
           </svg>
         </div>
         <h4 className="font-serif text-lg text-white mb-2">{title}</h4>
-        <p className="text-xs text-gray-300 mb-6">{message}</p>
+        <p className="text-sm text-gray-200 mb-6 leading-7">{message}</p>
         <div className="flex gap-3">
-          <button onClick={onCancel} className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-[9px] hover:text-white transition-colors">{cancelText || t('modal_cancel')}</button>
-          <button onClick={onConfirm} className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold uppercase tracking-widest text-[9px] transition-colors shadow-lg">{confirmText || t('admin_action_approve')}</button>
+          <button onClick={onCancel} className="flex-1 py-3 text-gray-300 font-bold uppercase tracking-wide text-sm hover:text-white transition-colors">{cancelText || t('modal_cancel')}</button>
+          <button onClick={onConfirm} className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold uppercase tracking-wide text-sm transition-colors shadow-lg">{confirmText || t('admin_action_approve')}</button>
         </div>
       </div>
     </div>

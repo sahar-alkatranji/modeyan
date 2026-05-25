@@ -88,7 +88,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
 
       <div className={glassCardClass + " overflow-x-auto mb-6"}>
         <table className="w-full text-start min-w-0 sm:min-w-[700px]">
-          <thead className="bg-white/5 text-gray-300 uppercase text-[9px] font-bold tracking-[0.15em] border-b border-white/10">
+          <thead className="bg-white/5 text-gray-200 uppercase text-xs font-bold tracking-[0.15em] border-b border-white/10">
             <tr>
               <th className="px-6 py-4 text-start">{t('admin_orders_table_id')}</th>
               <th className="px-6 py-4 text-start">{t('admin_orders_table_customer')}</th>
@@ -110,7 +110,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
                   </td>
                   <td className="px-6 py-4 text-xs font-bold text-white">
                     {customerUser ? `${customerUser.firstName} ${customerUser.lastName}` : t('unknown')}
-                    <p className="text-[9px] text-gray-400 font-normal">{customerUser?.email}</p>
+                    <p className="text-xs text-gray-300 font-normal">{customerUser?.email}</p>
                   </td>
                   <td className="px-6 py-4 text-xs text-brand-gold font-bold">
                     ${order.price ? Number(order.price).toFixed(2) : '-'}
@@ -128,14 +128,14 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
                           <button
                             onClick={() => handleUpdateStatus(order.id, 'approved')}
                             disabled={isUpdating}
-                            className="px-2 py-1 bg-green-500 hover:bg-green-600 text-white text-[9px] font-bold uppercase rounded transition-colors disabled:opacity-50"
+                            className="px-2 py-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold uppercase rounded transition-colors disabled:opacity-50"
                           >
                             {t('admin_orders_action_approve_quote' as any)}
                           </button>
                           <button
                             onClick={() => handleUpdateStatus(order.id, 'cancelled')}
                             disabled={isUpdating}
-                            className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white text-[9px] font-bold uppercase rounded transition-colors disabled:opacity-50"
+                            className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-bold uppercase rounded transition-colors disabled:opacity-50"
                           >
                             {t('admin_orders_action_reject' as any)}
                           </button>
@@ -146,7 +146,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
                         <button
                           onClick={() => handleUpdateStatus(order.id, 'completed')}
                           disabled={isUpdating}
-                          className="px-2.5 py-1 bg-blue-500 hover:bg-blue-600 text-white text-[9px] font-bold uppercase rounded transition-colors disabled:opacity-50"
+                          className="px-2.5 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold uppercase rounded transition-colors disabled:opacity-50"
                         >
                           {t('admin_orders_action_mark_completed' as any)}
                         </button>
@@ -156,7 +156,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
                         <button
                           onClick={() => handleUpdateStatus(order.id, 'cancelled')}
                           disabled={isUpdating}
-                          className="px-2.5 py-1 bg-white/10 hover:bg-red-500/20 text-red-400 hover:text-white border border-red-500/20 text-[9px] font-bold uppercase rounded transition-all disabled:opacity-50"
+                          className="px-2.5 py-1 bg-white/10 hover:bg-red-500/20 text-red-400 hover:text-white border border-red-500/20 text-xs font-bold uppercase rounded transition-all disabled:opacity-50"
                         >
                           {t('admin_orders_action_cancel' as any)}
                         </button>

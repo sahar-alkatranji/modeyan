@@ -260,13 +260,13 @@ export const ManagerOverview: React.FC<ManagerOverviewProps> = ({
                     />
                     <div className="flex-1 overflow-hidden">
                       <p className="font-bold text-xs text-white truncate">{t(i.title as any)}</p>
-                      <p className="text-[9px] text-gray-400 uppercase tracking-widest">
+                      <p className="text-xs text-gray-400 uppercase tracking-widest">
                         {t('dashboard_portfolio_request')}
                       </p>
                     </div>
                     <button
                       onClick={() => setCurrentView('admin-approvals')}
-                      className="text-brand-gold font-bold text-[9px] hover:underline uppercase tracking-widest"
+                      className="text-brand-gold font-bold text-xs hover:underline uppercase tracking-widest"
                     >
                       {t('dashboard_review_action')}
                     </button>

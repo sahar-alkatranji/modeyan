@@ -318,6 +318,13 @@ class ApiClient {
     return this.request<any>(`/users/${userId}`, { method: 'DELETE' });
   }
 
+  async updateUser(userId: number, data: Record<string, unknown>): Promise<any> {
+    return this.request<any>(`/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
   async getTransactions(): Promise<any[]> {
     return this.request<any[]>('/transactions');
   }
@@ -339,6 +346,27 @@ class ApiClient {
 
   async deleteProduct(id: number): Promise<any> {
     return this.request<any>(`/designs/${id}`, { method: 'DELETE' });
+  }
+
+  async uploadFile(file: File, type: 'image' | 'video' = 'image'): Promise<{ url: string }> {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('type', type);
+
+    const headers: Record<string, string> = {};
+    if (this.token) headers['Authorization'] = `Bearer ${this.token}`;
+
+    const res = await fetch(`${API_BASE}/upload`, {
+      method: 'POST',
+      headers,
+      body: form,
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data?.detail || 'Upload failed');
+    }
+    return data;
   }
 
   // Design Assets mapping to /parts backend

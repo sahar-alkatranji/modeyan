@@ -34,6 +34,15 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
+  // Edit User modal state
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
+  const [editUser, setEditUser] = useState<User | null>(null);
+  const [editFirstName, setEditFirstName] = useState('');
+  const [editLastName, setEditLastName] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editRole, setEditRole] = useState<UserRole>('customer');
+  const [isEditUserSubmitting, setIsEditUserSubmitting] = useState(false);
+
   // Filters logic
   const filteredUsers = users.filter(u => {
     const matchesSearch = 
@@ -136,6 +145,44 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
     }
   };
 
+  const openEditModal = (u: User) => {
+    setEditUser(u);
+    setEditFirstName(u.firstName);
+    setEditLastName(u.lastName);
+    setEditEmail(u.email);
+    setEditRole(u.role as UserRole);
+    setIsEditUserModalOpen(true);
+  };
+
+  const handleEditUserSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editUser) return;
+    if (!editFirstName || !editLastName || !editEmail) {
+      alert('All fields are required');
+      return;
+    }
+    setIsEditUserSubmitting(true);
+    try {
+      await api.updateUser(parseInt(editUser.id), {
+        first_name: editFirstName,
+        last_name: editLastName,
+        email: editEmail,
+        role: editRole,
+      });
+      setUsers(prev => prev.map(u =>
+        u.id === editUser.id
+          ? { ...u, firstName: editFirstName, lastName: editLastName, email: editEmail, role: editRole }
+          : u
+      ));
+      setIsEditUserModalOpen(false);
+      setEditUser(null);
+    } catch (err: any) {
+      alert(err.message || 'Failed to update user');
+    } finally {
+      setIsEditUserSubmitting(false);
+    }
+  };
+
   return (
     <div className="animate-fade-in text-start">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -145,7 +192,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
         </div>
         <button
           onClick={() => setIsAddUserModalOpen(true)}
-          className="px-6 py-2.5 bg-white text-brand-dark font-bold uppercase tracking-widest text-[10px] rounded-lg hover:bg-brand-gold hover:text-white transition-colors"
+          className="px-6 py-2.5 bg-white text-brand-dark font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-brand-gold hover:text-white transition-colors"
         >
           {t('admin_users_add_button' as any) || 'Add New User'}
         </button>
@@ -179,7 +226,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
 
       <div className={glassCardClass + " overflow-x-auto"}>
         <table className="w-full text-start min-w-0 sm:min-w-[600px]">
-          <thead className="bg-white/5 text-gray-300 uppercase text-[9px] font-bold tracking-[0.15em] border-b border-white/10">
+          <thead className="bg-white/5 text-gray-200 uppercase text-xs font-bold tracking-[0.15em] border-b border-white/10">
             <tr>
               <th className="px-6 py-4 text-start">{t('admin_users_table_name')}</th>
               <th className="px-6 py-4 text-start">{t('admin_users_table_role')}</th>
@@ -200,27 +247,33 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
                       <p className="font-bold text-sm text-white leading-none mb-1">
                         {u.firstName} {u.lastName}
                       </p>
-                      <p className="text-[10px] text-gray-400 font-normal">{u.email}</p>
+                      <p className="text-xs text-gray-300 font-normal">{u.email}</p>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 text-start">
-                  <span className="text-[10px] uppercase font-bold text-gray-400">
+                  <span className="text-xs uppercase font-bold text-gray-400">
                     {t(`signup_form_role_${u.role}` as any)}
                   </span>
                 </td>
                 <td className="px-6 py-4 font-serif text-base font-medium text-white">
-                  ${Number(u.balance).toFixed(2)}
+                  ${(typeof u.balance === 'number' && !isNaN(u.balance) ? u.balance : 0).toFixed(2)}
                 </td>
                 <td className="px-6 py-4 text-end">
                   <div className="flex justify-end gap-3">
+                    <button
+                      onClick={() => openEditModal(u)}
+                      className="text-blue-400 hover:text-blue-300 text-xs font-bold uppercase tracking-widest"
+                    >
+                      {t('admin_users_action_edit' as any) || 'Edit'}
+                    </button>
                     <button
                       onClick={() => {
                         setSelectedUserForWallet(u);
                         setWalletAction('add');
                         setIsWalletModalOpen(true);
                       }}
-                      className="text-white hover:text-brand-gold text-[10px] font-bold uppercase tracking-widest"
+                      className="text-white hover:text-brand-gold text-xs font-bold uppercase tracking-widest"
                     >
                       {t('admin_users_action_wallet')}
                     </button>
@@ -229,7 +282,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
                         setUserToDelete(u);
                         setIsDeleteConfirmOpen(true);
                       }}
-                      className="text-red-400 hover:text-red-500 text-[10px] font-bold uppercase tracking-widest"
+                      className="text-red-400 hover:text-red-500 text-xs font-bold uppercase tracking-widest"
                     >
                       {t('admin_users_action_delete')}
                     </button>
@@ -264,16 +317,16 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
               </div>
             </div>
             <div className="p-5 bg-white/5 rounded-2xl mb-6 text-center border border-white/10">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <p className="text-xs font-bold text-gray-200 uppercase tracking-widest mb-1">
                 {t('admin_wallet_current_balance')}
               </p>
               <p className="text-4xl font-serif text-white font-bold">
-                ${Number(selectedUserForWallet.balance).toFixed(2)}
+                ${(typeof selectedUserForWallet.balance === 'number' && !isNaN(selectedUserForWallet.balance) ? selectedUserForWallet.balance : 0).toFixed(2)}
               </p>
             </div>
             <div className="space-y-4 mb-8">
               <div>
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-2">
                   {t('admin_wallet_action_label')}
                 </label>
                 <select
@@ -290,7 +343,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
                 </select>
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-2">
                   {t('admin_wallet_amount_label')}
                 </label>
                 <input
@@ -305,14 +358,14 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
             <div className="flex gap-3">
               <button
                 onClick={() => setIsWalletModalOpen(false)}
-                className="flex-1 py-4 text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:text-white transition-colors"
+                className="flex-1 py-4 text-gray-400 font-bold uppercase tracking-widest text-xs hover:text-white transition-colors"
               >
                 {t('modal_cancel')}
               </button>
               <button
                 onClick={handleWalletSubmit}
                 disabled={isWalletSubmitting}
-                className="flex-1 py-4 bg-white text-black rounded-xl shadow-lg font-bold uppercase tracking-widest text-[10px] hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
+                className="flex-1 py-4 bg-white text-black rounded-xl shadow-lg font-bold uppercase tracking-widest text-xs hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
               >
                 {isWalletSubmitting ? t('wallet_processing') : t('admin_wallet_submit')}
               </button>
@@ -334,7 +387,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-1">
                   {t('contact_form_firstName')}
                 </label>
                 <input
@@ -346,7 +399,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
                 />
               </div>
               <div>
-                <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-1">
                   {t('contact_form_lastName')}
                 </label>
                 <input
@@ -360,7 +413,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
             </div>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-1">
                 {t('contact_form_email')}
               </label>
               <input
@@ -373,7 +426,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
             </div>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-1">
                 {t('signup_form_password_label' as any) || 'Password'}
               </label>
               <input
@@ -386,7 +439,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
             </div>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-1">
                 {t('admin_users_table_role')}
               </label>
               <select
@@ -413,16 +466,111 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
               <button
                 type="button"
                 onClick={() => setIsAddUserModalOpen(false)}
-                className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:text-white transition-colors"
+                className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-xs hover:text-white transition-colors"
               >
                 {t('modal_cancel')}
               </button>
               <button
                 type="submit"
                 disabled={isAddUserSubmitting}
-                className="flex-1 py-3 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
+                className="flex-1 py-3 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
               >
                 {isAddUserSubmitting ? t('wallet_processing') : t('signup_form_submit_label' as any) || 'Submit'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {isEditUserModalOpen && editUser && (
+        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
+          <form
+            onSubmit={handleEditUserSubmit}
+            className={glassCardClass + " p-6 sm:p-8 max-w-md w-full text-start space-y-4 my-4 max-h-[85vh] overflow-y-auto"}
+          >
+            <h3 className="font-serif text-2xl text-white mb-4">
+              {t('admin_users_edit_modal_title' as any) || 'Edit User'}
+            </h3>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-1">
+                  {t('contact_form_firstName')}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editFirstName}
+                  onChange={e => setEditFirstName(e.target.value)}
+                  className={glassInputClass}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-1">
+                  {t('contact_form_lastName')}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editLastName}
+                  onChange={e => setEditLastName(e.target.value)}
+                  className={glassInputClass}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-1">
+                {t('contact_form_email')}
+              </label>
+              <input
+                type="email"
+                required
+                value={editEmail}
+                onChange={e => setEditEmail(e.target.value)}
+                className={glassInputClass}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-1">
+                {t('admin_users_table_role')}
+              </label>
+              <select
+                className={glassInputClass}
+                value={editRole}
+                onChange={e => setEditRole(e.target.value as UserRole)}
+              >
+                <option value="customer" className="bg-gray-800 text-white">
+                  {t('signup_form_role_customer')}
+                </option>
+                <option value="designer" className="bg-gray-800 text-white">
+                  {t('signup_form_role_designer')}
+                </option>
+                <option value="tailor" className="bg-gray-800 text-white">
+                  {t('signup_form_role_tailor')}
+                </option>
+                <option value="manager" className="bg-gray-800 text-white">
+                  {t('signup_form_role_manager' as any) || 'Manager'}
+                </option>
+              </select>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <button
+                type="button"
+                onClick={() => { setIsEditUserModalOpen(false); setEditUser(null); }}
+                className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-xs hover:text-white transition-colors"
+              >
+                {t('modal_cancel')}
+              </button>
+              <button
+                type="submit"
+                disabled={isEditUserSubmitting}
+                className="flex-1 py-3 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
+              >
+                {isEditUserSubmitting ? t('wallet_processing') : t('admin_users_action_edit' as any) || 'Save Changes'}
               </button>
             </div>
           </form>

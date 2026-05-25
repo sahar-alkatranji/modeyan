@@ -373,6 +373,7 @@ export const en = {
   design_part_fabrics: 'Fabric',
   design_part_skirt_styles: 'Skirt Style',
   design_part_train: 'Train',
+  design_part_ornaments: 'Ornaments',
   design_select_fabric_placeholder: 'Select Fabric Type...',
   dashboard_design_save_button: 'Save to My Designs',
   dashboard_design_preview: 'AI Dress Preview',

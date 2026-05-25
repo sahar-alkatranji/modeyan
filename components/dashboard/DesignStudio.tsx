@@ -65,6 +65,7 @@ export const DesignStudio: React.FC<DesignStudioProps> = ({
         designSelections.fabrics ? `Fabric: ${t(designSelections.fabrics.name as any)}` : '',
         designSelections.skirt_styles ? `Skirt Style: ${t(designSelections.skirt_styles.name as any)}` : '',
         designSelections.train ? `Train: ${t(designSelections.train.name as any)}` : '',
+        designSelections.ornaments ? `Ornaments: ${t(designSelections.ornaments.name as any)}` : '',
       ].filter(Boolean).join(', ');
 
       const prompt = `Create a high-fashion, realistic full-body photograph of a dress. The dress has the following specifications: ${partsDescription}. The color of the dress is ${selectedColor}. The style should be elegant and suitable for a boutique display. Professional studio lighting, 4k resolution, white background.`;
@@ -106,7 +107,7 @@ export const DesignStudio: React.FC<DesignStudioProps> = ({
       </div>
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          {['front_neckline', 'back_neckline', 'fabrics', 'skirt_styles', 'train'].map(partType => (
+          {['front_neckline', 'back_neckline', 'fabrics', 'skirt_styles', 'train', 'ornaments'].map(partType => (
             <div key={partType} className={glassCardClass + " p-6"}>
               <h4 className="font-bold uppercase tracking-widest text-xs mb-4 text-brand-gold">{t(`design_part_${partType}` as any)}</h4>
               <div className="flex gap-4 overflow-x-auto pb-2 custom-scrollbar">
@@ -119,7 +120,7 @@ export const DesignStudio: React.FC<DesignStudioProps> = ({
                     <div className="w-full h-20 bg-white rounded-lg mb-2 overflow-hidden">
                       {part.imageUrl && <img src={part.imageUrl} className="w-full h-full object-cover" alt={part.name} />}
                     </div>
-                    <p className="text-[9px] font-bold text-center truncate text-white">{t(part.name as any)}</p>
+                    <p className="text-xs font-bold text-center truncate text-white">{t(part.name as any)}</p>
                   </button>
                 ))}
               </div>

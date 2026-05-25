@@ -106,7 +106,7 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({
                 <button
                   onClick={() => handleForwardToTailor(design)}
                   disabled={isForwarding}
-                  className="w-full py-2.5 bg-white text-black font-bold uppercase tracking-widest text-[9px] rounded-xl hover:bg-brand-gold hover:text-white transition-all disabled:opacity-50"
+                  className="w-full py-2.5 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-xl hover:bg-brand-gold hover:text-white transition-all disabled:opacity-50"
                 >
                   {isForwarding ? t('wallet_processing') : t('dashboard_send_to_tailor')}
                 </button>

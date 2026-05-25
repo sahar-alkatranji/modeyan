@@ -102,7 +102,7 @@ export const AdminSocials: React.FC<AdminSocialsProps> = ({ socialLinks, setSoci
                     placeholder="https://instagram.com/profile"
                   />
                   {!isUrlValid && link.isEnabled && (
-                    <span className="text-[10px] text-red-400 mt-1 block">
+                    <span className="text-xs text-red-400 mt-1 block">
                       {t('admin_socials_invalid_url_hint' as any) || 'Please enter a valid URL (e.g. https://domain.com)'}
                     </span>
                   )}

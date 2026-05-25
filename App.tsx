@@ -78,7 +78,7 @@ const AppContent: React.FC = () => {
       }
 
       try {
-        const categories = ['front_neckline', 'back_neckline', 'fabrics', 'skirt_styles', 'train'];
+        const categories = ['front_neckline', 'back_neckline', 'fabrics', 'skirt_styles', 'train', 'ornaments'];
         const allParts: DressPart[] = [];
         for (const cat of categories) {
           try {

@@ -88,7 +88,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
           lastName: u.last_name,
           email: u.email,
           role: u.role as UserRole,
-          balance: Number(u.balance),
+          balance: typeof u.balance === 'number' && !isNaN(u.balance) ? u.balance : 0,
           joinedDate: new Date(u.created_at || Date.now()),
         })));
       }).catch(() => {});
@@ -145,7 +145,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         <div className="flex-shrink-0">
              <Icon name={icon} className={`w-4 h-4 transition-colors duration-300 ${currentView === view ? 'text-black' : 'text-gray-400 group-hover:text-white'}`} />
         </div>
-        <span className={`text-[9px] font-bold uppercase tracking-[0.1em] text-start leading-none ${currentView === view ? 'opacity-100' : 'opacity-80'}`}>{label}</span>
+        <span className={`text-sm font-bold uppercase tracking-[0.1em] text-start leading-none ${currentView === view ? 'opacity-100' : 'opacity-80'}`}>{label}</span>
     </button>
   );
 
@@ -193,7 +193,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       <aside className="hidden md:flex fixed top-0 bottom-0 start-0 w-64 bg-gray-950/80 backdrop-blur-xl border-r border-white/10 flex-col h-full overflow-y-auto custom-scrollbar z-[80]">
           <div className="p-8 pb-0 text-center">
              <h1 className="font-serif text-xl font-black tracking-[0.15em] text-white mb-1">MODEYA</h1>
-             <p className="text-[8px] font-bold text-brand-gold uppercase tracking-[0.2em]">{t('dashboard_management_suite')}</p>
+             <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.2em]">{t('dashboard_management_suite')}</p>
           </div>
           
           <div className="p-4 flex-grow">
@@ -220,7 +220,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                   {/* MANAGER MENU */}
                   {userRole === 'manager' && (
                     <>
-                        <div className="mt-6 mb-2 px-3 text-start"><span className="text-[8px] font-black text-gray-500 uppercase tracking-[0.2em]">{t('dashboard_sidebar_admin')}</span></div>
+                        <div className="mt-6 mb-2 px-3 text-start"><span className="text-xs font-black text-gray-300 uppercase tracking-[0.2em]">{t('dashboard_sidebar_admin')}</span></div>
                         <SidebarItem view="admin-orders" icon="clipboard" label={t('dashboard_menu_admin_orders')} />
                         <SidebarItem view="admin-approvals" icon="check-circle" label={t('dashboard_menu_admin_approvals')} />
                         <SidebarItem view="admin-products" icon="shopping-bag" label={t('dashboard_menu_admin_products')} />
@@ -231,7 +231,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                     </>
                   )}
 
-                  <div className="mt-6 mb-2 px-3 text-start"><span className="text-[8px] font-black text-gray-500 uppercase tracking-[0.2em]">{t('dashboard_sidebar_personal')}</span></div>
+                  <div className="mt-6 mb-2 px-3 text-start"><span className="text-xs font-black text-gray-300 uppercase tracking-[0.2em]">{t('dashboard_sidebar_personal')}</span></div>
                   <SidebarItem view="wallet" icon="credit-card" label={t('dashboard_menu_wallet')} />
                   <SidebarItem view="profile" icon="settings" label={t('dashboard_menu_profile')} />
               </nav>
@@ -240,12 +240,12 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
           <div className="p-6 mt-auto border-t border-white/10">
              <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2 text-start">
-                    <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-[10px] font-bold">
+                    <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm font-bold">
                         {authUser?.first_name?.[0] || ''}{authUser?.last_name?.[0] || ''}
                     </div>
                     <div>
-                        <p className="text-[9px] font-bold text-white leading-none mb-1">{userRole === 'manager' ? t('dashboard_admin_access') : t('dashboard_user_account')}</p>
-                        <p className="text-[7px] text-gray-400 leading-none">{t('dashboard_version_premium')}</p>
+                        <p className="text-sm font-bold text-white leading-none mb-1">{userRole === 'manager' ? t('dashboard_admin_access') : t('dashboard_user_account')}</p>
+                        <p className="text-xs text-gray-400 leading-none">{t('dashboard_version_premium')}</p>
                     </div>
                 </div>
                 <button 
@@ -253,10 +253,10 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                       onLogout();
                       onNavigate('home');
                     }} 
-                    title={t('dashboard_menu_logout')}
-                    className="p-3 rounded-lg text-red-400 hover:bg-white/10 transition-colors shadow-sm"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/20 text-red-300 hover:bg-red-500/40 hover:text-white transition-all text-sm font-medium"
                 >
-                    <Icon name="logout" className="w-6 h-6" />
+                    <Icon name="logout" className="w-5 h-5" />
+                    <span>{t('dashboard_menu_logout')}</span>
                 </button>
              </div>
           </div>
@@ -285,7 +285,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
 
                   {userRole === 'manager' && (
                     <>
-                        <div className="mt-6 mb-2 px-3 text-start"><span className="text-[8px] font-black text-gray-500 uppercase tracking-[0.2em]">{t('dashboard_sidebar_admin')}</span></div>
+                        <div className="mt-6 mb-2 px-3 text-start"><span className="text-xs font-black text-gray-300 uppercase tracking-[0.2em]">{t('dashboard_sidebar_admin')}</span></div>
                         <SidebarItem view="admin-orders" icon="clipboard" label={t('dashboard_menu_admin_orders')} />
                         <SidebarItem view="admin-approvals" icon="check-circle" label={t('dashboard_menu_admin_approvals')} />
                         <SidebarItem view="admin-products" icon="shopping-bag" label={t('dashboard_menu_admin_products')} />
@@ -296,32 +296,22 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                     </>
                   )}
 
-                  <div className="mt-6 mb-2 px-3 text-start"><span className="text-[8px] font-black text-gray-500 uppercase tracking-[0.2em]">{t('dashboard_sidebar_personal')}</span></div>
+                  <div className="mt-6 mb-2 px-3 text-start"><span className="text-xs font-black text-gray-300 uppercase tracking-[0.2em]">{t('dashboard_sidebar_personal')}</span></div>
                   <SidebarItem view="wallet" icon="credit-card" label={t('dashboard_menu_wallet')} />
                   <SidebarItem view="profile" icon="settings" label={t('dashboard_menu_profile')} />
               </nav>
-          </div>
-          
-          <div className="p-6 mt-auto border-t border-white/10 bg-black/40">
-             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-start">
-                    <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-[10px] font-bold">
-                        {authUser?.first_name?.[0] || ''}{authUser?.last_name?.[0] || ''}
-                    </div>
-                    <div>
-                        <p className="text-[9px] font-bold text-white leading-none mb-1">{userRole === 'manager' ? t('dashboard_admin_access') : t('dashboard_user_account')}</p>
-                    </div>
-                </div>
-                <button 
-                    onClick={() => {
-                      onLogout();
-                      onNavigate('home');
-                    }} 
-                    className="p-3 rounded-lg text-red-400 hover:bg-white/10 transition-colors"
-                >
-                    <Icon name="logout" className="w-6 h-6" />
-                </button>
-             </div>
+
+              {/* Logout button directly below menu items */}
+              <button
+                  onClick={() => {
+                    onLogout();
+                    onNavigate('home');
+                  }}
+                  className="w-full flex items-center justify-center gap-2 mt-6 px-4 py-3 rounded-xl bg-red-500/20 text-red-300 hover:bg-red-500/40 hover:text-white transition-all text-sm font-bold min-h-[48px]"
+              >
+                  <Icon name="logout" className="w-5 h-5" />
+                  <span>{t('dashboard_menu_logout')}</span>
+              </button>
           </div>
       </aside>
 
@@ -400,18 +390,18 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                   </div>
                   <div className="grid md:grid-cols-3 gap-6 mb-8">
                     <div className={glassCardClass + " p-6 text-center"}>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_current_balance')}</p>
+                      <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_current_balance')}</p>
                       <p className="text-4xl font-serif text-white font-bold">${walletBalance.toFixed(2)}</p>
                     </div>
                     <div className={glassCardClass + " p-6 text-center"}>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_top_up' as any)}</p>
+                      <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_top_up' as any)}</p>
                       <div className="flex gap-2 mt-3">
                         <input type="number" value={topUpAmount} onChange={e => setTopUpAmount(e.target.value)} className={glassInputClass.replace('w-full','flex-1')} placeholder="0.00" />
-                        <button onClick={async () => { if (!topUpAmount || parseFloat(topUpAmount) <= 0) return; try { await api.topUpWallet(parseFloat(topUpAmount)); const w = await api.getWallet(); setWalletBalance(Number(w.balance)); setTopUpAmount(''); alert(t('profile_save_success')); } catch (err: any) { alert(err.message || 'Failed to top up'); } }} className="px-4 py-2 bg-brand-gold text-white font-bold uppercase tracking-widest text-[10px] rounded-xl hover:bg-yellow-600">{t('wallet_top_up' as any)}</button>
+                        <button onClick={async () => { if (!topUpAmount || parseFloat(topUpAmount) <= 0) return; try { await api.topUpWallet(parseFloat(topUpAmount)); const w = await api.getWallet(); setWalletBalance(Number(w.balance)); setTopUpAmount(''); alert(t('profile_save_success')); } catch (err: any) { alert(err.message || 'Failed to top up'); } }} className="px-4 py-2 bg-brand-gold text-white font-bold uppercase tracking-widest text-sm rounded-xl hover:bg-yellow-600">{t('wallet_top_up' as any)}</button>
                       </div>
                     </div>
                     <div className={glassCardClass + " p-6 text-center"}>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_pending_balance' as any) || 'Pending Balance'}</p>
+                      <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_pending_balance' as any) || 'Pending Balance'}</p>
                       <p className="text-2xl font-serif text-white font-bold">${authUser?.pending_balance?.toFixed(2) || '0.00'}</p>
                     </div>
                   </div>
@@ -430,28 +420,28 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                               <span className="font-bold text-white text-xs uppercase tracking-wider">{t(method.translationKey as any)}</span>
                             </div>
                             {method.details?.phoneNumber && (
-                              <p className="text-[10px] text-gray-400 mb-1">
-                                <span className="text-gray-500">{t('wallet_payment_phone' as any)}</span> {method.details.phoneNumber}
+                              <p className="text-sm text-gray-400 mb-1">
+                                <span className="text-gray-300">{t('wallet_payment_phone' as any)}</span> {method.details.phoneNumber}
                               </p>
                             )}
                             {method.details?.paymentCode && (
-                              <p className="text-[10px] text-gray-300 font-bold bg-white/5 rounded-lg px-3 py-2 mt-2 border border-white/10">
+                              <p className="text-sm text-gray-300 font-bold bg-white/5 rounded-lg px-3 py-2 mt-2 border border-white/10">
                                 {t('wallet_payment_code' as any)} <span className="text-brand-gold">{method.details.paymentCode}</span>
                               </p>
                             )}
                             {method.details?.accountName && (
-                              <p className="text-[10px] text-gray-400 mb-1">
-                                <span className="text-gray-500">{t('wallet_payment_account_name' as any)}</span> {method.details.accountName}
+                              <p className="text-sm text-gray-400 mb-1">
+                                <span className="text-gray-300">{t('wallet_payment_account_name' as any)}</span> {method.details.accountName}
                               </p>
                             )}
                             {method.details?.bankName && (
-                              <p className="text-[10px] text-gray-400 mb-1">
-                                <span className="text-gray-500">{t('wallet_payment_bank' as any)}</span> {method.details.bankName}
+                              <p className="text-sm text-gray-400 mb-1">
+                                <span className="text-gray-300">{t('wallet_payment_bank' as any)}</span> {method.details.bankName}
                               </p>
                             )}
                             {method.details?.accountNumber && (
-                              <p className="text-[10px] text-gray-400 mb-1">
-                                <span className="text-gray-500">{t('wallet_payment_account_number' as any)}</span> {method.details.accountNumber}
+                              <p className="text-sm text-gray-400 mb-1">
+                                <span className="text-gray-300">{t('wallet_payment_account_number' as any)}</span> {method.details.accountNumber}
                               </p>
                             )}
                           </div>
@@ -472,24 +462,24 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                   <div className={glassCardClass + " p-8 max-w-2xl"}>
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_firstName')}</label>
+                        <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_firstName')}</label>
                         <input type="text" defaultValue={authUser?.first_name || ''} id="profile-first-name" className={glassInputClass} />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_lastName')}</label>
+                        <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_lastName')}</label>
                         <input type="text" defaultValue={authUser?.last_name || ''} id="profile-last-name" className={glassInputClass} />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_email')}</label>
+                        <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_email')}</label>
                         <input type="email" defaultValue={authUser?.email || ''} className={glassInputClass} disabled />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('signup_form_phone_label')}</label>
+                        <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('signup_form_phone_label')}</label>
                         <input type="tel" defaultValue={authUser?.phone || ''} id="profile-phone" className={glassInputClass} />
                       </div>
                     </div>
                     <div className="mt-6">
-                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{t('profile_label_bio' as any)}</label>
+                      <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('profile_label_bio' as any)}</label>
                       <textarea defaultValue={authUser?.bio || ''} id="profile-bio" rows={3} className={glassInputClass + " resize-none"} />
                     </div>
                     <button onClick={async () => { try { const first_name = (document.getElementById('profile-first-name') as HTMLInputElement)?.value; const last_name = (document.getElementById('profile-last-name') as HTMLInputElement)?.value; const phone = (document.getElementById('profile-phone') as HTMLInputElement)?.value; const bio = (document.getElementById('profile-bio') as HTMLTextAreaElement)?.value; await api.updateMe({ first_name, last_name, phone, bio }); await refreshUser(); alert(t('profile_save_success')); } catch (err: any) { alert(err.message || 'Failed to update profile'); } }} className={glassButtonClass + " mt-6 w-auto px-8"}>{t('profile_save_button' as any)}</button>
@@ -506,7 +496,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                   </div>
                   <div className={glassCardClass + " overflow-hidden overflow-x-auto"}>
                     <table className="w-full text-start min-w-[480px]">
-                      <thead className="bg-white/5 text-gray-300 uppercase text-[9px] font-bold tracking-[0.15em] border-b border-white/10">
+                      <thead className="bg-white/5 text-gray-300 uppercase text-sm font-bold tracking-[0.15em] border-b border-white/10">
                         <tr>
                           <th className="px-6 py-4">{t('admin_orders_table_id')}</th>
                           <th className="px-6 py-4">{t('admin_orders_table_status')}</th>
@@ -541,7 +531,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                   </div>
                   <div className={glassCardClass + " overflow-hidden overflow-x-auto"}>
                     <table className="w-full text-start min-w-[480px]">
-                      <thead className="bg-white/5 text-gray-300 uppercase text-[9px] font-bold tracking-[0.15em] border-b border-white/10">
+                      <thead className="bg-white/5 text-gray-300 uppercase text-sm font-bold tracking-[0.15em] border-b border-white/10">
                         <tr>
                           <th className="px-6 py-4">{t('admin_orders_table_id')}</th>
                           <th className="px-6 py-4">{t('admin_orders_table_customer')}</th>

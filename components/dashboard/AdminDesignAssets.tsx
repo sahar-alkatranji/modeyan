@@ -30,6 +30,7 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
     { id: 'fabrics', labelKey: 'design_part_fabrics' },
     { id: 'skirt_styles', labelKey: 'design_part_skirt_styles' },
     { id: 'train', labelKey: 'design_part_train' },
+    { id: 'ornaments', labelKey: 'design_part_ornaments' },
   ];
 
   // Filters logic
@@ -100,7 +101,7 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
 
         <button
           onClick={() => setIsAddOpen(true)}
-          className="px-6 py-2.5 bg-white text-brand-dark font-bold uppercase tracking-widest text-[10px] rounded-lg hover:bg-brand-gold hover:text-white transition-colors"
+          className="px-6 py-2.5 bg-white text-brand-dark font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-brand-gold hover:text-white transition-colors"
         >
           {t('admin_design_assets_add_button' as any) || 'Add Design Element'}
         </button>
@@ -156,7 +157,7 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
                   </svg>
                 </button>
               </div>
-              <p className="text-[10px] uppercase font-bold text-brand-gold tracking-widest leading-none mb-1">
+              <p className="text-xs uppercase font-bold text-brand-gold tracking-widest leading-none mb-1">
                 {part.type.split('_').join(' ')}
               </p>
               <h4 className="font-bold text-white text-xs truncate mb-2">{t(part.name as any)}</h4>
@@ -182,7 +183,7 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
             </h3>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('admin_design_assets_field_name' as any) || 'Asset Name (or Translation Key)'}
               </label>
               <input
@@ -196,7 +197,7 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
             </div>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('admin_design_assets_field_type' as any) || 'Element Type'}
               </label>
               <select
@@ -209,11 +210,12 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
                 <option value="fabrics" className="bg-gray-800 text-white">{t('design_part_fabrics')}</option>
                 <option value="skirt_styles" className="bg-gray-800 text-white">{t('design_part_skirt_styles')}</option>
                 <option value="train" className="bg-gray-800 text-white">{t('design_part_train')}</option>
+                <option value="ornaments" className="bg-gray-800 text-white">{t('design_part_ornaments')}</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('admin_products_field_image' as any) || 'Transparent PNG / SVG Asset Link'}
               </label>
               <input
@@ -230,14 +232,14 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
               <button
                 type="button"
                 onClick={() => setIsAddOpen(false)}
-                className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:text-white transition-colors"
+                className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-xs hover:text-white transition-colors"
               >
                 {t('modal_cancel')}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 py-3 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
+                className="flex-1 py-3 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? t('wallet_processing') : t('signup_form_submit_label' as any) || 'Submit'}
               </button>

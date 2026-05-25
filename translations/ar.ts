@@ -371,6 +371,7 @@ export const ar = {
   design_part_fabrics: 'القماش',
   design_part_skirt_styles: 'أسلوب التنورة',
   design_part_train: 'الشاحط',
+  design_part_ornaments: 'الزينة',
   design_part_color: 'لون الفستان',
   design_part_all: 'الكل',
   design_select_fabric_placeholder: 'اختر نوع القماش...',

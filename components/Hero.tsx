@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 
 interface HeroProps {
@@ -7,13 +7,20 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <section 
       className="relative h-[80vh] bg-cover bg-no-repeat bg-scroll overflow-hidden"
       style={{ 
         backgroundImage: "url('https://static.wixstatic.com/media/88aac0_a61bd9903e7942cba653459562a80d35~mv2.jpeg')",
-        backgroundPosition: 'center 15%'
+        backgroundPosition: isDesktop ? 'center calc(15% - 200px)' : 'center 15%'
       }}
     >
       <div className="absolute inset-0 bg-black bg-opacity-20"></div>

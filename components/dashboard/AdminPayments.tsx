@@ -187,7 +187,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
         </div>
         <button
           onClick={() => setIsAddMethodOpen(true)}
-          className="px-6 py-2.5 bg-white text-brand-dark font-bold uppercase tracking-widest text-[10px] rounded-lg hover:bg-brand-gold hover:text-white transition-colors"
+          className="px-6 py-2.5 bg-white text-brand-dark font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-brand-gold hover:text-white transition-colors"
         >
           {t('admin_payments_add_button' as any) || 'Add Payment Gateway'}
         </button>
@@ -238,7 +238,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
               <h3 className="font-bold text-white mb-1 uppercase tracking-widest text-xs">
                 {t(method.translationKey as any)}
               </h3>
-              <p className="text-[10px] text-gray-400 font-bold mb-4">
+              <p className="text-xs text-gray-400 font-bold mb-4">
                 {method.isActive
                   ? t('admin_payments_status_active')
                   : t('admin_payments_status_inactive')}
@@ -247,7 +247,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
 
             <button
               onClick={() => handleOpenConfigure(method)}
-              className="w-full py-2.5 border border-white/20 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 text-white transition-colors"
+              className="w-full py-2.5 border border-white/20 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-white/10 text-white transition-colors"
             >
               {t('admin_payments_configure')}
             </button>
@@ -276,7 +276,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
 
             {/* Logo / Image URL */}
             <div className="border-b border-white/10 pb-4">
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">
                 {t('admin_payments_field_icon' as any) || 'Logo / Image URL'}
               </label>
               {configureImgUrl && (
@@ -297,7 +297,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
             {(selectedMethod.type === 'mobile_transfer' || selectedMethod.type === 'wallet_qr') && (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">
                     {t('signup_form_phone_label')}
                   </label>
                   <input
@@ -310,7 +310,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">
                     {t('admin_payments_field_payment_code' as any)}
                   </label>
                   <input
@@ -319,7 +319,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                     onChange={e => setDetailsForm({ ...detailsForm, paymentCode: e.target.value })}
                     className={glassInputClass}
                   />
-                  <p className="text-[9px] text-gray-500 mt-1">{t('admin_payments_payment_code_hint' as any)}</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('admin_payments_payment_code_hint' as any)}</p>
                 </div>
               </div>
             )}
@@ -327,7 +327,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
             {selectedMethod.type === 'remittance' && (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                     {t('admin_payments_field_account_name' as any) || 'Account Name'}
                   </label>
                   <input
@@ -339,7 +339,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                     {t('signup_form_phone_label')}
                   </label>
                   <input
@@ -351,7 +351,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                     {t('admin_payments_field_city' as any) || 'City / Location'}
                   </label>
                   <input
@@ -363,7 +363,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                     {t('admin_payments_field_payment_code' as any)}
                   </label>
                   <input
@@ -372,14 +372,14 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                     onChange={e => setDetailsForm({ ...detailsForm, paymentCode: e.target.value })}
                     className={glassInputClass}
                   />
-                  <p className="text-[9px] text-gray-500 mt-1">{t('admin_payments_payment_code_hint' as any)}</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('admin_payments_payment_code_hint' as any)}</p>
                 </div>
               </div>
             )}
 
             {selectedMethod.type === 'paypal' && (
               <div>
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">
                   {t('contact_form_email')}
                 </label>
                 <input
@@ -395,7 +395,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
 
             {selectedMethod.type === 'cash_location' && (
               <div>
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">
                   {t('admin_payments_field_address' as any) || 'Branch Office Address'}
                 </label>
                 <input
@@ -411,7 +411,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
             {selectedMethod.type === 'bank_transfer' && (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                     {t('admin_payments_field_bank_name' as any) || 'Bank Name'}
                   </label>
                   <input
@@ -423,7 +423,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                     {t('admin_payments_field_account_num' as any) || 'Account Number'}
                   </label>
                   <input
@@ -435,7 +435,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                     IBAN
                   </label>
                   <input
@@ -461,14 +461,14 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                   setIsConfigureOpen(false);
                   setSelectedMethod(null);
                 }}
-                className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:text-white transition-colors"
+                className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-xs hover:text-white transition-colors"
               >
                 {t('modal_cancel')}
               </button>
               <button
                 type="submit"
                 disabled={isConfiguring}
-                className="flex-1 py-3 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
+                className="flex-1 py-3 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
               >
                 {isConfiguring ? t('wallet_processing') : t('profile_save_button' as any) || 'Save'}
               </button>
@@ -489,7 +489,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
             </h3>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('admin_payments_field_name' as any) || 'Gateway Name'}
               </label>
               <input
@@ -503,7 +503,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
             </div>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('admin_payments_field_type' as any) || 'Gateway Type'}
               </label>
               <select
@@ -522,7 +522,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
             </div>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('admin_payments_field_icon' as any) || 'Logo URL (Optional)'}
               </label>
               <input
@@ -538,14 +538,14 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
               <button
                 type="button"
                 onClick={() => setIsAddMethodOpen(false)}
-                className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:text-white transition-colors"
+                className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-xs hover:text-white transition-colors"
               >
                 {t('modal_cancel')}
               </button>
               <button
                 type="submit"
                 disabled={isAdding}
-                className="flex-1 py-3 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
+                className="flex-1 py-3 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
               >
                 {isAdding ? t('wallet_processing') : t('signup_form_submit_label' as any) || 'Submit'}
               </button>

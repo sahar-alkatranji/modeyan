@@ -123,7 +123,7 @@ export const ProfessionalPortfolio: React.FC<ProfessionalPortfolioProps> = ({
         {userRole !== 'manager' && (
           <button
             onClick={() => setIsAddOpen(true)}
-            className="px-6 py-2.5 bg-white text-brand-dark font-bold uppercase tracking-widest text-[10px] rounded-lg hover:bg-brand-gold hover:text-white transition-colors"
+            className="px-6 py-2.5 bg-white text-brand-dark font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-brand-gold hover:text-white transition-colors"
           >
             {t('tailor_portfolio_add_button')}
           </button>
@@ -177,14 +177,14 @@ export const ProfessionalPortfolio: React.FC<ProfessionalPortfolioProps> = ({
                       <button
                         onClick={() => handleApproveReject(item.id, 'approved')}
                         disabled={isProcessing}
-                        className="px-2 py-1 bg-green-500 hover:bg-green-600 text-white text-[9px] font-bold uppercase rounded disabled:opacity-50 transition-colors"
+                        className="px-2 py-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold uppercase rounded disabled:opacity-50 transition-colors"
                       >
                         {t('portfolio_action_approve' as any)}
                       </button>
                       <button
                         onClick={() => handleApproveReject(item.id, 'rejected')}
                         disabled={isProcessing}
-                        className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white text-[9px] font-bold uppercase rounded disabled:opacity-50 transition-colors"
+                        className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-bold uppercase rounded disabled:opacity-50 transition-colors"
                       >
                         {t('portfolio_action_reject' as any)}
                       </button>
@@ -216,7 +216,7 @@ export const ProfessionalPortfolio: React.FC<ProfessionalPortfolioProps> = ({
             </h3>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('tailor_portfolio_field_title' as any) || 'Showcase Title'}
               </label>
               <input
@@ -230,7 +230,7 @@ export const ProfessionalPortfolio: React.FC<ProfessionalPortfolioProps> = ({
             </div>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('tailor_portfolio_field_price' as any) || 'Base Pricing ($)'}
               </label>
               <input
@@ -244,7 +244,7 @@ export const ProfessionalPortfolio: React.FC<ProfessionalPortfolioProps> = ({
             </div>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('admin_products_field_image' as any) || 'Photo URL'}
               </label>
               <input
@@ -258,7 +258,7 @@ export const ProfessionalPortfolio: React.FC<ProfessionalPortfolioProps> = ({
             </div>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('tailor_portfolio_field_video' as any) || 'Video URL (Optional)'}
               </label>
               <input
@@ -271,7 +271,7 @@ export const ProfessionalPortfolio: React.FC<ProfessionalPortfolioProps> = ({
             </div>
 
             <div>
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('contact_form_message')}
               </label>
               <textarea
@@ -287,14 +287,14 @@ export const ProfessionalPortfolio: React.FC<ProfessionalPortfolioProps> = ({
               <button
                 type="button"
                 onClick={() => setIsAddOpen(false)}
-                className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-[10px] hover:text-white transition-colors"
+                className="flex-1 py-3 text-gray-400 font-bold uppercase tracking-widest text-xs hover:text-white transition-colors"
               >
                 {t('modal_cancel')}
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 py-3 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
+                className="flex-1 py-3 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? t('wallet_processing') : t('signup_form_submit_label' as any) || 'Submit'}
               </button>
