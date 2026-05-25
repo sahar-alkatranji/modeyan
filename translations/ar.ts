@@ -593,4 +593,7 @@ export const ar = {
   tailor_portfolio_field_title: 'العنوان',
   tailor_portfolio_field_price: 'السعر',
   tailor_portfolio_field_video: 'رابط الفيديو',
+  admin_users_action_edit: 'تعديل',
+  admin_users_edit_modal_title: 'تعديل بيانات المستخدم',
+  admin_users_add_button: 'إضافة مستخدم جديد',
 };

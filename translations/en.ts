@@ -593,4 +593,7 @@ export const en = {
   tailor_portfolio_field_title: 'Title',
   tailor_portfolio_field_price: 'Price',
   tailor_portfolio_field_video: 'Video URL',
+  admin_users_action_edit: 'Edit',
+  admin_users_edit_modal_title: 'Edit User Details',
+  admin_users_add_button: 'Add New User',
 };
