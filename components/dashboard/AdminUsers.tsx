@@ -20,6 +20,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
   const [walletAction, setWalletAction] = useState<'add' | 'deduct'>('add');
   const [walletAmount, setWalletAmount] = useState('');
   const [isWalletSubmitting, setIsWalletSubmitting] = useState(false);
+  const [isWalletActionDropdownOpen, setIsWalletActionDropdownOpen] = useState(false);
 
   // Add User modal state
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
@@ -29,6 +30,18 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
   const [addPassword, setAddPassword] = useState('');
   const [addRole, setAddRole] = useState<UserRole>('customer');
   const [isAddUserSubmitting, setIsAddUserSubmitting] = useState(false);
+  const [isAddRoleDropdownOpen, setIsAddRoleDropdownOpen] = useState(false);
+
+  // Role filter dropdown
+  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
+
+  const roleOptions = [
+    { value: 'all', label: t('admin_users_filter_all_roles' as any) || 'All Roles' },
+    { value: 'customer', label: t('signup_form_role_customer') },
+    { value: 'designer', label: t('signup_form_role_designer') },
+    { value: 'tailor', label: t('signup_form_role_tailor') },
+    { value: 'manager', label: t('signup_form_role_manager' as any) || 'Manager' },
+  ];
 
   // Delete User confirmation state
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
@@ -42,6 +55,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
   const [editEmail, setEditEmail] = useState('');
   const [editRole, setEditRole] = useState<UserRole>('customer');
   const [isEditUserSubmitting, setIsEditUserSubmitting] = useState(false);
+  const [isEditRoleDropdownOpen, setIsEditRoleDropdownOpen] = useState(false);
 
   // Filters logic
   const filteredUsers = users.filter(u => {
@@ -209,18 +223,43 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
             className={glassInputClass}
           />
         </div>
-        <div>
-          <select
-            value={selectedRoleFilter}
-            onChange={e => setSelectedRoleFilter(e.target.value)}
-            className={glassInputClass}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
+            className="w-full p-4 border border-white/20 bg-white/5 text-white text-base text-start flex items-center justify-between focus:bg-white/10 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold/50 transition-all rounded-xl cursor-pointer"
           >
-            <option value="all" className="bg-gray-900 text-white">{t('admin_users_filter_all_roles' as any) || 'All Roles'}</option>
-            <option value="customer" className="bg-gray-900 text-white">{t('signup_form_role_customer')}</option>
-            <option value="designer" className="bg-gray-900 text-white">{t('signup_form_role_designer')}</option>
-            <option value="tailor" className="bg-gray-900 text-white">{t('signup_form_role_tailor')}</option>
-            <option value="manager" className="bg-gray-900 text-white">{t('signup_form_role_manager' as any) || 'Manager'}</option>
-          </select>
+            <span>{roleOptions.find(r => r.value === selectedRoleFilter)?.label}</span>
+            <svg className={`w-4 h-4 text-brand-gold transition-transform duration-200 ${isRoleDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {isRoleDropdownOpen && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setIsRoleDropdownOpen(false)} />
+              <div className="absolute top-full mt-2 left-0 right-0 z-20 bg-black/90 backdrop-blur-xl border border-white/15 rounded-xl shadow-2xl overflow-hidden animate-fade-in">
+                {roleOptions.map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => { setSelectedRoleFilter(opt.value); setIsRoleDropdownOpen(false); }}
+                    className={`w-full px-5 py-3 text-start text-sm font-medium transition-all flex items-center gap-3 ${
+                      selectedRoleFilter === opt.value
+                        ? 'bg-brand-gold/20 text-brand-gold border-l-2 border-brand-gold'
+                        : 'text-gray-300 hover:bg-white/10 hover:text-white border-l-2 border-transparent'
+                    }`}
+                  >
+                    {selectedRoleFilter === opt.value && (
+                      <svg className="w-4 h-4 text-brand-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                    <span>{opt.label}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -325,22 +364,55 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
               </p>
             </div>
             <div className="space-y-4 mb-8">
-              <div>
+              <div className="relative">
                 <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-2">
                   {t('admin_wallet_action_label')}
                 </label>
-                <select
-                  className={glassInputClass}
-                  value={walletAction}
-                  onChange={e => setWalletAction(e.target.value as any)}
+                <button
+                  type="button"
+                  onClick={() => setIsWalletActionDropdownOpen(!isWalletActionDropdownOpen)}
+                  className="w-full p-4 border border-white/20 bg-white/5 text-white text-base text-start flex items-center justify-between focus:bg-white/10 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold/50 transition-all rounded-xl cursor-pointer"
                 >
-                  <option value="add" className="bg-gray-800 text-white">
-                    {t('admin_wallet_action_add')}
-                  </option>
-                  <option value="deduct" className="bg-gray-800 text-white">
-                    {t('admin_wallet_action_deduct')}
-                  </option>
-                </select>
+                  <span>{walletAction === 'add' ? t('admin_wallet_action_add') : t('admin_wallet_action_deduct')}</span>
+                  <svg className={`w-4 h-4 text-brand-gold transition-transform duration-200 ${isWalletActionDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {isWalletActionDropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setIsWalletActionDropdownOpen(false)} />
+                    <div className="absolute top-full mt-2 left-0 right-0 z-20 bg-black/90 backdrop-blur-xl border border-white/15 rounded-xl shadow-2xl overflow-hidden animate-fade-in">
+                      <button
+                        type="button"
+                        onClick={() => { setWalletAction('add'); setIsWalletActionDropdownOpen(false); }}
+                        className={`w-full px-5 py-3 text-start text-sm font-medium transition-all flex items-center gap-3 ${
+                          walletAction === 'add' ? 'bg-brand-gold/20 text-brand-gold border-l-2 border-brand-gold' : 'text-gray-300 hover:bg-white/10 hover:text-white border-l-2 border-transparent'
+                        }`}
+                      >
+                        {walletAction === 'add' && (
+                          <svg className="w-4 h-4 text-brand-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                        <span>{t('admin_wallet_action_add')}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setWalletAction('deduct'); setIsWalletActionDropdownOpen(false); }}
+                        className={`w-full px-5 py-3 text-start text-sm font-medium transition-all flex items-center gap-3 ${
+                          walletAction === 'deduct' ? 'bg-brand-gold/20 text-brand-gold border-l-2 border-brand-gold' : 'text-gray-300 hover:bg-white/10 hover:text-white border-l-2 border-transparent'
+                        }`}
+                      >
+                        {walletAction === 'deduct' && (
+                          <svg className="w-4 h-4 text-brand-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                        <span>{t('admin_wallet_action_deduct')}</span>
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
               <div>
                 <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-2">
@@ -438,28 +510,44 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
               />
             </div>
 
-            <div>
+            <div className="relative">
               <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-1">
                 {t('admin_users_table_role')}
               </label>
-              <select
-                className={glassInputClass}
-                value={addRole}
-                onChange={e => setAddRole(e.target.value as UserRole)}
+              <button
+                type="button"
+                onClick={() => setIsAddRoleDropdownOpen(!isAddRoleDropdownOpen)}
+                className="w-full p-4 border border-white/20 bg-white/5 text-white text-base text-start flex items-center justify-between focus:bg-white/10 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold/50 transition-all rounded-xl cursor-pointer"
               >
-                <option value="customer" className="bg-gray-800 text-white">
-                  {t('signup_form_role_customer')}
-                </option>
-                <option value="designer" className="bg-gray-800 text-white">
-                  {t('signup_form_role_designer')}
-                </option>
-                <option value="tailor" className="bg-gray-800 text-white">
-                  {t('signup_form_role_tailor')}
-                </option>
-                <option value="manager" className="bg-gray-800 text-white">
-                  {t('signup_form_role_manager' as any) || 'Manager'}
-                </option>
-              </select>
+                <span>{roleOptions.find(r => r.value === addRole)?.label || addRole}</span>
+                <svg className={`w-4 h-4 text-brand-gold transition-transform duration-200 ${isAddRoleDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isAddRoleDropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setIsAddRoleDropdownOpen(false)} />
+                  <div className="absolute top-full mt-2 left-0 right-0 z-20 bg-black/90 backdrop-blur-xl border border-white/15 rounded-xl shadow-2xl overflow-hidden animate-fade-in">
+                    {roleOptions.filter(r => r.value !== 'all').map(opt => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => { setAddRole(opt.value as UserRole); setIsAddRoleDropdownOpen(false); }}
+                        className={`w-full px-5 py-3 text-start text-sm font-medium transition-all flex items-center gap-3 ${
+                          addRole === opt.value ? 'bg-brand-gold/20 text-brand-gold border-l-2 border-brand-gold' : 'text-gray-300 hover:bg-white/10 hover:text-white border-l-2 border-transparent'
+                        }`}
+                      >
+                        {addRole === opt.value && (
+                          <svg className="w-4 h-4 text-brand-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                        <span>{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="flex gap-3 pt-4">
@@ -533,28 +621,44 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
               />
             </div>
 
-            <div>
+            <div className="relative">
               <label className="block text-xs font-bold text-gray-200 uppercase tracking-widest mb-1">
                 {t('admin_users_table_role')}
               </label>
-              <select
-                className={glassInputClass}
-                value={editRole}
-                onChange={e => setEditRole(e.target.value as UserRole)}
+              <button
+                type="button"
+                onClick={() => setIsEditRoleDropdownOpen(!isEditRoleDropdownOpen)}
+                className="w-full p-4 border border-white/20 bg-white/5 text-white text-base text-start flex items-center justify-between focus:bg-white/10 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold/50 transition-all rounded-xl cursor-pointer"
               >
-                <option value="customer" className="bg-gray-800 text-white">
-                  {t('signup_form_role_customer')}
-                </option>
-                <option value="designer" className="bg-gray-800 text-white">
-                  {t('signup_form_role_designer')}
-                </option>
-                <option value="tailor" className="bg-gray-800 text-white">
-                  {t('signup_form_role_tailor')}
-                </option>
-                <option value="manager" className="bg-gray-800 text-white">
-                  {t('signup_form_role_manager' as any) || 'Manager'}
-                </option>
-              </select>
+                <span>{roleOptions.find(r => r.value === editRole)?.label || editRole}</span>
+                <svg className={`w-4 h-4 text-brand-gold transition-transform duration-200 ${isEditRoleDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isEditRoleDropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setIsEditRoleDropdownOpen(false)} />
+                  <div className="absolute top-full mt-2 left-0 right-0 z-20 bg-black/90 backdrop-blur-xl border border-white/15 rounded-xl shadow-2xl overflow-hidden animate-fade-in">
+                    {roleOptions.filter(r => r.value !== 'all').map(opt => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => { setEditRole(opt.value as UserRole); setIsEditRoleDropdownOpen(false); }}
+                        className={`w-full px-5 py-3 text-start text-sm font-medium transition-all flex items-center gap-3 ${
+                          editRole === opt.value ? 'bg-brand-gold/20 text-brand-gold border-l-2 border-brand-gold' : 'text-gray-300 hover:bg-white/10 hover:text-white border-l-2 border-transparent'
+                        }`}
+                      >
+                        {editRole === opt.value && (
+                          <svg className="w-4 h-4 text-brand-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                        <span>{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="flex gap-3 pt-4">
