@@ -197,6 +197,13 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
     }
   };
 
+  const roleAvatarColors: Record<string, string> = {
+    manager: 'from-brand-gold/80 to-amber-700/80',
+    designer: 'from-purple-500/80 to-pink-500/80',
+    tailor: 'from-blue-500/80 to-cyan-500/80',
+    customer: 'from-emerald-500/80 to-teal-500/80',
+  };
+
   return (
     <div className="animate-fade-in text-start">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -278,10 +285,18 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
               <tr key={u.id} className="hover:bg-white/5 transition-colors group">
                 <td className="px-6 py-4 text-start">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-brand-gold font-bold text-xs">
-                      {u.firstName ? u.firstName[0] : ''}
-                      {u.lastName ? u.lastName[0] : ''}
-                    </div>
+                    {u.profileImage ? (
+                      <img
+                        src={u.profileImage}
+                        alt={`${u.firstName} ${u.lastName}`}
+                        className="w-9 h-9 rounded-full object-cover border border-white/20"
+                      />
+                    ) : (
+                      <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${roleAvatarColors[u.role] || roleAvatarColors.customer} flex items-center justify-center text-white font-bold text-xs shadow-md`}>
+                        {u.firstName ? u.firstName[0] : ''}
+                        {u.lastName ? u.lastName[0] : ''}
+                      </div>
+                    )}
                     <div>
                       <p className="font-bold text-sm text-white leading-none mb-1">
                         {u.firstName} {u.lastName}
@@ -345,9 +360,14 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
         <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <div className={glassCardClass + " p-6 sm:p-8 max-w-md w-full text-start my-4 max-h-[85vh] overflow-y-auto"}>
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-brand-gold font-bold text-xl">
-                {selectedUserForWallet.firstName ? selectedUserForWallet.firstName[0] : ''}
-              </div>
+              {selectedUserForWallet.profileImage ? (
+                <img src={selectedUserForWallet.profileImage} alt="" className="w-12 h-12 rounded-full object-cover border border-white/20" />
+              ) : (
+                <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${roleAvatarColors[selectedUserForWallet.role] || roleAvatarColors.customer} flex items-center justify-center text-white font-bold text-xl shadow-md`}>
+                  {selectedUserForWallet.firstName ? selectedUserForWallet.firstName[0] : ''}
+                  {selectedUserForWallet.lastName ? selectedUserForWallet.lastName[0] : ''}
+                </div>
+              )}
               <div>
                 <h3 className="font-serif text-xl text-white">{t('admin_wallet_modal_title')}</h3>
                 <p className="text-sm text-gray-300">

@@ -89,6 +89,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
           email: u.email,
           role: u.role as UserRole,
           balance: typeof u.balance === 'number' && !isNaN(u.balance) ? u.balance : 0,
+          profileImage: u.profile_image || undefined,
           joinedDate: new Date(u.created_at || Date.now()),
         })));
       }).catch(() => {});

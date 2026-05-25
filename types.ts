@@ -42,6 +42,7 @@ export interface User {
   role: UserRole;
   balance: number;
   phone?: string;
+  profileImage?: string;
   joinedDate: Date;
 }
 
