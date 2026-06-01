@@ -19,6 +19,8 @@ interface DesignStudioProps {
   setSavedDesigns: React.Dispatch<React.SetStateAction<SavedDesign[]>>;
 }
 
+const PART_TYPES = ['front_neckline', 'back_neckline', 'fabrics', 'skirt_styles', 'train', 'ornaments'] as const;
+
 export const DesignStudio: React.FC<DesignStudioProps> = ({
   dressParts,
   designSelections,
@@ -101,51 +103,110 @@ export const DesignStudio: React.FC<DesignStudioProps> = ({
 
   return (
     <div className="animate-fade-in text-start">
-      <div className="mb-8">
-        <h2 className="text-3xl font-serif text-white mb-1">{t('dashboard_design_title')}</h2>
+      {/* Title */}
+      <div className="mb-5">
+        <h2 className="text-2xl font-serif text-white mb-1">{t('dashboard_design_title')}</h2>
         <p className="text-sm text-gray-300">{t('dashboard_design_summary')}</p>
       </div>
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          {['front_neckline', 'back_neckline', 'fabrics', 'skirt_styles', 'train', 'ornaments'].map(partType => (
-            <div key={partType} className={glassCardClass + " p-6"}>
-              <h4 className="font-bold uppercase tracking-widest text-xs mb-4 text-brand-gold">{t(`design_part_${partType}` as any)}</h4>
-              <div className="flex gap-4 overflow-x-auto pb-2 custom-scrollbar">
-                {dressParts.filter(p => p.type === partType).map(part => (
-                  <button
-                    key={part.id}
-                    onClick={() => setDesignSelections({ ...designSelections, [partType]: part })}
-                    className={`flex-shrink-0 w-24 p-2 rounded-xl border transition-all ${designSelections[partType]?.id === part.id ? 'border-brand-gold bg-white/10' : 'border-white/10 hover:border-white/30'}`}
-                  >
-                    <div className="w-full h-20 bg-white rounded-lg mb-2 overflow-hidden">
-                      {part.imageUrl && <img src={part.imageUrl} className="w-full h-full object-cover" alt={part.name} />}
-                    </div>
-                    <p className="text-xs font-bold text-center truncate text-white">{t(part.name as any)}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-          <div className={glassCardClass + " p-6"}>
-            <h4 className="font-bold uppercase tracking-widest text-xs mb-4 text-brand-gold">{t('design_color_picker_label')}</h4>
+
+      {/* Compact 2-column grid: Left = all parts, Right = preview */}
+      <div className="grid lg:grid-cols-5 gap-5">
+        
+        {/* LEFT: All 6 parts in a tight 2x3 grid */}
+        <div className="lg:col-span-3">
+          <div className="grid grid-cols-2 gap-3">
+            {PART_TYPES.map(partType => {
+              const parts = dressParts.filter(p => p.type === partType);
+              const selected = designSelections[partType];
+              return (
+                <div key={partType} className={glassCardClass + " p-3"}>
+                  {/* Section Header */}
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-extrabold text-sm tracking-wide text-brand-gold">
+                      {t(`design_part_${partType}` as any)}
+                    </h4>
+                    {selected && (
+                      <span className="text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">
+                        ✓
+                      </span>
+                    )}
+                  </div>
+                  {/* Options as compact chips */}
+                  <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
+                    {parts.map(part => {
+                      const isSelected = selected?.id === part.id;
+                      return (
+                        <button
+                          key={part.id}
+                          onClick={() => setDesignSelections({ ...designSelections, [partType]: part })}
+                          className={`flex-shrink-0 w-16 p-1.5 rounded-lg border-2 transition-all duration-200 ${
+                            isSelected 
+                              ? 'border-brand-gold bg-brand-gold/15 shadow-lg shadow-brand-gold/20 scale-105' 
+                              : 'border-white/10 hover:border-white/30 hover:bg-white/5'
+                          }`}
+                        >
+                          <div className="w-full h-12 bg-white rounded-md mb-1 overflow-hidden">
+                            {part.imageUrl && (
+                              <img 
+                                src={part.imageUrl} 
+                                className="w-full h-full object-cover" 
+                                alt={t(part.name as any)} 
+                              />
+                            )}
+                          </div>
+                          <p className={`text-[9px] font-bold text-center leading-tight truncate ${
+                            isSelected ? 'text-brand-gold' : 'text-gray-300'
+                          }`}>
+                            {t(part.name as any)}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Color Picker - inline compact */}
+          <div className={glassCardClass + " p-3 mt-3"}>
             <div className="flex items-center gap-4">
-              <input type="color" value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)} className="w-16 h-16 rounded cursor-pointer border-0 bg-transparent" />
-              <span className="font-mono text-xs text-white">{selectedColor}</span>
+              <h4 className="font-extrabold text-sm tracking-wide text-brand-gold whitespace-nowrap">
+                {t('design_color_picker_label')}
+              </h4>
+              <div className="flex items-center gap-3 flex-1">
+                <div className="relative w-10 h-10 rounded-full border-2 border-white/20 overflow-hidden flex-shrink-0">
+                  <input 
+                    type="color" 
+                    value={selectedColor} 
+                    onChange={(e) => setSelectedColor(e.target.value)} 
+                    className="absolute -top-2 -left-2 w-[150%] h-[150%] cursor-pointer border-0 bg-transparent" 
+                  />
+                </div>
+                <span className="font-mono text-xs text-gray-300 bg-white/5 px-3 py-1 rounded-lg border border-white/10">
+                  {selectedColor}
+                </span>
+              </div>
             </div>
           </div>
         </div>
-        <div className="space-y-6">
-          <div className={glassCardClass + " p-6 sticky top-6"}>
-            <h3 className="font-serif text-xl mb-4 text-white">{t('dashboard_design_preview')}</h3>
 
-            <div className="aspect-[3/4] bg-white/5 rounded-xl mb-4 flex items-center justify-center text-gray-400 overflow-hidden relative border border-white/10">
+        {/* RIGHT: Preview Panel */}
+        <div className="lg:col-span-2">
+          <div className={glassCardClass + " p-4 sticky top-4"}>
+            <h3 className="font-serif text-lg font-bold text-white mb-3">
+              {t('dashboard_design_preview')}
+            </h3>
+
+            {/* Preview Image */}
+            <div className="aspect-[3/4] bg-white/5 rounded-xl mb-3 flex items-center justify-center text-gray-400 overflow-hidden relative border border-white/10">
               {isGeneratingAi ? (
                 <div className="text-center p-4">
                   <svg className="animate-spin h-8 w-8 text-brand-gold mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <p className="text-xs text-white">{t('dashboard_design_generating')}</p>
+                  <p className="text-xs text-white font-semibold">{t('dashboard_design_generating')}</p>
                 </div>
               ) : generatedAiImage ? (
                 <img src={generatedAiImage} alt="AI Generated Dress" className="w-full h-full object-cover" />
@@ -157,24 +218,36 @@ export const DesignStudio: React.FC<DesignStudioProps> = ({
               )}
             </div>
 
+            {/* Generate Button */}
             <button
               onClick={handleGenerateAI}
               disabled={isGeneratingAi}
-              className="w-full py-3 mb-3 bg-brand-gold text-white font-bold uppercase tracking-widest text-xs rounded-xl hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg"
+              className="w-full py-3 mb-3 bg-brand-gold text-white font-extrabold uppercase tracking-widest text-xs rounded-xl hover:bg-yellow-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg"
             >
               <Icon name="sparkles" className="w-4 h-4" />
               {t('dashboard_design_ai_button')}
             </button>
 
-            <div className="space-y-2 mb-6">
-              {Object.keys(designSelections).map(key => (
+            {/* Selection Summary */}
+            <div className="space-y-1.5 mb-4 bg-white/5 rounded-xl p-3 border border-white/10">
+              {PART_TYPES.map(key => (
                 <div key={key} className="flex justify-between text-xs">
-                  <span className="text-gray-400 capitalize">{t(`design_part_${key}` as any)}:</span>
-                  <span className="font-bold text-white">{t(designSelections[key]?.name as any)}</span>
+                  <span className="text-gray-400 font-semibold">{t(`design_part_${key}` as any)}:</span>
+                  <span className={`font-bold ${designSelections[key] ? 'text-white' : 'text-gray-600'}`}>
+                    {designSelections[key] ? t(designSelections[key]?.name as any) : '—'}
+                  </span>
                 </div>
               ))}
+              <div className="flex justify-between text-xs pt-1 border-t border-white/10">
+                <span className="text-gray-400 font-semibold">{t('design_color_picker_label')}:</span>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full border border-white/30" style={{ backgroundColor: selectedColor }} />
+                  <span className="font-bold text-white font-mono text-[10px]">{selectedColor}</span>
+                </div>
+              </div>
             </div>
 
+            {/* Save Button */}
             <button
               onClick={async () => {
                 const newDesign: SavedDesign = {

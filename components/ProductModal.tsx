@@ -97,7 +97,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4"
+      className="fixed inset-0 z-[120] flex items-center justify-center bg-black bg-opacity-70 p-4"
       onClick={onClose}
       aria-modal="true"
       role="dialog"
@@ -108,7 +108,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-black z-20"
+          className="absolute top-4 end-4 text-gray-500 hover:text-black z-20"
           aria-label="Close"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,7 +135,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
           </div>
 
           {product.imageUrls.length > 1 && (
-            <div className="flex-shrink-0 flex justify-center items-center space-x-2 pt-4">
+            <div className="flex-shrink-0 flex justify-center items-center gap-2 pt-4">
               {product.imageUrls.map((_, index) => (
                 <button
                   key={index}
@@ -173,7 +173,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
             />
           ) : (
             <div className="flex flex-col h-full overflow-hidden">
-              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto pe-2 custom-scrollbar">
                 <style>{`
                   .custom-scrollbar::-webkit-scrollbar { width: 6px; }
                   .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -227,7 +227,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
                       {product.reviews.map((review, index) => (
                         <div key={index} className="text-start">
                           <div className="flex items-center mb-1">
-                            <p className="font-semibold mr-3">{review.author}</p>
+                            <p className="font-semibold me-3">{review.author}</p>
                             <StarRating rating={review.rating} />
                           </div>
                           <p className="text-gray-600 text-sm leading-relaxed">{review.comment}</p>

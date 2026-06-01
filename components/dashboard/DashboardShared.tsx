@@ -151,7 +151,7 @@ export const ConfirmDialog = ({
   const btnBg = variant === 'danger' ? 'bg-red-500 hover:bg-red-600' : variant === 'warning' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-500 hover:bg-blue-600';
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
+    <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
       <div className={glassCardClass + " p-8 max-w-sm w-full text-center border-" + iconColor + "-500/30"}>
         {/* Animated warning icon */}
         <div className={`w-16 h-16 rounded-full bg-${iconColor}-500/10 flex items-center justify-center mx-auto mb-5 border border-${iconColor}-500/20 animate-pulse`}>

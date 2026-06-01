@@ -257,7 +257,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
 
       {/* Configure Payment Details Overlay (BUG-05) */}
       {isConfigureOpen && selectedMethod && (
-        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
+        <div className="fixed inset-0 z-[120] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <form
             onSubmit={handleConfigureSubmit}
             className={glassCardClass + " p-6 sm:p-8 max-w-md w-full text-start space-y-4 my-4 max-h-[85vh] overflow-y-auto"}
@@ -479,7 +479,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
 
       {/* Add Gateway Modal */}
       {isAddMethodOpen && (
-        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
+        <div className="fixed inset-0 z-[120] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <form
             onSubmit={handleAddPaymentSubmit}
             className={glassCardClass + " p-6 sm:p-8 max-w-md w-full text-start space-y-4 my-4 max-h-[85vh] overflow-y-auto"}

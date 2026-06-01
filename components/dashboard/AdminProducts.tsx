@@ -67,14 +67,16 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ products, setProdu
     setFormNameEn(product.name || '');
     setFormNameAr(product.description || '');
     setFormPrice(String(product.price ?? ''));
-    setFormImage(product.imageUrls?.[0] || '');
+    // Fix: Handle both camelCase and snake_case, single image and array
+    const imageUrl = (product as any).image_url || (product as any).imageUrl || product.imageUrls?.[0] || '';
+    setFormImage(imageUrl);
     setFormSizes(product.sizes || ['S', 'M', 'L']);
     setFormCategory((product as any).category || 'long_dress');
     const stockValue = (product as any).stock;
     const unlimited = stockValue === -1 || stockValue === 'unlimited';
     setIsUnlimitedStock(unlimited);
     setFormStock(unlimited ? '' : String(stockValue ?? '10'));
-    setFormVideoUrl(product.videoUrl || '');
+    setFormVideoUrl(product.videoUrl || (product as any).video_url || '');
     setLocalPreviewImage('');
     setMode('edit');
   };
@@ -141,31 +143,43 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ products, setProdu
 
       if (mode === 'edit' && selectedProduct) {
         const updatedRes = await api.updateProduct(Number(selectedProduct.id), payload);
+        // Fix: Handle both snake_case and camelCase from API response
+        const imageUrls = updatedRes.image_urls || 
+                         (updatedRes.image_url ? [updatedRes.image_url] : [formImage || 'https://placehold.co/400x600?text=Dress']);
         const updatedProduct: Product = {
           id: Number(updatedRes.id),
           name: updatedRes.name || formNameEn,
           description: updatedRes.description || formNameAr,
           price: Number(updatedRes.price ?? priceNum),
-          imageUrls: updatedRes.image_urls || (updatedRes.image_url ? [updatedRes.image_url] : [formImage || 'https://placehold.co/400x600?text=Dress']),
+          imageUrls: imageUrls,
           sizes: updatedRes.sizes || formSizes,
           videoUrl: updatedRes.video_url || formVideoUrl || '',
         };
         (updatedProduct as any).category = updatedRes.category || formCategory;
         (updatedProduct as any).stock = updatedRes.stock ?? (isUnlimitedStock ? -1 : parseInt(formStock, 10));
+        // Also store snake_case versions for compatibility
+        (updatedProduct as any).image_url = imageUrls[0];
+        (updatedProduct as any).image_urls = imageUrls;
         setProducts(prev => prev.map(p => (p.id === selectedProduct.id ? updatedProduct : p)));
       } else {
         const createdRes = await api.createProduct(payload);
+        // Fix: Handle both snake_case and camelCase from API response
+        const imageUrls = createdRes.image_urls || 
+                         (createdRes.image_url ? [createdRes.image_url] : [formImage || 'https://placehold.co/400x600?text=Dress']);
         const newProduct: Product = {
           id: Number(createdRes.id),
           name: createdRes.name || formNameEn,
           description: createdRes.description || formNameAr,
           price: Number(createdRes.price ?? priceNum),
-          imageUrls: createdRes.image_urls || (createdRes.image_url ? [createdRes.image_url] : [formImage || 'https://placehold.co/400x600?text=Dress']),
+          imageUrls: imageUrls,
           sizes: createdRes.sizes || formSizes,
           videoUrl: createdRes.video_url || formVideoUrl || '',
         };
         (newProduct as any).category = createdRes.category || formCategory;
         (newProduct as any).stock = createdRes.stock ?? (isUnlimitedStock ? -1 : parseInt(formStock, 10));
+        // Also store snake_case versions for compatibility
+        (newProduct as any).image_url = imageUrls[0];
+        (newProduct as any).image_urls = imageUrls;
         setProducts(prev => [newProduct, ...prev]);
       }
 
@@ -436,7 +450,7 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ products, setProdu
             <div key={product.id} className={glassCardClass + ' overflow-hidden group flex flex-col justify-between'}>
               <div className="aspect-[3/4] relative overflow-hidden bg-white/5">
                 <img
-                  src={product.imageUrls?.[0] || 'https://placehold.co/400x600?text=Dress'}
+                  src={(product as any).image_url || product.imageUrls?.[0] || (product as any).imageUrl || 'https://placehold.co/400x600?text=Dress'}
                   alt={product.description || product.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />

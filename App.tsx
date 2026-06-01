@@ -27,7 +27,16 @@ const AppContent: React.FC = () => {
     const validPages: Page[] = ['home', 'login', 'about', 'shop', 'user-dashboard', 'policy-shipping'];
     return (validPages.includes(path as Page) ? path : 'home') as Page;
   });
-  const [cart, setCart] = useState<CartItem[]>([]);
+  // F2: Persist cart in localStorage across sessions
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('modeya_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error("Failed to load cart from cache", e);
+      return [];
+    }
+  });
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [shopCategory, setShopCategory] = useState<ShopCategory>('all');
   const { user, isAuthenticated, isLoading, logout } = useAuth();
@@ -57,6 +66,15 @@ const AppContent: React.FC = () => {
       console.error("Failed to save designs to cache", e);
     }
   }, [savedDesigns]);
+
+  // F2: Persist cart changes to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('modeya_cart', JSON.stringify(cart));
+    } catch (e) {
+      console.error("Failed to save cart to cache", e);
+    }
+  }, [cart]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -142,27 +160,7 @@ const AppContent: React.FC = () => {
     }
   }, [isAuthenticated]);
 
-  // Redirect to dashboard if authenticated and on login page, or restore session
-  useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      if (currentPage === 'login') {
-        navigate('user-dashboard');
-      }
-    }
-  }, [isLoading, isAuthenticated, currentPage]);
-
-  useEffect(() => {
-    const handlePopState = (event: PopStateEvent) => {
-      if (event.state?.page) {
-        setCurrentPage(event.state.page as Page);
-      } else {
-        setCurrentPage('home');
-      }
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
+  // F1: navigate defined BEFORE the useEffect that calls it
   const navigate = (page: Page, anchor?: string, category?: ShopCategory) => {
     const doScroll = (selector: string) => {
       const element = document.querySelector(selector);
@@ -191,6 +189,27 @@ const AppContent: React.FC = () => {
       }
     }
   };
+
+  // Redirect to dashboard if authenticated and on login page, or restore session
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      if (currentPage === 'login') {
+        navigate('user-dashboard');
+      }
+    }
+  }, [isLoading, isAuthenticated, currentPage]);
+
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state?.page) {
+        setCurrentPage(event.state.page as Page);
+      } else {
+        setCurrentPage('home');
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   const navigateToShopCategory = (category: ShopCategory) => {
     setShopCategory(category);

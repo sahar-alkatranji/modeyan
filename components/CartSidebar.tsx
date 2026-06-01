@@ -17,12 +17,9 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
-  const sidebarPositionClass = direction === 'rtl' ? 'left-0' : 'right-0';
   const sidebarTransformClass = isOpen
     ? 'translate-x-0'
-    : direction === 'rtl'
-    ? '-translate-x-full'
-    : 'translate-x-full';
+    : 'ltr:translate-x-full rtl:-translate-x-full';
 
   return (
     <>
@@ -35,7 +32,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 ${sidebarPositionClass} h-full w-full max-w-sm bg-brand-beige shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${sidebarTransformClass} flex flex-col`}
+        className={`fixed top-0 end-0 h-full w-full max-w-sm bg-brand-beige shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${sidebarTransformClass} flex flex-col`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="cart-title"

@@ -496,7 +496,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                     <p className="text-sm text-gray-300">{t('orders_subtitle' as any)}</p>
                   </div>
                   <div className={glassCardClass + " overflow-hidden overflow-x-auto"}>
-                    <table className="w-full text-start min-w-[480px]">
+                    <table className="w-full text-start min-w-0 sm:min-w-[480px]">
                       <thead className="bg-white/5 text-gray-300 uppercase text-sm font-bold tracking-[0.15em] border-b border-white/10">
                         <tr>
                           <th className="px-6 py-4">{t('admin_orders_table_id')}</th>
@@ -531,7 +531,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                     <p className="text-sm text-gray-300">{t('requests_subtitle' as any)}</p>
                   </div>
                   <div className={glassCardClass + " overflow-hidden overflow-x-auto"}>
-                    <table className="w-full text-start min-w-[480px]">
+                    <table className="w-full text-start min-w-0 sm:min-w-[480px]">
                       <thead className="bg-white/5 text-gray-300 uppercase text-sm font-bold tracking-[0.15em] border-b border-white/10">
                         <tr>
                           <th className="px-6 py-4">{t('admin_orders_table_id')}</th>

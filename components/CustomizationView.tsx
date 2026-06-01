@@ -29,7 +29,7 @@ const CustomizationView: React.FC<CustomizationViewProps> = ({
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="flex-1 overflow-y-auto pr-2 pb-6 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto pe-2 pb-6 custom-scrollbar">
         <style>{`
           .custom-scrollbar::-webkit-scrollbar { width: 8px; }
           .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
@@ -43,7 +43,7 @@ const CustomizationView: React.FC<CustomizationViewProps> = ({
             onClick={onBack}
             className="text-sm text-gray-500 hover:text-black mb-2 flex items-center transition-colors"
           >
-            <span className="text-lg mr-1">←</span> {t('customization_back_to_product')}
+            <span className="text-lg me-1 rtl:rotate-180">←</span> {t('customization_back_to_product')}
           </button>
           <h3 className="text-2xl font-serif text-gray-900">{t('customization_title')}</h3>
           <div className="mt-3 bg-gray-50 border border-gray-100 p-4 rounded-lg text-sm text-gray-700">
@@ -70,53 +70,53 @@ const CustomizationView: React.FC<CustomizationViewProps> = ({
                 onChange={() => setEnableSizeCustom(!enableSizeCustom)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:ltr:translate-x-full peer-checked:after:rtl:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
             </label>
           </div>
 
           {enableSizeCustom && (
             <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg border border-gray-200 transition-all duration-300">
               <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1">{t('measurement_bust' as any)}</label>
+                <label className="block text-xs font-semibold text-gray-500 mb-1 text-start">{t('measurement_bust' as any)}</label>
                 <input
                   placeholder="cm"
-                  className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                  className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-black focus:ring-1 focus:ring-black text-start"
                   value={customMeasurements.bust}
                   onChange={e => setCustomMeasurements({ ...customMeasurements, bust: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1">{t('measurement_waist' as any)}</label>
+                <label className="block text-xs font-semibold text-gray-500 mb-1 text-start">{t('measurement_waist' as any)}</label>
                 <input
                   placeholder="cm"
-                  className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                  className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-black focus:ring-1 focus:ring-black text-start"
                   value={customMeasurements.waist}
                   onChange={e => setCustomMeasurements({ ...customMeasurements, waist: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1">{t('measurement_hips' as any)}</label>
+                <label className="block text-xs font-semibold text-gray-500 mb-1 text-start">{t('measurement_hips' as any)}</label>
                 <input
                   placeholder="cm"
-                  className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                  className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-black focus:ring-1 focus:ring-black text-start"
                   value={customMeasurements.hips}
                   onChange={e => setCustomMeasurements({ ...customMeasurements, hips: e.target.value })}
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1">{t('measurement_shoulder' as any)}</label>
+                <label className="block text-xs font-semibold text-gray-500 mb-1 text-start">{t('measurement_shoulder' as any)}</label>
                 <input
                   placeholder="cm"
-                  className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                  className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-black focus:ring-1 focus:ring-black text-start"
                   value={customMeasurements.shoulder}
                   onChange={e => setCustomMeasurements({ ...customMeasurements, shoulder: e.target.value })}
                 />
               </div>
               <div className="col-span-2">
-                <label className="block text-xs font-semibold text-gray-500 mb-1">{t('measurement_length' as any)}</label>
+                <label className="block text-xs font-semibold text-gray-500 mb-1 text-start">{t('measurement_length' as any)}</label>
                 <input
                   placeholder="cm"
-                  className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+                  className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:border-black focus:ring-1 focus:ring-black text-start"
                   value={customMeasurements.length}
                   onChange={e => setCustomMeasurements({ ...customMeasurements, length: e.target.value })}
                 />
@@ -136,22 +136,22 @@ const CustomizationView: React.FC<CustomizationViewProps> = ({
                 onChange={() => setEnableColorCustom(!enableColorCustom)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:ltr:translate-x-full peer-checked:after:rtl:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
             </label>
           </div>
           {enableColorCustom && (
             <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 transition-all duration-300">
-              <label className="block text-xs font-semibold text-gray-500 mb-2">{t('design_color_picker_label')}</label>
+              <label className="block text-xs font-semibold text-gray-500 mb-2 text-start">{t('design_color_picker_label')}</label>
               <div className="flex items-center gap-4">
                 <div className="relative overflow-hidden w-16 h-16 rounded-full border-2 border-gray-300 shadow-sm hover:scale-105 transition-transform">
                   <input
                     type="color"
                     value={customColor}
                     onChange={e => setCustomColor(e.target.value)}
-                    className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] cursor-pointer p-0 m-0 border-0"
+                    className="absolute -top-1/2 -start-1/2 w-[200%] h-[200%] cursor-pointer p-0 m-0 border-0"
                   />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col text-start">
                   <span className="text-sm font-medium text-gray-900 mb-1">{t('customization_select_color')}</span>
                   <span className="text-xs text-gray-500 font-mono bg-white px-2 py-1 rounded border">{customColor}</span>
                 </div>
@@ -161,7 +161,7 @@ const CustomizationView: React.FC<CustomizationViewProps> = ({
         </div>
 
         {/* Additional Notes */}
-        <div className="mb-6 border-t border-gray-100 pt-6">
+        <div className="mb-6 border-t border-gray-100 pt-6 text-start">
           <label className="block font-semibold mb-2">{t('customization_requests_label')}</label>
           <textarea
             placeholder={t('customization_requests_label')}
@@ -172,7 +172,7 @@ const CustomizationView: React.FC<CustomizationViewProps> = ({
         </div>
 
         {/* Footer Note */}
-        <p className="text-xs text-gray-500 mb-6 italic bg-gray-50 p-3 rounded">{t('customization_fee_note')}</p>
+        <p className="text-xs text-gray-500 mb-6 italic bg-gray-50 p-3 rounded text-start">{t('customization_fee_note')}</p>
       </div>
 
       <div className="pt-4 border-t border-gray-100 mt-2">

@@ -24,6 +24,7 @@ interface ApiUser {
 
 class ApiClient {
   private token: string | null = null;
+  public onUnauthorized?: () => void;
 
   constructor() {
     try {
@@ -44,9 +45,10 @@ class ApiClient {
     return headers;
   }
 
-  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestInit = {}, timeoutMs: number = 15000): Promise<T> {
+    // F3: Configurable timeout — default 15s, upload endpoints pass 120s
     const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), 5000);
+    const id = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
       const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -60,6 +62,10 @@ class ApiClient {
       clearTimeout(id);
 
       if (!response.ok) {
+        if (response.status === 401) {
+          this.clearToken();
+          if (this.onUnauthorized) this.onUnauthorized();
+        }
         const error = await response.json().catch(() => ({ detail: 'Request failed' }));
         throw new Error(error.detail || `HTTP ${response.status}`);
       }
@@ -67,7 +73,7 @@ class ApiClient {
     } catch (error: any) {
       clearTimeout(id);
       if (error.name === 'AbortError') {
-        throw new Error('API Request timed out after 5 seconds');
+        throw new Error('API Request timed out');
       }
       throw error;
     }
@@ -318,13 +324,6 @@ class ApiClient {
     return this.request<any>(`/users/${userId}`, { method: 'DELETE' });
   }
 
-  async updateUser(userId: number, data: Record<string, unknown>): Promise<any> {
-    return this.request<any>(`/users/${userId}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-  }
-
   async getTransactions(): Promise<any[]> {
     return this.request<any[]>('/transactions');
   }
@@ -356,17 +355,31 @@ class ApiClient {
     const headers: Record<string, string> = {};
     if (this.token) headers['Authorization'] = `Bearer ${this.token}`;
 
-    const res = await fetch(`${API_BASE}/upload`, {
-      method: 'POST',
-      headers,
-      body: form,
-    });
+    // F3: Upload needs a longer timeout — 120 seconds for large files
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 120000);
 
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      throw new Error(data?.detail || 'Upload failed');
+    try {
+      const res = await fetch(`${API_BASE}/upload`, {
+        method: 'POST',
+        headers,
+        body: form,
+        signal: controller.signal,
+      });
+      clearTimeout(id);
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.detail || 'Upload failed');
+      }
+      return data;
+    } catch (error: any) {
+      clearTimeout(id);
+      if (error.name === 'AbortError') {
+        throw new Error('Upload timed out after 120 seconds');
+      }
+      throw error;
     }
-    return data;
   }
 
   // Design Assets mapping to /parts backend
@@ -386,9 +399,17 @@ class ApiClient {
     return this.request<any>(`/parts/${id}`, { method: 'DELETE' });
   }
 
-  // User Management
+  async updateUser(userId: number, data: Record<string, unknown>): Promise<any> {
+    return this.request<any>(`/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // I1: Admin user creation — use POST /users (not /auth/register)
+  // This keeps admin's token intact and allows all roles including manager
   async createUser(data: Record<string, unknown>): Promise<any> {
-    return this.request<any>('/auth/register', {
+    return this.request<any>('/users', {
       method: 'POST',
       body: JSON.stringify(data),
     });

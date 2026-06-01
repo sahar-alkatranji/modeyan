@@ -14,18 +14,39 @@ export interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<ApiUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<ApiUser | null>(() => {
+    try {
+      const savedUser = localStorage.getItem('modeya_user');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [isLoading, setIsLoading] = useState(!user && api.isAuthenticated());
 
   useEffect(() => {
+    // F1: Set up global unauthorized listener
+    api.onUnauthorized = () => {
+      setUser(null);
+      localStorage.removeItem('modeya_user');
+    };
+
     const restoreSession = async () => {
       if (api.isAuthenticated()) {
         try {
           const userData = await api.getMe();
           setUser(userData);
-        } catch {
-          api.clearToken();
+          localStorage.setItem('modeya_user', JSON.stringify(userData));
+        } catch (error) {
+          console.error("Session restoration failed", error);
+          // If it was a 401, api.ts already cleared everything
+          if (!api.isAuthenticated()) {
+            setUser(null);
+          }
         }
+      } else {
+        setUser(null);
+        localStorage.removeItem('modeya_user');
       }
       setIsLoading(false);
     };

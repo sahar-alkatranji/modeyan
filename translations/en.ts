@@ -595,4 +595,21 @@ export const en = {
   tailor_portfolio_field_video: 'Video URL',
   admin_users_action_edit: 'Edit',
   admin_users_edit_modal_title: 'Edit User Details',
+
+  // T1: Missing translation keys
+  admin_design_assets_title: 'Manage Design Assets',
+  admin_users_filter_all_roles: 'All Roles',
+  admin_users_add_modal_title: 'Add New User',
+  admin_users_no_users: 'No users found.',
+  admin_users_delete_warning: 'This action will deactivate the user account.',
+  admin_wallet_invalid_amount: 'Please enter a valid amount greater than 0.',
+  admin_wallet_insufficient_deduct: 'Deduction amount exceeds the user\'s current balance.',
+  orders_subtitle: 'Track and manage your orders',
+  tailor_orders_subtitle: 'Customer orders waiting for your quote',
+  dashboard_menu_requests_subtitle: 'Incoming orders waiting for your quote',
+  profile_update_success: 'Profile updated successfully.',
+  profile_update_error: 'Failed to update profile. Please try again.',
+  error_unauthorized: 'You are not authorized to perform this action.',
+  error_insufficient_balance: 'Insufficient wallet balance. Please top up.',
+  error_generic: 'An unexpected error occurred. Please try again.',
 };

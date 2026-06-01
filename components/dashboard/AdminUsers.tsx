@@ -357,7 +357,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
 
       {/* Wallet Deposit/Deduction Modal */}
       {isWalletModalOpen && selectedUserForWallet && (
-        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
+        <div className="fixed inset-0 z-[120] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <div className={glassCardClass + " p-6 sm:p-8 max-w-md w-full text-start my-4 max-h-[85vh] overflow-y-auto"}>
             <div className="flex items-center gap-4 mb-6">
               {selectedUserForWallet.profileImage ? (
@@ -468,7 +468,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
 
       {/* Add User Modal */}
       {isAddUserModalOpen && (
-        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
+        <div className="fixed inset-0 z-[120] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <form
             onSubmit={handleAddUserSubmit}
             className={glassCardClass + " p-6 sm:p-8 max-w-md w-full text-start space-y-4 my-4 max-h-[85vh] overflow-y-auto"}
@@ -592,7 +592,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
 
       {/* Edit User Modal */}
       {isEditUserModalOpen && editUser && (
-        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
+        <div className="fixed inset-0 z-[120] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <form
             onSubmit={handleEditUserSubmit}
             className={glassCardClass + " p-6 sm:p-8 max-w-md w-full text-start space-y-4 my-4 max-h-[85vh] overflow-y-auto"}
