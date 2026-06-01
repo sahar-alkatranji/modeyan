@@ -121,33 +121,35 @@ export const DesignStudio: React.FC<DesignStudioProps> = ({
                 </span>
               </div>
 
-              <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {dressParts.filter(p => p.type === partType).map(part => {
                   const isSelected = designSelections[partType]?.id === part.id;
                   return (
                     <button
                       key={part.id}
                       onClick={() => setDesignSelections({ ...designSelections, [partType]: part })}
-                      className={`flex-shrink-0 w-28 sm:w-32 rounded-xl border-2 p-2 transition-all duration-200 ${
+                      className={`rounded-xl border-2 p-2 transition-all duration-200 ${
                         isSelected
                           ? 'border-brand-gold bg-brand-gold/10 shadow-lg shadow-brand-gold/10'
                           : 'border-white/10 hover:border-white/30 hover:bg-white/5'
                       }`}
                     >
-                      <div className="w-full h-24 sm:h-28 bg-white rounded-lg mb-2 overflow-hidden">
+                      <div className="w-full h-40 sm:h-44 bg-white rounded-lg mb-2 overflow-hidden flex items-center justify-center">
                         {part.imageUrl ? (
                           <img
                             src={part.imageUrl}
                             alt={t(part.name as any)}
-                            className="w-full h-full object-cover"
+                            loading="lazy"
+                            className="w-full h-full object-contain p-1"
+                            onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.2'; }}
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
                             No image
                           </div>
                         )}
                       </div>
-                      <p className={`text-[11px] sm:text-xs font-bold text-center leading-tight ${
+                      <p className={`text-sm font-bold text-center leading-tight ${
                         isSelected ? 'text-brand-gold' : 'text-white'
                       }`}>
                         {t(part.name as any)}

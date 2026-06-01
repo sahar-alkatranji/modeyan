@@ -9,9 +9,9 @@ export const NAV_LINKS: {key: string; page: 'shop' | 'home'; anchor?: string}[] 
 ];
 
 export const SOCIAL_LINKS = [
-  { 
-    name: 'Instagram', 
-    href: 'https://instagram.com/modeya', 
+  {
+    name: 'Instagram',
+    href: 'https://instagram.com/modeyaboutiq',
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>

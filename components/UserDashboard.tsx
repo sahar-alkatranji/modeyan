@@ -69,6 +69,30 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [portfolioItems, setPortfolioItems] = useState<any[]>([]);
 
+  // Profile image upload state
+  const [profileImage, setProfileImage] = useState<string>(authUser?.profile_image || '');
+  const [isUploadingImage, setIsUploadingImage] = useState<boolean>(false);
+
+  useEffect(() => {
+    setProfileImage(authUser?.profile_image || '');
+  }, [authUser?.profile_image]);
+
+  const handleProfileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingImage(true);
+    try {
+      const { url } = await api.uploadFile(file, 'image');
+      setProfileImage(url);
+      await api.updateMe({ profile_image: url });
+      await refreshUser();
+    } catch (err: any) {
+      alert(err.message || 'Upload failed');
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   useEffect(() => {
     const loadWallet = async () => {
       try {
@@ -387,30 +411,36 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                 <div className="animate-fade-in text-start">
                   <div className="mb-8">
                     <h2 className="text-3xl font-serif text-white mb-1">{t('dashboard_menu_wallet')}</h2>
-                    <p className="text-sm text-gray-300">{t('wallet_subtitle' as any)}</p>
+                    <p className="text-base text-gray-300">{t('wallet_subtitle' as any)}</p>
                   </div>
-                  <div className="grid md:grid-cols-3 gap-6 mb-8">
+                  <div className="grid md:grid-cols-3 gap-6 mb-6">
                     <div className={glassCardClass + " p-6 text-center"}>
-                      <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_current_balance')}</p>
+                      <p className="text-base font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_current_balance')}</p>
                       <p className="text-4xl font-serif text-white font-bold">${walletBalance.toFixed(2)}</p>
                     </div>
                     <div className={glassCardClass + " p-6 text-center"}>
-                      <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_top_up' as any)}</p>
+                      <p className="text-base font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_amount_to_add' as any)}</p>
                       <div className="flex gap-2 mt-3">
-                        <input type="number" value={topUpAmount} onChange={e => setTopUpAmount(e.target.value)} className={glassInputClass.replace('w-full','flex-1')} placeholder="0.00" />
+                        <input type="number" value={topUpAmount} onChange={e => setTopUpAmount(e.target.value)} className={glassInputClass.replace('w-full','flex-1') + ' text-base'} placeholder="0.00" />
                         <button onClick={async () => { if (!topUpAmount || parseFloat(topUpAmount) <= 0) return; try { await api.topUpWallet(parseFloat(topUpAmount)); const w = await api.getWallet(); setWalletBalance(Number(w.balance)); setTopUpAmount(''); alert(t('profile_save_success')); } catch (err: any) { alert(err.message || 'Failed to top up'); } }} className="px-4 py-2 bg-brand-gold text-white font-bold uppercase tracking-widest text-sm rounded-xl hover:bg-yellow-600">{t('wallet_top_up' as any)}</button>
                       </div>
                     </div>
                     <div className={glassCardClass + " p-6 text-center"}>
-                      <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_pending_balance' as any) || 'Pending Balance'}</p>
+                      <p className="text-base font-bold text-gray-400 uppercase tracking-widest mb-2">{t('wallet_pending_balance' as any) || 'Pending Balance'}</p>
                       <p className="text-2xl font-serif text-white font-bold">${authUser?.pending_balance?.toFixed(2) || '0.00'}</p>
                     </div>
+                  </div>
+
+                  {/* Offline payment notice */}
+                  <div className="mb-8 flex items-start gap-3 rounded-xl border border-brand-gold/30 bg-brand-gold/10 p-4">
+                    <Icon name="info" className="w-5 h-5 text-brand-gold flex-shrink-0 mt-0.5" />
+                    <p className="text-base text-gray-100 leading-relaxed">{t('wallet_offline_notice' as any)}</p>
                   </div>
 
                   {/* Payment Methods for top-up */}
                   {paymentMethods.filter(m => m.isActive).length > 0 && (
                     <div>
-                      <h3 className="text-lg font-serif text-white mb-4">{t('wallet_payment_methods' as any) || 'طرق الدفع المتاحة'}</h3>
+                      <h3 className="text-xl font-serif text-white mb-4">{t('wallet_payment_methods' as any) || 'طرق الدفع المتاحة'}</h3>
                       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {paymentMethods.filter(m => m.isActive).map(method => (
                           <div key={method.id} className={glassCardClass + " p-5"}>
@@ -458,32 +488,53 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                 <div className="animate-fade-in text-start">
                   <div className="mb-8">
                     <h2 className="text-3xl font-serif text-white mb-1">{t('dashboard_menu_profile')}</h2>
-                    <p className="text-sm text-gray-300">{t('profile_subtitle' as any)}</p>
+                    <p className="text-base text-gray-300">{t('profile_subtitle' as any)}</p>
                   </div>
-                  <div className={glassCardClass + " p-8 max-w-2xl"}>
+                  <div className={glassCardClass + " p-8 max-w-4xl"}>
+                    {/* Profile image */}
+                    <div className="flex flex-col sm:flex-row items-center gap-6 mb-8 pb-8 border-b border-white/10">
+                      <div className="relative w-28 h-28 flex-shrink-0">
+                        <div className="w-28 h-28 rounded-full overflow-hidden bg-white/10 border-2 border-white/20 flex items-center justify-center">
+                          {profileImage ? (
+                            <img src={profileImage} alt="profile" className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-3xl font-bold text-white">{authUser?.first_name?.[0] || ''}{authUser?.last_name?.[0] || ''}</span>
+                          )}
+                        </div>
+                        <label className="absolute -bottom-1 -end-1 w-9 h-9 rounded-full bg-brand-gold text-white flex items-center justify-center cursor-pointer hover:bg-yellow-600 transition-colors shadow-lg">
+                          <Icon name="camera" className="w-4 h-4" />
+                          <input type="file" accept="image/*" className="hidden" onChange={handleProfileImageUpload} disabled={isUploadingImage} />
+                        </label>
+                      </div>
+                      <div className="text-center sm:text-start">
+                        <p className="block text-base font-bold text-gray-300 mb-1">{t('profile_label_image' as any)}</p>
+                        <p className="text-base text-gray-400">{isUploadingImage ? t('profile_uploading' as any) : t('profile_change_image' as any)}</p>
+                      </div>
+                    </div>
+
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_firstName')}</label>
-                        <input type="text" defaultValue={authUser?.first_name || ''} id="profile-first-name" className={glassInputClass} />
+                        <label className="block text-base font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_firstName')}</label>
+                        <input type="text" defaultValue={authUser?.first_name || ''} id="profile-first-name" className={glassInputClass + ' text-base'} />
                       </div>
                       <div>
-                        <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_lastName')}</label>
-                        <input type="text" defaultValue={authUser?.last_name || ''} id="profile-last-name" className={glassInputClass} />
+                        <label className="block text-base font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_lastName')}</label>
+                        <input type="text" defaultValue={authUser?.last_name || ''} id="profile-last-name" className={glassInputClass + ' text-base'} />
                       </div>
                       <div>
-                        <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_email')}</label>
-                        <input type="email" defaultValue={authUser?.email || ''} className={glassInputClass} disabled />
+                        <label className="block text-base font-bold text-gray-400 uppercase tracking-widest mb-2">{t('contact_form_email')}</label>
+                        <input type="email" defaultValue={authUser?.email || ''} className={glassInputClass + ' text-base'} disabled />
                       </div>
                       <div>
-                        <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('signup_form_phone_label')}</label>
-                        <input type="tel" defaultValue={authUser?.phone || ''} id="profile-phone" className={glassInputClass} />
+                        <label className="block text-base font-bold text-gray-400 uppercase tracking-widest mb-2">{t('signup_form_phone_label')}</label>
+                        <input type="tel" defaultValue={authUser?.phone || ''} id="profile-phone" className={glassInputClass + ' text-base'} />
                       </div>
                     </div>
                     <div className="mt-6">
-                      <label className="block text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">{t('profile_label_bio' as any)}</label>
-                      <textarea defaultValue={authUser?.bio || ''} id="profile-bio" rows={3} className={glassInputClass + " resize-none"} />
+                      <label className="block text-base font-bold text-gray-400 uppercase tracking-widest mb-2">{t('profile_label_bio' as any)}</label>
+                      <textarea defaultValue={authUser?.bio || ''} id="profile-bio" rows={3} className={glassInputClass + " resize-none text-base"} />
                     </div>
-                    <button onClick={async () => { try { const first_name = (document.getElementById('profile-first-name') as HTMLInputElement)?.value; const last_name = (document.getElementById('profile-last-name') as HTMLInputElement)?.value; const phone = (document.getElementById('profile-phone') as HTMLInputElement)?.value; const bio = (document.getElementById('profile-bio') as HTMLTextAreaElement)?.value; await api.updateMe({ first_name, last_name, phone, bio }); await refreshUser(); alert(t('profile_save_success')); } catch (err: any) { alert(err.message || 'Failed to update profile'); } }} className={glassButtonClass + " mt-6 w-auto px-8"}>{t('profile_save_button' as any)}</button>
+                    <button onClick={async () => { try { const first_name = (document.getElementById('profile-first-name') as HTMLInputElement)?.value; const last_name = (document.getElementById('profile-last-name') as HTMLInputElement)?.value; const phone = (document.getElementById('profile-phone') as HTMLInputElement)?.value; const bio = (document.getElementById('profile-bio') as HTMLTextAreaElement)?.value; await api.updateMe({ first_name, last_name, phone, bio, profile_image: profileImage }); await refreshUser(); alert(t('profile_save_success')); } catch (err: any) { alert(err.message || 'Failed to update profile'); } }} className={glassButtonClass + " mt-6 w-auto px-8"}>{t('profile_save_button' as any)}</button>
                   </div>
                 </div>
               )}

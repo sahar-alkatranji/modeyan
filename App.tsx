@@ -99,21 +99,29 @@ const AppContent: React.FC = () => {
         const categories = ['front_neckline', 'back_neckline', 'fabrics', 'skirt_styles', 'train', 'ornaments'];
         const allParts: DressPart[] = [];
         for (const cat of categories) {
+          let catParts: DressPart[] = [];
           try {
             const scanParts = await api.getScannerParts(cat);
             if (Array.isArray(scanParts)) {
-              for (const p of scanParts) {
-                allParts.push({
+              catParts = scanParts
+                .filter(p => p && (p.imageUrl || p.image_url))
+                .map(p => ({
                   id: String(p.id),
-                  type: p.category as any,
+                  type: (p.category || cat) as any,
                   name: p.name || '',
-                  imageUrl: p.imageUrl || '',
-                });
-              }
+                  imageUrl: p.imageUrl || p.image_url || '',
+                }));
             }
           } catch (err) {
             console.error(`Failed to load scanner parts for ${cat}`, err);
           }
+          // Per-category fallback: if the API returned nothing usable for this
+          // category, fall back to the bundled DRESS_PARTS for that category so
+          // the design studio always shows a complete set of options/images.
+          if (catParts.length === 0) {
+            catParts = DRESS_PARTS.filter(p => p.type === cat);
+          }
+          allParts.push(...catParts);
         }
         if (allParts.length > 0) {
           setDressParts(allParts);

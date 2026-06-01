@@ -193,6 +193,11 @@ export const en = {
   wallet_stripe_pay_now: 'Pay Now',
   wallet_stripe_card_details: 'Card Details',
   wallet_stripe_powered_by: 'Secure payments powered by Stripe',
+  wallet_offline_notice: 'Note: Payment is processed outside the system. Transfer the amount via one of the payment methods below, then enter the amount here to add it to your balance. Transactions are reviewed by management.',
+  wallet_amount_to_add: 'Amount to add',
+  profile_label_image: 'Profile Image',
+  profile_change_image: 'Change Image',
+  profile_uploading: 'Uploading...',
 
   // Customer Dashboard
   dashboard_menu_create_design: 'Create Design',

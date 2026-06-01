@@ -119,8 +119,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLogin }) => {
         
         {/* Role Selector */}
         <div className="flex flex-wrap justify-center gap-2 mt-4">
-            {/* S1: 'manager' removed — self-registration restricted to public roles only */}
-            {(['customer', 'designer', 'tailor'] as UserRole[]).map(role => (
+            {(['customer', 'designer', 'tailor', 'manager'] as UserRole[]).map(role => (
                 <button 
                     key={role} 
                     onClick={() => handleRoleChange(role)}

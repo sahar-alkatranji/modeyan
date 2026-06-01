@@ -193,6 +193,11 @@ export const ar = {
   wallet_stripe_pay_now: 'ادفع الآن',
   wallet_stripe_card_details: 'بيانات البطاقة',
   wallet_stripe_powered_by: 'مدفوعات آمنة عبر Stripe',
+  wallet_offline_notice: 'ملاحظة: يتم الدفع خارج النظام. حوّل المبلغ عبر إحدى طرق الدفع أدناه ثم أدخل المبلغ هنا لإضافته إلى رصيدك. تتم مراجعة العمليات من قبل الإدارة.',
+  wallet_amount_to_add: 'المبلغ المراد إضافته',
+  profile_label_image: 'الصورة الشخصية',
+  profile_change_image: 'تغيير الصورة',
+  profile_uploading: 'جاري الرفع...',
 
   // Customer Dashboard
   dashboard_menu_create_design: 'صمم فستانك',
