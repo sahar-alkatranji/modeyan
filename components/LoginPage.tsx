@@ -168,7 +168,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLogin }) => {
         </div>
         <input type="email" name="email" placeholder={t('contact_form_email')} required className={inputClasses} />
         <input type="tel" name="phone" placeholder={t('signup_form_phone_label')} required className={inputClasses} />
-        <input type="password" name="password" placeholder={t('login_form_password')} required className={inputClasses} />
+        <input type="password" name="password" placeholder={t('login_form_password')} required minLength={8} className={inputClasses} />
         
         {/* Role is implicitly selected via the UI state, but we send it in form */}
         <input type="hidden" name="role" value={activeRole} />
@@ -261,10 +261,22 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLogin }) => {
         </div>
 
         {/* Right Side: Glass Form */}
+        {/*
+          Render the views by CALLING the functions ({LoginView()}) rather than
+          mounting them as elements (<LoginView />). They are defined inside this
+          component, so as elements React gives them a new component identity on
+          every render and remounts the whole subtree. Because the email/password
+          inputs are uncontrolled, that remount wipes whatever the user typed.
+          Selecting the "designer" or "manager" role calls handleRoleChange, which
+          fires a setState + a 300ms setTimeout setState — the resulting re-render
+          remounted and cleared the form, so submitting sent empty credentials and
+          the backend replied "Incorrect email or password". Calling the function
+          inlines the JSX into this component's tree, keeping the inputs mounted.
+        */}
         <div className={glassPanelClasses}>
-            {view === 'login' && <LoginView />}
-            {view === 'signup' && <SignupView />}
-            {view === 'forgot' && <ForgotPasswordView />}
+            {view === 'login' && LoginView()}
+            {view === 'signup' && SignupView()}
+            {view === 'forgot' && ForgotPasswordView()}
         </div>
 
       </div>

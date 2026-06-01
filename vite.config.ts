@@ -9,7 +9,15 @@ export default defineConfig({
     allowedHosts: ['modeya.abdalgani.com', '72.60.130.170'],
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8002',
+        changeOrigin: true,
+      },
+      // Uploaded files (profile images, portfolio media) are served by the
+      // backend under /storage/uploads. Without this proxy the dev server
+      // answers the SPA fallback HTML instead of the image, so uploaded
+      // images never display.
+      '/storage': {
+        target: 'http://localhost:8002',
         changeOrigin: true,
       },
     },

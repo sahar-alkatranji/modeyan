@@ -81,15 +81,27 @@ const AppContent: React.FC = () => {
       try {
         const designs = await api.getDesigns();
         if (Array.isArray(designs)) {
-          const mappedProducts: Product[] = designs.map((d: any) => ({
-            id: d.id,
-            name: d.name || '',
-            description: d.description || '',
-            price: Number(d.price) || 0,
-            imageUrls: d.image_url ? [d.image_url] : [],
-            sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
-          }));
-          setProducts(prev => mappedProducts.length > 0 ? mappedProducts : prev);
+          const mappedProducts: Product[] = designs
+            .filter((d: any) => d && d.image_url) // only API designs that actually have an image
+            .map((d: any) => ({
+              id: d.id,
+              name: d.name || '',
+              description: d.description || '',
+              price: Number(d.price) || 0,
+              imageUrls: d.image_url ? [d.image_url] : [],
+              sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
+              category: d.category || 'all', // ensure API products have a category
+            }));
+          // Merge the bundled boutique catalog with admin-managed products from
+          // the API so the original collection stays visible alongside any new
+          // items (previously the API list REPLACED the catalog, dropping the
+          // original product images). De-dupe by id, keeping the bundled entry.
+          setProducts(() => {
+            const apiOnly = mappedProducts.filter(
+              mp => !PRODUCTS.some(bp => bp.id === mp.id)
+            );
+            return [...PRODUCTS, ...apiOnly];
+          });
         }
       } catch (e) {
         console.error("Failed to load designs from API, using fallback", e);

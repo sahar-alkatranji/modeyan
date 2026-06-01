@@ -57,7 +57,7 @@ const ShopPage: React.FC<ShopPageProps> = ({ onAddToCart, products, initialCateg
               <button
                 key={cat.key}
                 onClick={() => setActiveCategory(cat.key)}
-                className={`px-6 py-2 text-sm tracking-wider transition-all duration-300 border ${
+                className={`px-6 py-3 text-base font-medium tracking-wider transition-all duration-300 border rounded-lg ${
                   activeCategory === cat.key
                     ? 'bg-brand-dark text-white border-brand-dark shadow-md'
                     : 'bg-white text-gray-600 border-gray-200 hover:border-brand-dark hover:text-brand-dark'

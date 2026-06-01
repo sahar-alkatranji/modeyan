@@ -33,11 +33,12 @@ export const ManagerOverview: React.FC<ManagerOverviewProps> = ({
     return (
       <div className="animate-fade-in text-start">
         <div className="mb-10">
-          <h2 className="text-3xl font-serif text-white mb-1">
+          <h2 className="text-4xl font-serif font-bold text-white mb-2 tracking-wide">
             {t('dashboard_welcome_user')}, {authUser?.first_name || 'User'}
           </h2>
-          <p className="text-sm text-gray-300">
-            {t(`signup_form_role_${userRole}` as any)} • {t('dashboard_welcome_message')}
+          <div className="w-16 h-0.5 bg-brand-gold mb-3"></div>
+          <p className="text-base text-gray-300">
+            <span className="text-brand-gold font-bold uppercase tracking-widest text-sm">{t(`signup_form_role_${userRole}` as any)}</span> • {t('dashboard_welcome_message')}
           </p>
         </div>
 
@@ -152,10 +153,11 @@ export const ManagerOverview: React.FC<ManagerOverviewProps> = ({
   return (
     <div className="animate-fade-in text-start">
       <div className="mb-10">
-        <h2 className="text-3xl font-serif text-white mb-1">
+        <h2 className="text-4xl font-serif font-bold text-white mb-2 tracking-wide">
           {t('dashboard_welcome_user')}, {t('dashboard_admin_access')}
         </h2>
-        <p className="text-sm text-gray-300">{t('dashboard_welcome_message')}</p>
+        <div className="w-16 h-0.5 bg-brand-gold mb-3"></div>
+        <p className="text-base text-gray-300">{t('dashboard_welcome_message')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">

@@ -1,6 +1,27 @@
 
 const API_BASE = '/api/v1';
 
+// Extracts a human-readable message from a backend error body.
+// FastAPI returns `detail` as a string for HTTPException, but as an ARRAY of
+// {loc, msg, ...} objects for 422 validation errors. Without this, the UI would
+// render "[object Object]" and the real reason (e.g. "Invalid role for
+// self-registration") would be hidden.
+function extractErrorMessage(body: any, status: number): string {
+  const detail = body?.detail;
+  if (typeof detail === 'string' && detail.trim()) return detail;
+  if (Array.isArray(detail)) {
+    const msgs = detail
+      .map((d: any) => (typeof d === 'string' ? d : d?.msg))
+      .filter(Boolean);
+    if (msgs.length) return msgs.join('. ');
+  }
+  if (detail && typeof detail === 'object' && typeof detail.msg === 'string') {
+    return detail.msg;
+  }
+  if (typeof body?.message === 'string' && body.message.trim()) return body.message;
+  return `HTTP ${status}`;
+}
+
 interface TokenResponse {
   access_token: string;
   token_type: string;
@@ -67,7 +88,7 @@ class ApiClient {
           if (this.onUnauthorized) this.onUnauthorized();
         }
         const error = await response.json().catch(() => ({ detail: 'Request failed' }));
-        throw new Error(error.detail || `HTTP ${response.status}`);
+        throw new Error(extractErrorMessage(error, response.status));
       }
       return response.json();
     } catch (error: any) {
@@ -370,7 +391,7 @@ class ApiClient {
 
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(data?.detail || 'Upload failed');
+        throw new Error(extractErrorMessage(data, res.status) || 'Upload failed');
       }
       return data;
     } catch (error: any) {

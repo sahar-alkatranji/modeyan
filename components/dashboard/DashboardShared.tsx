@@ -44,7 +44,7 @@ export const GlassDropdown: React.FC<{
                 key={opt.value}
                 type="button"
                 onClick={() => { onChange(opt.value); setIsOpen(false); }}
-                className={`w-full px-5 py-3 text-start text-sm font-medium transition-all flex items-center gap-3 ${
+                className={`w-full px-5 py-3 text-start text-base font-medium transition-all flex items-center gap-3 ${
                   value === opt.value
                     ? 'bg-brand-gold/20 text-brand-gold border-l-2 border-brand-gold'
                     : 'text-gray-300 hover:bg-white/10 hover:text-white border-l-2 border-transparent'
@@ -99,7 +99,7 @@ export const StatusPill = ({ status }: { status: string }) => {
   };
   const key = status.toLowerCase();
   return (
-      <span className={`px-3 py-1 rounded-full text-sm font-bold uppercase border tracking-wide ${styles[key] || 'bg-gray-500/20 text-gray-300'}`}>
+      <span className={`px-3 py-1 rounded-full text-base font-bold uppercase border tracking-wide ${styles[key] || 'bg-gray-500/20 text-gray-300'}`}>
           {t(`status_${key}` as any) || key}
       </span>
   );
@@ -120,8 +120,8 @@ export const MetricCard = ({ title, value, icon, trend }: { title: string, value
             )}
         </div>
         <div>
-            <p className="text-sm font-bold text-gray-200 uppercase tracking-wide mb-1">{title}</p>
-            <h3 className="text-2xl font-serif text-white">{value}</h3>
+            <p className="text-base font-bold text-brand-gold uppercase tracking-wide mb-1">{title}</p>
+            <h3 className="text-3xl font-serif text-white font-bold">{value}</h3>
         </div>
     </div>
   );
