@@ -18,6 +18,7 @@ import { ProfessionalPortfolio } from './dashboard/ProfessionalPortfolio';
 import { AdminDesignAssets } from './dashboard/AdminDesignAssets';
 import { OrderDetailModal } from './dashboard/OrderDetailModal';
 import { AdminTopups } from './dashboard/AdminTopups';
+import AdminSettings from './dashboard/AdminSettings';
 
 const ROLE_IMAGES = {
   customer: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop',
@@ -46,7 +47,7 @@ interface UserDashboardProps {
   onLogout: () => void;
 }
 
-type DashboardView = 'overview' | 'design' | 'my-designs' | 'orders' | 'profile' | 'wallet' | 'portfolio' | 'requests' | 'admin-approvals' | 'admin-products' | 'admin-users' | 'admin-payments' | 'admin-socials' | 'admin-design-assets' | 'admin-orders' | 'admin-topups';
+type DashboardView = 'overview' | 'design' | 'my-designs' | 'orders' | 'profile' | 'wallet' | 'portfolio' | 'requests' | 'admin-approvals' | 'admin-products' | 'admin-users' | 'admin-payments' | 'admin-socials' | 'admin-design-assets' | 'admin-orders' | 'admin-topups' | 'admin-settings';
 
 const UserDashboard: React.FC<UserDashboardProps> = ({ 
   onNavigate, userRole, orders, setOrders, users, setUsers, products, setProducts, socialLinks, setSocialLinks, dressParts, setDressParts, setSavedDesigns, savedDesigns, onLogout
@@ -453,6 +454,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
               )}
               {currentView === 'admin-topups' && (
                 <AdminTopups />
+              )}
+              {currentView === 'admin-settings' && (
+                <AdminSettings />
               )}
               {currentView === 'design' && (
                 <DesignStudio

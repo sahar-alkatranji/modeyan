@@ -235,6 +235,19 @@ class ApiClient {
     return this.request<any>(`/designs/${id}`, { method: 'DELETE' });
   }
 
+  // Single design with its designer name + reviews (DesignDetailResponse)
+  async getDesign(id: number | string): Promise<any> {
+    return this.request<any>(`/designs/${id}`);
+  }
+
+  // Customer leaves a star rating + comment on a ready design
+  async createDesignReview(designId: number | string, data: { rating: number; comment?: string }): Promise<any> {
+    return this.request<any>(`/designs/${designId}/reviews`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   async getOrders(): Promise<any[]> {
     return this.request<any[]>('/orders');
   }
@@ -299,6 +312,16 @@ class ApiClient {
 
   async getPublicSettings(): Promise<any> {
     return this.request<any>('/admin/settings/public');
+  }
+
+  // Public catalog taxonomy (GET /categories) — drives the shop filter tabs
+  async getCategories(): Promise<any[]> {
+    return this.request<any[]>('/categories');
+  }
+
+  // Public shipping policies (GET /shipping-policies) — drives the policy page
+  async getShippingPolicies(): Promise<any[]> {
+    return this.request<any[]>('/shipping-policies');
   }
 
   async getPortfolio(): Promise<any[]> {
@@ -464,6 +487,19 @@ class ApiClient {
     } else {
       return this.rejectPortfolioItem(id);
     }
+  }
+
+  // Admin settings (GET /admin/settings) — key/value site config
+  async getAdminSettings(): Promise<any[]> {
+    return this.request<any[]>('/admin/settings');
+  }
+
+  // Admin settings update (PUT /admin/settings)
+  async updateAdminSettings(settings: { key: string; value: string | null; is_secret?: boolean }[]): Promise<any[]> {
+    return this.request<any[]>('/admin/settings', {
+      method: 'PUT',
+      body: JSON.stringify(settings),
+    });
   }
 }
 

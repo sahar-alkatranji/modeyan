@@ -2,9 +2,16 @@ import React, { useState, useCallback, useEffect } from 'react';
 import ProductCard from './ProductCard';
 import ProductModal from './ProductModal';
 import { useTranslation } from '../hooks/useTranslation';
+import { useLanguage } from '../contexts/LanguageContext';
+import { api } from '../services/api';
 import { Product } from '../types';
 
 type ShopCategory = 'all' | 'long' | 'short' | 'summer' | 'winter' | 'spring' | 'autumn';
+
+interface ShopCategoryTab {
+  key: string;
+  label: string;
+}
 
 interface ShopPageProps {
   onAddToCart: (product: Product, size: string) => void;
@@ -14,13 +21,34 @@ interface ShopPageProps {
 
 const ShopPage: React.FC<ShopPageProps> = ({ onAddToCart, products, initialCategory = 'all' }) => {
   const { t } = useTranslation();
+  const { language } = useLanguage();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeCategory, setActiveCategory] = useState<ShopCategory>(initialCategory);
+  // Categories fetched from GET /categories (TASK 3). Falls back to the bundled
+  // translated list below if the API is unavailable.
+  const [apiCategories, setApiCategories] = useState<ShopCategoryTab[] | null>(null);
 
   // Sync when parent changes the category (e.g. from footer link)
   useEffect(() => {
     setActiveCategory(initialCategory || 'all');
   }, [initialCategory]);
+
+  useEffect(() => {
+    let cancelled = false;
+    api.getCategories()
+      .then(data => {
+        if (cancelled || !Array.isArray(data) || data.length === 0) return;
+        const tabs: ShopCategoryTab[] = data
+          .filter((c: any) => c && c.slug)
+          .map((c: any) => ({
+            key: c.slug,
+            label: (language === 'ar' ? c.name_ar : c.name) || c.name || c.slug,
+          }));
+        setApiCategories([{ key: 'all', label: t('shop_category_all' as any) }, ...tabs]);
+      })
+      .catch(() => { /* keep fallback */ });
+    return () => { cancelled = true; };
+  }, [language]);
 
   const handleQuickView = (product: Product) => {
     setSelectedProduct(product);
@@ -30,15 +58,17 @@ const ShopPage: React.FC<ShopPageProps> = ({ onAddToCart, products, initialCateg
     setSelectedProduct(null);
   }, []);
 
-  const categories = [
-    { key: 'all', label: 'الكل' },
-    { key: 'long', label: t('footer_shop_long' as any) || 'فساتين طويلة' },
-    { key: 'short', label: t('footer_shop_short' as any) || 'فساتين قصيرة' },
-    { key: 'summer', label: t('footer_shop_summer' as any) || 'فساتين صيفية' },
-    { key: 'winter', label: t('footer_shop_winter' as any) || 'فساتين شتوية' },
-    { key: 'spring', label: t('footer_shop_spring' as any) || 'فساتين ربيعية' },
-    { key: 'autumn', label: t('footer_shop_autumn' as any) || 'فساتين خريفية' },
+  const fallbackCategories: ShopCategoryTab[] = [
+    { key: 'all', label: t('shop_category_all' as any) },
+    { key: 'long', label: t('footer_shop_long' as any) },
+    { key: 'short', label: t('footer_shop_short' as any) },
+    { key: 'summer', label: t('footer_shop_summer' as any) },
+    { key: 'winter', label: t('footer_shop_winter' as any) },
+    { key: 'spring', label: t('footer_shop_spring' as any) },
+    { key: 'autumn', label: t('footer_shop_autumn' as any) },
   ];
+
+  const categories = apiCategories ?? fallbackCategories;
 
   const filteredProducts = activeCategory === 'all'
     ? products
@@ -56,7 +86,7 @@ const ShopPage: React.FC<ShopPageProps> = ({ onAddToCart, products, initialCateg
             {categories.map((cat) => (
               <button
                 key={cat.key}
-                onClick={() => setActiveCategory(cat.key)}
+                onClick={() => setActiveCategory(cat.key as ShopCategory)}
                 className={`px-6 py-3 text-base font-medium tracking-wider transition-all duration-300 border rounded-lg ${
                   activeCategory === cat.key
                     ? 'bg-brand-dark text-white border-brand-dark shadow-md'

@@ -4,6 +4,47 @@ import { Order, User } from '../../types';
 import { api } from '../../services/api';
 import { glassCardClass, StatusPill, Icon } from './DashboardShared';
 
+type OrderStatus = Order['status'];
+
+// Mirror of the backend ALLOWED_TRANSITIONS state machine (orders.py). The admin
+// panel only offers transitions the backend will actually accept, so we never
+// POST an invalid status like "approved" or "pending".
+const ALLOWED_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
+  pending_quote: ['cancelled'],
+  quote_submitted: ['quote_accepted', 'cancelled'],
+  quote_accepted: ['in_progress', 'cancelled'],
+  in_progress: ['completed', 'disputed'],
+  completed: ['disputed'],
+  cancelled: [],
+  disputed: ['completed', 'cancelled'],
+};
+
+// Translation key + button colour for each status when used as an action target.
+const ACTION_LABEL_KEY: Record<OrderStatus, string> = {
+  pending_quote: 'status_pending_quote',
+  quote_submitted: 'status_quote_submitted',
+  quote_accepted: 'admin_orders_action_accept_quote',
+  in_progress: 'admin_orders_action_start',
+  completed: 'admin_orders_action_mark_completed',
+  cancelled: 'admin_orders_action_cancel',
+  disputed: 'admin_orders_action_dispute',
+};
+
+const ACTION_STYLE: Record<OrderStatus, string> = {
+  pending_quote: 'bg-purple-500 hover:bg-purple-600',
+  quote_submitted: 'bg-purple-500 hover:bg-purple-600',
+  quote_accepted: 'bg-green-500 hover:bg-green-600',
+  in_progress: 'bg-indigo-500 hover:bg-indigo-600',
+  completed: 'bg-blue-500 hover:bg-blue-600',
+  cancelled: 'bg-red-500 hover:bg-red-600',
+  disputed: 'bg-amber-500 hover:bg-amber-600',
+};
+
+const STATUS_FILTERS: string[] = [
+  'all', 'pending_quote', 'quote_submitted', 'quote_accepted',
+  'in_progress', 'completed', 'cancelled', 'disputed',
+];
+
 interface AdminOrdersProps {
   orders: Order[];
   setOrders: React.Dispatch<React.SetStateAction<Order[]>>;
@@ -32,7 +73,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
     currentPage * itemsPerPage
   );
 
-  const handleUpdateStatus = async (orderId: string, newStatus: string) => {
+  const handleUpdateStatus = async (orderId: string, newStatus: OrderStatus) => {
     setUpdatingOrderId(orderId);
     try {
       await api.updateOrderStatus(orderId, newStatus);
@@ -67,7 +108,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
 
         {/* Status Filter (H-17) */}
         <div className="flex flex-wrap gap-2">
-          {['all', 'pending', 'pending_quote', 'approved', 'completed', 'cancelled'].map(status => (
+          {STATUS_FILTERS.map(status => (
             <button
               key={status}
               onClick={() => {
@@ -122,44 +163,19 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
                     {new Date(order.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-end">
-                    <div className="flex justify-end gap-2">
-                      {order.status === 'pending_quote' && (
-                        <>
-                          <button
-                            onClick={() => handleUpdateStatus(order.id, 'approved')}
-                            disabled={isUpdating}
-                            className="px-2 py-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold uppercase rounded transition-colors disabled:opacity-50"
-                          >
-                            {t('admin_orders_action_approve_quote' as any)}
-                          </button>
-                          <button
-                            onClick={() => handleUpdateStatus(order.id, 'cancelled')}
-                            disabled={isUpdating}
-                            className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-bold uppercase rounded transition-colors disabled:opacity-50"
-                          >
-                            {t('admin_orders_action_reject' as any)}
-                          </button>
-                        </>
-                      )}
-                      
-                      {order.status === 'pending' && (
+                    <div className="flex justify-end gap-2 flex-wrap">
+                      {ALLOWED_TRANSITIONS[order.status].map(target => (
                         <button
-                          onClick={() => handleUpdateStatus(order.id, 'completed')}
+                          key={target}
+                          onClick={() => handleUpdateStatus(order.id, target)}
                           disabled={isUpdating}
-                          className="px-2.5 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold uppercase rounded transition-colors disabled:opacity-50"
+                          className={`px-2.5 py-1 text-white text-xs font-bold uppercase rounded transition-colors disabled:opacity-50 ${ACTION_STYLE[target]}`}
                         >
-                          {t('admin_orders_action_mark_completed' as any)}
+                          {t(ACTION_LABEL_KEY[target] as any)}
                         </button>
-                      )}
-
-                      {order.status !== 'completed' && order.status !== 'cancelled' && order.status !== 'pending_quote' && (
-                        <button
-                          onClick={() => handleUpdateStatus(order.id, 'cancelled')}
-                          disabled={isUpdating}
-                          className="px-2.5 py-1 bg-white/10 hover:bg-red-500/20 text-red-400 hover:text-white border border-red-500/20 text-xs font-bold uppercase rounded transition-all disabled:opacity-50"
-                        >
-                          {t('admin_orders_action_cancel' as any)}
-                        </button>
+                      ))}
+                      {ALLOWED_TRANSITIONS[order.status].length === 0 && (
+                        <span className="text-xs text-gray-500">—</span>
                       )}
                     </div>
                   </td>

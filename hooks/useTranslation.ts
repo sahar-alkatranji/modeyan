@@ -11,5 +11,5 @@ export const useTranslation = () => {
     return translations[language][key] || key;
   };
 
-  return { t };
+  return { t, lang: language };
 };

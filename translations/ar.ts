@@ -29,6 +29,15 @@ export const ar = {
   product_modal_add_to_cart_button: 'أضف إلى السلة',
   product_modal_size: 'المقاس',
   product_modal_reviews_title: 'آراء العملاء',
+  review_no_reviews: 'لا توجد تقييمات بعد. كن أول من يقيّم!',
+  review_form_title: 'اكتب تقييماً',
+  review_form_rating: 'تقييمك',
+  review_form_comment_placeholder: 'شاركنا رأيك حول هذا التصميم (اختياري)',
+  review_form_submit: 'إرسال التقييم',
+  review_form_submitting: 'جارٍ الإرسال…',
+  review_login_required: 'الرجاء تسجيل الدخول لكتابة تقييم.',
+  review_rating_required: 'الرجاء اختيار تقييم بالنجوم.',
+  review_submit_success: 'شكراً لك على تقييمك!',
   product_modal_custom_size_button: 'تخصيص',
 
   // Customization
@@ -349,6 +358,9 @@ export const ar = {
   admin_orders_action_approve_quote: 'موافقة على السعر',
   admin_orders_action_reject: 'رفض',
   admin_orders_action_mark_completed: 'إتمام الطلب',
+  admin_orders_action_accept_quote: 'قبول عرض السعر',
+  admin_orders_action_start: 'بدء العمل',
+  admin_orders_action_dispute: 'فتح نزاع',
   admin_orders_pagination_previous: 'السابق',
   admin_orders_pagination_next: 'التالي',
   portfolio_action_approve: 'موافقة',
@@ -442,6 +454,9 @@ export const ar = {
   status_cancelled: 'ملغي',
   status_in_progress: 'قيد التنفيذ',
   status_pending_quote: 'بانتظار التسعير',
+  status_quote_submitted: 'تم تقديم عرض السعر',
+  status_quote_accepted: 'تم قبول عرض السعر',
+  status_disputed: 'قيد النزاع',
   status_priced: 'تم التسعير',
   status_accepted: 'مقبول',
   
@@ -664,4 +679,7 @@ export const ar = {
   wallet_tx_type: 'النوع',
   wallet_tx_amount: 'المبلغ',
   wallet_no_transactions: 'لا توجد معاملات بعد.',
+
+  // Admin Settings
+  admin_settings_title: 'الإعدادات',
 };

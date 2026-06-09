@@ -1,12 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
+import { api } from '../services/api';
+
+interface ShippingPolicy {
+  id: number;
+  title: string;
+  title_ar: string;
+  description: string;
+  description_ar: string;
+  price: number;
+  estimated_days: number;
+  is_active: boolean;
+}
 
 interface ShippingPolicyPageProps {
   onNavigate: (page: 'home') => void;
 }
 
 const ShippingPolicyPage: React.FC<ShippingPolicyPageProps> = ({ onNavigate }) => {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
+  const [policies, setPolicies] = useState<ShippingPolicy[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.getShippingPolicies()
+      .then(data => { setPolicies(data.filter(p => p.is_active)); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const getLocalizedName = (p: ShippingPolicy) =>
+    lang === 'ar' ? (p.title_ar || p.title) : p.title;
+
+  const getLocalizedDesc = (p: ShippingPolicy) =>
+    lang === 'ar' ? (p.description_ar || p.description) : p.description;
 
   return (
     <section className="min-h-screen bg-brand-beige py-24 px-6">
@@ -62,7 +88,7 @@ const ShippingPolicyPage: React.FC<ShippingPolicyPageProps> = ({ onNavigate }) =
         </div>
 
         {/* ═══════════════════════════════ */}
-        {/* Section 2: Shipping Duration  */}
+        {/* Section 2: Shipping Options    */}
         {/* ═══════════════════════════════ */}
         <div className="mb-12 bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
           <div className="flex items-center gap-4 p-6 border-b border-gray-100 bg-gray-50">
@@ -80,56 +106,84 @@ const ShippingPolicyPage: React.FC<ShippingPolicyPageProps> = ({ onNavigate }) =
               {t('policy_shipping_duration_desc' as any)}
             </p>
 
-            {/* Duration Table */}
-            <div className="overflow-hidden rounded-xl border border-gray-200">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="px-5 py-3 text-start font-semibold text-gray-700 text-xs uppercase tracking-wider">
-                      المنطقة / Region
-                    </th>
-                    <th className="px-5 py-3 text-start font-semibold text-gray-700 text-xs uppercase tracking-wider">
-                      المدة / Duration
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  <tr className="hover:bg-gray-50 transition-colors">
-                    <td className="px-5 py-4 flex items-center gap-2">
-                      <span className="text-lg">🏙️</span>
-                      <span className="font-medium text-gray-800">{t('policy_shipping_local' as any)}</span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
-                        {t('policy_shipping_local_time' as any)}
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-gray-50 transition-colors">
-                    <td className="px-5 py-4 flex items-center gap-2">
-                      <span className="text-lg">🗺️</span>
-                      <span className="font-medium text-gray-800">{t('policy_shipping_syria' as any)}</span>
-                    </td>
-                    <td className="px-5 py-4">
+            {/* API shipping policies */}
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="w-6 h-6 border-2 border-gray-300 border-t-black rounded-full animate-spin" />
+              </div>
+            ) : policies.length > 0 ? (
+              <div className="space-y-3 mb-6">
+                {policies.map(p => (
+                  <div key={p.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors">
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-900 text-sm">{getLocalizedName(p)}</p>
+                      <p className="text-xs text-gray-500 mt-1">{getLocalizedDesc(p)}</p>
+                    </div>
+                    <div className="flex items-center gap-3 flex-shrink-0">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
-                        {t('policy_shipping_syria_time' as any)}
+                        {p.estimated_days} {lang === 'ar' ? 'أيام' : 'days'}
                       </span>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-gray-50 transition-colors">
-                    <td className="px-5 py-4 flex items-center gap-2">
-                      <span className="text-lg">✈️</span>
-                      <span className="font-medium text-gray-800">{t('policy_shipping_international' as any)}</span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
-                        {t('policy_shipping_international_time' as any)}
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${p.price === 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                        {p.price === 0
+                          ? (lang === 'ar' ? 'مجاني' : 'Free')
+                          : `${p.price.toLocaleString()} SYP`}
                       </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              /* Fallback to static table when API returns empty */
+              <div className="overflow-hidden rounded-xl border border-gray-200">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-gray-50 border-b border-gray-200">
+                      <th className="px-5 py-3 text-start font-semibold text-gray-700 text-xs uppercase tracking-wider">
+                        {lang === 'ar' ? 'المنطقة' : 'Region'}
+                      </th>
+                      <th className="px-5 py-3 text-start font-semibold text-gray-700 text-xs uppercase tracking-wider">
+                        {lang === 'ar' ? 'المدة' : 'Duration'}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="px-5 py-4 flex items-center gap-2">
+                        <span className="text-lg">🏙️</span>
+                        <span className="font-medium text-gray-800">{t('policy_shipping_local' as any)}</span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                          {t('policy_shipping_local_time' as any)}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="px-5 py-4 flex items-center gap-2">
+                        <span className="text-lg">🗺️</span>
+                        <span className="font-medium text-gray-800">{t('policy_shipping_syria' as any)}</span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
+                          {t('policy_shipping_syria_time' as any)}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="px-5 py-4 flex items-center gap-2">
+                        <span className="text-lg">✈️</span>
+                        <span className="font-medium text-gray-800">{t('policy_shipping_international' as any)}</span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
+                          {t('policy_shipping_international_time' as any)}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             <p className="text-xs text-gray-400 mt-4 italic">
               {t('policy_shipping_note' as any)}
@@ -156,45 +210,74 @@ const ShippingPolicyPage: React.FC<ShippingPolicyPageProps> = ({ onNavigate }) =
               {t('policy_fees_desc' as any)}
             </p>
 
-            <div className="space-y-3">
-              {/* Free shipping highlight */}
-              <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-xl">
-                <div className="flex items-center gap-3">
-                  <span className="text-xl">🎁</span>
-                  <div>
-                    <p className="font-bold text-green-800 text-sm">{t('policy_fees_free' as any)}</p>
-                    <p className="text-xs text-green-600">{t('policy_fees_free_desc' as any)}</p>
+            {/* Show API prices when available */}
+            {policies.length > 0 ? (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">🎁</span>
+                    <div>
+                      <p className="font-bold text-green-800 text-sm">{t('policy_fees_free' as any)}</p>
+                      <p className="text-xs text-green-600">{t('policy_fees_free_desc' as any)}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-3">
+                  {policies.map(p => (
+                    <div key={p.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
+                      <span className="text-sm text-gray-600 flex items-center gap-2">
+                        📦 {getLocalizedName(p)}
+                      </span>
+                      <span className={`font-bold text-sm px-3 py-1 rounded-full ${p.price === 0 ? 'text-green-700 bg-green-100' : 'text-blue-700 bg-blue-100'}`}>
+                        {p.price === 0
+                          ? (lang === 'ar' ? 'مجاني' : 'Free')
+                          : `${p.price.toLocaleString()} SYP`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">🎁</span>
+                    <div>
+                      <p className="font-bold text-green-800 text-sm">{t('policy_fees_free' as any)}</p>
+                      <p className="text-xs text-green-600">{t('policy_fees_free_desc' as any)}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-3">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
+                    <span className="text-sm text-gray-600 flex items-center gap-2">
+                      <span>🏙️</span> {t('policy_fees_local_rate' as any).split(':')[0]}
+                    </span>
+                    <span className="font-bold text-sm text-green-700 bg-green-100 px-3 py-1 rounded-full">
+                      {t('policy_fees_local_rate' as any).split(':')[1]?.trim() || (lang === 'ar' ? 'مجاني' : 'Free')}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
+                    <span className="text-sm text-gray-600 flex items-center gap-2">
+                      <span>🗺️</span> {t('policy_fees_syria_rate' as any).split(':')[0]}
+                    </span>
+                    <span className="font-bold text-sm text-blue-700 bg-blue-100 px-3 py-1 rounded-full">
+                      {t('policy_fees_syria_rate' as any).split(':')[1]?.trim() || (lang === 'ar' ? 'يُحدد عند الطلب' : 'TBD')}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
+                    <span className="text-sm text-gray-600 flex items-center gap-2">
+                      <span>✈️</span> {t('policy_fees_international_rate' as any).split(':')[0]}
+                    </span>
+                    <span className="font-bold text-sm text-purple-700 bg-purple-100 px-3 py-1 rounded-full">
+                      {t('policy_fees_international_rate' as any).split(':')[1]?.trim() || (lang === 'ar' ? 'يُحدد حسب الوزن' : 'By weight')}
+                    </span>
                   </div>
                 </div>
               </div>
-
-              <div className="grid grid-cols-1 gap-3">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
-                  <span className="text-sm text-gray-600 flex items-center gap-2">
-                    <span>🏙️</span> {t('policy_fees_local_rate' as any).split(':')[0]}
-                  </span>
-                  <span className="font-bold text-sm text-green-700 bg-green-100 px-3 py-1 rounded-full">
-                    {t('policy_fees_local_rate' as any).split(':')[1]?.trim() || 'مجاني'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
-                  <span className="text-sm text-gray-600 flex items-center gap-2">
-                    <span>🗺️</span> {t('policy_fees_syria_rate' as any).split(':')[0]}
-                  </span>
-                  <span className="font-bold text-sm text-blue-700 bg-blue-100 px-3 py-1 rounded-full">
-                    {t('policy_fees_syria_rate' as any).split(':')[1]?.trim() || 'يُحدد عند الطلب'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
-                  <span className="text-sm text-gray-600 flex items-center gap-2">
-                    <span>✈️</span> {t('policy_fees_international_rate' as any).split(':')[0]}
-                  </span>
-                  <span className="font-bold text-sm text-purple-700 bg-purple-100 px-3 py-1 rounded-full">
-                    {t('policy_fees_international_rate' as any).split(':')[1]?.trim() || 'يُحدد حسب الوزن'}
-                  </span>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -220,7 +303,6 @@ const ShippingPolicyPage: React.FC<ShippingPolicyPageProps> = ({ onNavigate }) =
 
             {/* Timeline Steps */}
             <div className="relative">
-              {/* Vertical line */}
               <div className="absolute right-5 top-0 bottom-0 w-px bg-gray-200 hidden rtl:block ltr:left-5 ltr:right-auto" style={{left: '20px'}} />
 
               <div className="space-y-6">

@@ -29,6 +29,15 @@ export const en = {
   product_modal_add_to_cart_button: 'Add to Cart',
   product_modal_size: 'Size',
   product_modal_reviews_title: 'Customer Reviews',
+  review_no_reviews: 'No reviews yet. Be the first to review!',
+  review_form_title: 'Write a Review',
+  review_form_rating: 'Your Rating',
+  review_form_comment_placeholder: 'Share your thoughts about this design (optional)',
+  review_form_submit: 'Submit Review',
+  review_form_submitting: 'Submitting…',
+  review_login_required: 'Please log in to write a review.',
+  review_rating_required: 'Please select a star rating.',
+  review_submit_success: 'Thank you for your review!',
   product_modal_custom_size_button: 'Custom',
   
   // Customization
@@ -347,6 +356,9 @@ export const en = {
   admin_orders_table_actions: 'Actions',
   admin_orders_action_approve_quote: 'Approve Quote',
   admin_orders_action_reject: 'Reject',
+  admin_orders_action_accept_quote: 'Accept Quote',
+  admin_orders_action_start: 'Start Work',
+  admin_orders_action_dispute: 'Mark Disputed',
   admin_orders_action_mark_completed: 'Mark Completed',
   admin_orders_pagination_previous: 'Previous',
   admin_orders_pagination_next: 'Next',
@@ -442,6 +454,9 @@ export const en = {
   status_cancelled: 'Cancelled',
   status_in_progress: 'In Progress',
   status_pending_quote: 'Pending Quote',
+  status_quote_submitted: 'Quote Submitted',
+  status_quote_accepted: 'Quote Accepted',
+  status_disputed: 'Disputed',
   status_priced: 'Priced',
   status_accepted: 'Accepted',
 
@@ -664,4 +679,7 @@ export const en = {
   wallet_tx_type: 'Type',
   wallet_tx_amount: 'Amount',
   wallet_no_transactions: 'No transactions yet.',
+
+  // Admin Settings
+  admin_settings_title: 'Settings',
 };
