@@ -126,7 +126,7 @@ export const DesignStudio: React.FC<DesignStudioProps> = ({
                   const isSelected = designSelections[partType]?.id === part.id;
                   return (
                     <button
-                      key={part.id}
+                      key={`${part.type}_${part.id}`}
                       onClick={() => setDesignSelections({ ...designSelections, [partType]: part })}
                       className={`rounded-xl border-2 p-2 transition-all duration-200 ${
                         isSelected

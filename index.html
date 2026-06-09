@@ -8,15 +8,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200;300;400;500;600;700&family=Montserrat:wght@100;200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dubai-font@1.0.1/dubai-font/css/dubai-font.css">
     <!-- Stripe.js removed (P0-2): payments use the manual receipt + admin-approval flow; no live card gateway. -->
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              'sans': ['Montserrat', 'Cairo', 'sans-serif'],
-              'serif': ['Playfair Display', 'Amiri', 'serif'],
+              'sans': ['Montserrat', 'Dubai', 'sans-serif'],
+              'serif': ['Playfair Display', 'Dubai', 'serif'],
             },
             colors: {
               'brand-beige': '#FBF6E6',
@@ -33,25 +34,25 @@
       }
     </script>
     <style>
-      /* Base font: Amiri for Arabic, Playfair Display for Latin headings */
+      /* Base font: Dubai for Arabic, Playfair Display for Latin headings */
       :root {
-        --font-arabic: 'Amiri', 'Cairo', serif;
+        --font-arabic: 'Dubai', sans-serif;
         --font-latin: 'Playfair Display', 'Montserrat', sans-serif;
         --color-gold: #A07830;
         --color-dark: #1A1A1A;
         --color-beige: #FBF6E6;
       }
-      /* Arabic text uses Amiri */
+      /* Arabic text uses Dubai */
       :lang(ar), [dir="rtl"], .font-arabic {
-        font-family: 'Amiri', 'Cairo', sans-serif !important;
+        font-family: 'Dubai', sans-serif !important;
       }
-      /* Headings & serif elements use Playfair + Amiri */
+      /* Headings & serif elements use Playfair + Dubai */
       h1, h2, h3, .font-serif {
-        font-family: 'Playfair Display', 'Amiri', serif;
+        font-family: 'Playfair Display', 'Dubai', serif;
       }
       /* Body text */
       body, .font-sans {
-        font-family: 'Montserrat', 'Cairo', sans-serif;
+        font-family: 'Montserrat', 'Dubai', sans-serif;
       }
 
       @keyframes fade-in {

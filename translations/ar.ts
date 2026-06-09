@@ -687,4 +687,23 @@ export const ar = {
   // Support Chat
   support_chat_title: 'الدعم الفني',
   admin_support_title: 'تذاكر الدعم',
+  // Design Your Dress
+  design_title: 'صمم فستانك',
+  design_subtitle: 'اختاري أجزاء الفستان وقومي بتوليد تصميم فريد باستخدام الذكاء الاصطناعي',
+  design_back: 'العودة',
+  design_generate: 'توليد التصميم',
+  design_generating: 'جاري التوليد...',
+  design_generating_time: 'قد يستغرق هذا 10-30 ثانية',
+  design_save: 'حفظ التصميم',
+  design_new: 'تصميم جديد',
+  design_download: 'تحميل الصورة',
+  design_generated_by: 'تم التوليد بواسطة',
+  design_color: 'اللون',
+  design_ai_settings: 'إعدادات الذكاء الاصطناعي',
+  design_model: 'النموذج',
+  design_quality: 'الجودة',
+  design_details: 'تفاصيل إضافية',
+  design_details_placeholder: 'أي تفاصيل إضافية للتصميم...',
+  design_saved: 'تم حفظ التصميم!',
+  design_error: 'فشل التوليد',
 };

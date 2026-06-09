@@ -17,14 +17,18 @@ import { PRODUCTS, SOCIAL_LINKS, DRESS_PARTS } from './constants';
 import { api } from './services/api';
 
 import ShippingPolicyPage from './components/ShippingPolicyPage';
+import DesignYourDress from './components/DesignYourDress';
+import { useTranslation } from './hooks/useTranslation';
 
-type Page = 'home' | 'login' | 'about' | 'shop' | 'user-dashboard' | 'policy-shipping';
+type Page = 'home' | 'login' | 'about' | 'shop' | 'user-dashboard' | 'policy-shipping' | 'design-dress';
 type ShopCategory = 'all' | 'long' | 'short' | 'summer' | 'winter' | 'spring' | 'autumn';
 
 const AppContent: React.FC = () => {
+  const { lang } = useTranslation();
+  const isAr = lang === 'ar';
   const [currentPage, setCurrentPage] = useState<Page>(() => {
     const path = window.location.pathname.replace('/', '');
-    const validPages: Page[] = ['home', 'login', 'about', 'shop', 'user-dashboard', 'policy-shipping'];
+    const validPages: Page[] = ['home', 'login', 'about', 'shop', 'user-dashboard', 'policy-shipping', 'design-dress'];
     return (validPages.includes(path as Page) ? path : 'home') as Page;
   });
   // F2: Persist cart in localStorage across sessions
@@ -320,6 +324,16 @@ const AppContent: React.FC = () => {
           {currentPage === 'about' && <AboutPage onNavigate={navigate} />}
           {currentPage === 'shop' && <ShopPage onAddToCart={handleAddToCart} products={products} initialCategory={shopCategory} />}
           {currentPage === 'policy-shipping' && <ShippingPolicyPage onNavigate={navigate} />}
+          {currentPage === 'design-dress' && (
+            <DesignYourDress
+              dressParts={dressParts}
+              onBack={() => navigate('home')}
+              onSave={(design) => {
+                setSavedDesigns(prev => [...prev, { ...design, id: Date.now().toString(), createdAt: new Date() }]);
+                alert(isAr ? 'تم حفظ التصميم!' : 'Design saved!');
+              }}
+            />
+          )}
           {currentPage === 'user-dashboard' && (
             <UserDashboard 
               onNavigate={navigate}

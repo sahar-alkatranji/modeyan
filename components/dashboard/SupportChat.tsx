@@ -151,19 +151,19 @@ export const SupportChat: React.FC<SupportChatProps> = ({ mode }) => {
               <p className="text-[11px] font-bold uppercase tracking-widest text-brand-gold mb-2">
                 {tr('New conversation', 'محادثة جديدة')}
               </p>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2">
                 <input
                   type="text"
                   value={newSubject}
                   onChange={e => setNewSubject(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') handleCreate(); }}
                   placeholder={tr('Subject…', 'الموضوع…')}
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white transition-colors"
                 />
                 <button
                   onClick={handleCreate}
                   disabled={creating || !newSubject.trim()}
-                  className="px-3 py-2 bg-brand-gold text-white text-xs font-bold uppercase rounded-xl hover:bg-yellow-600 transition-colors disabled:opacity-40 flex-shrink-0"
+                  className="w-full px-3 py-2.5 bg-brand-gold text-white text-xs font-bold uppercase rounded-xl hover:bg-yellow-600 transition-colors disabled:opacity-40"
                 >
                   {tr('Start', 'ابدأ')}
                 </button>

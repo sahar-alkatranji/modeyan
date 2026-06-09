@@ -19,6 +19,7 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
   const [type, setType] = useState<'front_neckline' | 'back_neckline' | 'fabrics' | 'skirt_styles' | 'train'>('front_neckline');
   const [imageUrl, setImageUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Delete Confirm Dialog state
   const [assetToDelete, setAssetToDelete] = useState<DressPart | null>(null);
@@ -78,7 +79,13 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
   const handleDeleteConfirm = async () => {
     if (!assetToDelete) return;
     try {
-      await api.deleteDesignAsset(parseInt(assetToDelete.id));
+      // Only call the API if the id is a valid numeric backend id.
+      // Bundled fallback items have string ids like "front_neckline_1" which
+      // would cause parseInt to return NaN → DELETE /parts/NaN → 404.
+      const numericId = Number(assetToDelete.id);
+      if (!isNaN(numericId) && String(numericId) === assetToDelete.id) {
+        await api.deleteDesignAsset(numericId);
+      }
       setDressParts(prev => prev.filter(p => p.id !== assetToDelete.id));
       setIsDeleteOpen(false);
       setAssetToDelete(null);
@@ -137,7 +144,7 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
       {/* Grid of Design Parts */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
         {filteredAssets.map(part => (
-          <div key={part.id} className={glassCardClass + " p-3 flex flex-col justify-between group overflow-hidden"}>
+          <div key={`${part.type}_${part.id}`} className={glassCardClass + " p-3 flex flex-col justify-between group overflow-hidden"}>
             <div>
               <div className="aspect-square bg-white rounded-xl overflow-hidden mb-3 border border-white/10 relative">
                 <img
@@ -218,14 +225,49 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
               <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('admin_products_field_image' as any) || 'Transparent PNG / SVG Asset Link'}
               </label>
-              <input
-                type="text"
-                required
-                value={imageUrl}
-                onChange={e => setImageUrl(e.target.value)}
-                className={glassInputClass}
-                placeholder="https://example.com/asset.png"
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={imageUrl}
+                  onChange={e => setImageUrl(e.target.value)}
+                  className={glassInputClass.replace('w-full', 'flex-1 min-w-0')}
+                  placeholder="https://example.com/asset.png"
+                />
+                <label className="flex-shrink-0 flex items-center justify-center w-11 h-11 bg-white/10 border border-white/20 rounded-xl cursor-pointer hover:bg-brand-gold/20 hover:border-brand-gold/50 transition-all group" title={t('admin_design_assets_upload_label' as any) || 'Upload from device'}>
+                  <input
+                    type="file"
+                    accept="image/png,image/svg+xml,image/webp,image/jpeg"
+                    className="sr-only"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setIsUploading(true);
+                      try {
+                        const result = await api.uploadFile(file, 'image');
+                        if (result?.url) setImageUrl(result.url);
+                      } catch (err: any) {
+                        alert(err.message || 'Upload failed');
+                      } finally {
+                        setIsUploading(false);
+                        e.target.value = '';
+                      }
+                    }}
+                    disabled={isUploading}
+                  />
+                  {isUploading ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-brand-gold rounded-full animate-spin" />
+                  ) : (
+                    <svg className="w-5 h-5 text-gray-300 group-hover:text-brand-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                  )}
+                </label>
+              </div>
+              {imageUrl && (
+                <div className="mt-2 rounded-lg border border-white/10 overflow-hidden bg-white/5 p-1">
+                  <img src={imageUrl} alt="Preview" className="h-20 w-auto mx-auto object-contain rounded" onError={e => { (e.target as HTMLElement).style.display = 'none'; }} />
+                </div>
+              )}
             </div>
 
             <div className="flex gap-3 pt-4">
@@ -238,10 +280,10 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
               </button>
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isUploading || !imageUrl}
                 className="flex-1 py-3 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
               >
-                {isSubmitting ? t('wallet_processing') : t('signup_form_submit_label' as any) || 'Submit'}
+                {isSubmitting ? t('wallet_processing') : (t('admin_design_assets_add_button' as any) || 'Add Element')}
               </button>
             </div>
           </form>

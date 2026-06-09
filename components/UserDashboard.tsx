@@ -522,9 +522,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                     </div>
                     <div className={glassCardClass + " p-6 text-center"}>
                       <p className="text-base font-bold text-gray-300 uppercase tracking-widest mb-2">{t('wallet_amount_to_add' as any)}</p>
-                      <div className="flex gap-2 mt-3">
-                        <input type="number" value={topUpAmount} onChange={e => setTopUpAmount(e.target.value)} className={glassInputClass.replace('w-full','flex-1') + ' text-base'} placeholder="0.00" />
-                        <button onClick={async () => { if (!topUpAmount || parseFloat(topUpAmount) <= 0) return; try { await api.topUpWallet(parseFloat(topUpAmount)); setTopUpAmount(''); alert('Top-up request submitted — pending admin approval.'); } catch (err: any) { alert(err.message || 'Failed to submit top-up'); } }} className="px-4 py-2 bg-brand-gold text-white font-bold uppercase tracking-widest text-sm rounded-xl hover:bg-yellow-600">{t('wallet_top_up' as any)}</button>
+                      <div className="flex items-center gap-2 mt-3">
+                        <input type="number" value={topUpAmount} onChange={e => setTopUpAmount(e.target.value)} className="flex-1 min-w-0 px-3 py-2.5 border border-white/20 bg-white/5 text-white text-base placeholder-gray-400 focus:bg-white/10 focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-all rounded-xl" placeholder="0.00" />
+                        <button onClick={async () => { if (!topUpAmount || parseFloat(topUpAmount) <= 0) return; try { await api.topUpWallet(parseFloat(topUpAmount)); setTopUpAmount(''); alert('Top-up request submitted — pending admin approval.'); } catch (err: any) { alert(err.message || 'Failed to submit top-up'); } }} className="flex-shrink-0 px-4 py-2.5 bg-brand-gold text-white font-bold uppercase tracking-widest text-sm rounded-xl hover:bg-yellow-600 transition-colors whitespace-nowrap">{t('wallet_top_up' as any)}</button>
                       </div>
                     </div>
                     <div className={glassCardClass + " p-6 text-center"}>

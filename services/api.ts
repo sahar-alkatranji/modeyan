@@ -501,6 +501,19 @@ class ApiClient {
       body: JSON.stringify(settings),
     });
   }
+
+  // AI Image Generation (POST /ai/generate-design-image)
+  async generateDesignImage(
+    prompt: string,
+    parts: Record<string, string>,
+    model: string = 'gpt-image-1',
+    quality: string = 'medium'
+  ): Promise<{ image_url: string; model_used: string; revised_prompt?: string }> {
+    return this.request('/ai/generate-design-image', {
+      method: 'POST',
+      body: JSON.stringify({ prompt, parts, model, quality }),
+    });
+  }
 }
 
 export const api = new ApiClient();
