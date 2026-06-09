@@ -82,8 +82,9 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
       // Only call the API if the id is a valid numeric backend id.
       // Bundled fallback items have string ids like "front_neckline_1" which
       // would cause parseInt to return NaN → DELETE /parts/NaN → 404.
-      const numericId = Number(assetToDelete.id);
-      if (!isNaN(numericId) && String(numericId) === assetToDelete.id) {
+      const idStr = String(assetToDelete.id).trim();
+      const numericId = Number(idStr);
+      if (!isNaN(numericId) && /^\d+$/.test(idStr)) {
         await api.deleteDesignAsset(numericId);
       }
       setDressParts(prev => prev.filter(p => p.id !== assetToDelete.id));
