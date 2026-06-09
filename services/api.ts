@@ -83,11 +83,16 @@ class ApiClient {
       clearTimeout(id);
 
       if (!response.ok) {
-        if (response.status === 401) {
-          this.clearToken();
-          if (this.onUnauthorized) this.onUnauthorized();
-        }
         const error = await response.json().catch(() => ({ detail: 'Request failed' }));
+        if (response.status === 401) {
+          // Only clear token on genuine auth failures, not transient 401s
+          const detail = typeof error?.detail === 'string' ? error.detail.toLowerCase() : '';
+          const isRealAuthFailure = !this.token || detail.includes('credential') || detail.includes('token') || detail.includes('authenticated') || detail.includes('not found');
+          if (isRealAuthFailure) {
+            this.clearToken();
+            if (this.onUnauthorized) this.onUnauthorized();
+          }
+        }
         throw new Error(extractErrorMessage(error, response.status));
       }
       return response.json();
