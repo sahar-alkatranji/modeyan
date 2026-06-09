@@ -601,15 +601,7 @@ export const ar = {
   admin_users_action_edit: 'تعديل',
   admin_users_edit_modal_title: 'تعديل بيانات المستخدم',
 
-  // T1: مفاتيح ترجمة مفقودة
-  admin_design_assets_title: 'إدارة أصول التصميم',
-  admin_users_filter_all_roles: 'كل الأدوار',
-  admin_users_add_modal_title: 'إضافة مستخدم جديد',
-  admin_users_no_users: 'لا يوجد مستخدمون.',
-  admin_users_delete_warning: 'سيتم إلغاء تفعيل حساب المستخدم.',
-  admin_wallet_invalid_amount: 'الرجاء إدخال مبلغ صحيح أكبر من 0.',
-  admin_wallet_insufficient_deduct: 'مبلغ الخصم يتجاوز الرصيد الحالي للمستخدم.',
-  orders_subtitle: 'تتبع وإدارة طلباتك',
+  // T1: مفاتيح ترجمة مفقودة (تمت إزالة التكرارات المعرفة مسبقاً — TS1117)
   tailor_orders_subtitle: 'طلبات العملاء بانتظار عرض سعرك',
   dashboard_menu_requests_subtitle: 'الطلبات الواردة بانتظار عرض سعرك',
   profile_update_success: 'تم تحديث الملف الشخصي بنجاح.',

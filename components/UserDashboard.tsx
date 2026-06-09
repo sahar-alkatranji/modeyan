@@ -16,6 +16,7 @@ import { AdminSocials } from './dashboard/AdminSocials';
 import { AdminOrders } from './dashboard/AdminOrders';
 import { ProfessionalPortfolio } from './dashboard/ProfessionalPortfolio';
 import { AdminDesignAssets } from './dashboard/AdminDesignAssets';
+import { OrderDetailModal } from './dashboard/OrderDetailModal';
 
 const ROLE_IMAGES = {
   customer: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop',
@@ -72,6 +73,10 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   // Profile image upload state
   const [profileImage, setProfileImage] = useState<string>(authUser?.profile_image || '');
   const [isUploadingImage, setIsUploadingImage] = useState<boolean>(false);
+
+  // Order detail / quote modal + tailor's quotable requests
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [tailorRequests, setTailorRequests] = useState<any[]>([]);
 
   useEffect(() => {
     setProfileImage(authUser?.profile_image || '');
@@ -159,6 +164,44 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       api.getAdminStats().then(setAdminStats).catch(() => {});
     }
   }, [userRole, currentView]);
+
+  const reloadOrders = async () => {
+    try {
+      const o = await api.getOrders();
+      if (Array.isArray(o)) setOrders(o.map((ord: any) => ({
+        id: String(ord.id),
+        customerId: String(ord.customer_id),
+        design: {} as any,
+        tailorId: String(ord.tailor_id || ''),
+        measurements: {} as any,
+        status: ord.status as any,
+        price: ord.total_price,
+        createdAt: new Date(ord.created_at || Date.now()),
+      })));
+    } catch {}
+  };
+
+  const reloadTailorRequests = async () => {
+    try {
+      const o = await api.getTailorPendingOrders();
+      if (Array.isArray(o)) setTailorRequests(o.map((ord: any) => ({
+        id: String(ord.id),
+        customerId: String(ord.customer_id),
+        status: ord.status,
+        price: ord.total_price,
+      })));
+    } catch {}
+  };
+
+  // Tailors/managers pull quotable orders from the dedicated endpoint
+  // (these are unassigned pending_quote orders, not in the user's own order list)
+  useEffect(() => {
+    if ((userRole === 'tailor' || userRole === 'manager') && currentView === 'requests') reloadTailorRequests();
+  }, [userRole, currentView]);
+
+  const requestList = (userRole === 'tailor' || userRole === 'manager')
+    ? tailorRequests
+    : orders.filter(o => o.status === 'pending_quote');
 
   const SidebarItem = ({ view, icon, label }: { view: DashboardView, icon: string, label: string }) => (
     <button 
@@ -568,7 +611,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                       </thead>
                       <tbody className="divide-y divide-white/10">
                         {orders.filter(o => String(o.customerId) === String(authUser?.id)).map(order => (
-                          <tr key={order.id} className="hover:bg-white/5 transition-colors">
+                          <tr key={order.id} onClick={() => setSelectedOrderId(order.id)} className="hover:bg-white/5 transition-colors cursor-pointer">
                             <td className="px-6 py-4 font-mono text-sm text-gray-200">#{String(order.id || '').slice(-6)}</td>
                             <td className="px-6 py-4"><StatusPill status={order.status} /></td>
                             <td className="px-6 py-4 text-sm text-white font-medium">${order.price || '-'}</td>
@@ -603,15 +646,15 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/10">
-                        {orders.filter(o => o.status === 'pending_quote').map(order => (
-                          <tr key={order.id} className="hover:bg-white/5 transition-colors">
+                        {requestList.map((order: any) => (
+                          <tr key={order.id} onClick={() => setSelectedOrderId(order.id)} className="hover:bg-white/5 transition-colors cursor-pointer">
                             <td className="px-6 py-4 font-mono text-sm text-gray-200">#{String(order.id || '').slice(-6)}</td>
                             <td className="px-6 py-4 text-sm font-bold text-white">{users.find(u => u.id === order.customerId)?.firstName || '-'}</td>
                             <td className="px-6 py-4"><StatusPill status={order.status} /></td>
                             <td className="px-6 py-4 text-sm text-white font-medium">${order.price || '-'}</td>
                           </tr>
                         ))}
-                        {orders.filter(o => o.status === 'pending_quote').length === 0 && (
+                        {requestList.length === 0 && (
                           <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-400 text-xs">{t('dashboard_no_orders')}</td></tr>
                         )}
                       </tbody>
@@ -620,6 +663,16 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                 </div>
               )}
           </div>
+
+          {selectedOrderId && (
+            <OrderDetailModal
+              orderId={selectedOrderId}
+              role={userRole}
+              currentUserId={authUser?.id ? String(authUser.id) : undefined}
+              onClose={() => setSelectedOrderId(null)}
+              onChanged={() => { reloadOrders(); if (userRole === 'tailor' || userRole === 'manager') reloadTailorRequests(); }}
+            />
+          )}
       </main>
     </div>
   );

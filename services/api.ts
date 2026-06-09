@@ -332,6 +332,23 @@ class ApiClient {
     return this.request<any>(`/orders/${orderId}`);
   }
 
+  // --- Quotes (marketplace core) ---
+  async submitQuote(data: { order_id: number; price: number; estimated_days?: number; message?: string }): Promise<any> {
+    return this.request<any>('/quotes', { method: 'POST', body: JSON.stringify(data) });
+  }
+
+  async getOrderQuotes(orderId: number): Promise<any[]> {
+    return this.request<any[]>(`/orders/${orderId}/quotes`);
+  }
+
+  async respondToQuote(quoteId: number, accept: boolean): Promise<any> {
+    return this.request<any>(`/quotes/${quoteId}/respond`, { method: 'PUT', body: JSON.stringify({ accept }) });
+  }
+
+  async getTailorPendingOrders(): Promise<any[]> {
+    return this.request<any[]>('/tailors/pending-orders');
+  }
+
   async getAdminOrders(): Promise<any[]> {
     return this.request<any[]>('/admin/orders');
   }
