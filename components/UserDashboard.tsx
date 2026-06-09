@@ -17,6 +17,7 @@ import { AdminOrders } from './dashboard/AdminOrders';
 import { ProfessionalPortfolio } from './dashboard/ProfessionalPortfolio';
 import { AdminDesignAssets } from './dashboard/AdminDesignAssets';
 import { OrderDetailModal } from './dashboard/OrderDetailModal';
+import { AdminTopups } from './dashboard/AdminTopups';
 
 const ROLE_IMAGES = {
   customer: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop',
@@ -45,7 +46,7 @@ interface UserDashboardProps {
   onLogout: () => void;
 }
 
-type DashboardView = 'overview' | 'design' | 'my-designs' | 'orders' | 'profile' | 'wallet' | 'portfolio' | 'requests' | 'admin-approvals' | 'admin-products' | 'admin-users' | 'admin-payments' | 'admin-socials' | 'admin-design-assets' | 'admin-orders';
+type DashboardView = 'overview' | 'design' | 'my-designs' | 'orders' | 'profile' | 'wallet' | 'portfolio' | 'requests' | 'admin-approvals' | 'admin-products' | 'admin-users' | 'admin-payments' | 'admin-socials' | 'admin-design-assets' | 'admin-orders' | 'admin-topups';
 
 const UserDashboard: React.FC<UserDashboardProps> = ({ 
   onNavigate, userRole, orders, setOrders, users, setUsers, products, setProducts, socialLinks, setSocialLinks, dressParts, setDressParts, setSavedDesigns, savedDesigns, onLogout
@@ -77,6 +78,13 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   // Order detail / quote modal + tailor's quotable requests
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [tailorRequests, setTailorRequests] = useState<any[]>([]);
+
+  // Transaction history (#6) + change password (#5)
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [pwOld, setPwOld] = useState('');
+  const [pwNew, setPwNew] = useState('');
+  const [pwConfirm, setPwConfirm] = useState('');
+  const [pwBusy, setPwBusy] = useState(false);
 
   useEffect(() => {
     setProfileImage(authUser?.profile_image || '');
@@ -203,6 +211,28 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     ? tailorRequests
     : orders.filter(o => o.status === 'pending_quote');
 
+  // Load transaction history when the wallet view is open (#6)
+  useEffect(() => {
+    if (currentView === 'wallet') {
+      api.getTransactions().then((d: any[]) => setTransactions(Array.isArray(d) ? d : [])).catch(() => {});
+    }
+  }, [currentView]);
+
+  const handleChangePassword = async () => {
+    if (!pwOld || !pwNew) return;
+    if (pwNew.length < 8) { alert(t('password_min_length' as any) || 'New password must be at least 8 characters.'); return; }
+    if (pwNew !== pwConfirm) { alert(t('password_mismatch' as any) || 'New passwords do not match.'); return; }
+    setPwBusy(true);
+    try {
+      await api.changePassword(pwOld, pwNew);
+      setPwOld(''); setPwNew(''); setPwConfirm('');
+      alert(t('password_change_success' as any) || 'Password updated. Please log in again.');
+      onLogout();
+      onNavigate('home');
+    } catch (e: any) { alert(e.message || 'Failed to change password'); }
+    finally { setPwBusy(false); }
+  };
+
   const SidebarItem = ({ view, icon, label }: { view: DashboardView, icon: string, label: string }) => (
     <button 
         onClick={() => {
@@ -293,6 +323,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                     <>
                         <div className="mt-6 mb-2 px-3 text-start"><span className="text-sm font-black text-brand-gold uppercase tracking-[0.2em]">{t('dashboard_sidebar_admin')}</span></div>
                         <SidebarItem view="admin-orders" icon="clipboard" label={t('dashboard_menu_admin_orders')} />
+                        <SidebarItem view="admin-topups" icon="credit-card" label={t('dashboard_menu_admin_topups' as any) || 'Top-up Requests'} />
                         <SidebarItem view="admin-approvals" icon="check-circle" label={t('dashboard_menu_admin_approvals')} />
                         <SidebarItem view="admin-products" icon="shopping-bag" label={t('dashboard_menu_admin_products')} />
                         <SidebarItem view="admin-users" icon="users" label={t('dashboard_menu_admin_users')} />
@@ -362,6 +393,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                     <>
                         <div className="mt-6 mb-2 px-3 text-start"><span className="text-sm font-black text-brand-gold uppercase tracking-[0.2em]">{t('dashboard_sidebar_admin')}</span></div>
                         <SidebarItem view="admin-orders" icon="clipboard" label={t('dashboard_menu_admin_orders')} />
+                        <SidebarItem view="admin-topups" icon="credit-card" label={t('dashboard_menu_admin_topups' as any) || 'Top-up Requests'} />
                         <SidebarItem view="admin-approvals" icon="check-circle" label={t('dashboard_menu_admin_approvals')} />
                         <SidebarItem view="admin-products" icon="shopping-bag" label={t('dashboard_menu_admin_products')} />
                         <SidebarItem view="admin-users" icon="users" label={t('dashboard_menu_admin_users')} />
@@ -418,6 +450,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
               )}
               {currentView === 'admin-orders' && (
                 <AdminOrders orders={orders} setOrders={setOrders} users={users} />
+              )}
+              {currentView === 'admin-topups' && (
+                <AdminTopups />
               )}
               {currentView === 'design' && (
                 <DesignStudio
@@ -486,6 +521,36 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                   <div className="mb-8 flex items-start gap-3 rounded-xl border border-brand-gold/30 bg-brand-gold/10 p-4">
                     <Icon name="info" className="w-5 h-5 text-brand-gold flex-shrink-0 mt-0.5" />
                     <p className="text-base text-gray-100 leading-relaxed">{t('wallet_offline_notice' as any)}</p>
+                  </div>
+
+                  {/* Transaction history (#6) */}
+                  <div className="mb-8">
+                    <h3 className="text-xl font-serif text-white mb-4">{t('wallet_transactions_title' as any) || 'Transaction History'}</h3>
+                    <div className={glassCardClass + " overflow-x-auto"}>
+                      <table className="w-full text-start min-w-0 sm:min-w-[560px]">
+                        <thead className="bg-white/5 text-gray-300 uppercase text-sm font-bold tracking-[0.15em] border-b border-white/10">
+                          <tr>
+                            <th className="px-6 py-4">{t('wallet_tx_type' as any) || 'Type'}</th>
+                            <th className="px-6 py-4">{t('wallet_tx_amount' as any) || 'Amount'}</th>
+                            <th className="px-6 py-4">{t('admin_orders_table_status')}</th>
+                            <th className="px-6 py-4">{t('admin_orders_table_date' as any) || 'Date'}</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/10">
+                          {transactions.map((tx: any) => (
+                            <tr key={tx.id} className="hover:bg-white/5 transition-colors">
+                              <td className="px-6 py-4 text-sm text-gray-200 capitalize">{String(tx.transaction_type || '').replace(/_/g, ' ')}</td>
+                              <td className="px-6 py-4 text-sm text-white font-medium">${Number(tx.amount).toFixed(2)}</td>
+                              <td className="px-6 py-4"><StatusPill status={tx.status} /></td>
+                              <td className="px-6 py-4 text-sm text-gray-300">{tx.created_at ? new Date(tx.created_at).toLocaleDateString() : '-'}</td>
+                            </tr>
+                          ))}
+                          {transactions.length === 0 && (
+                            <tr><td colSpan={4} className="px-6 py-8 text-center text-gray-400 text-xs">{t('wallet_no_transactions' as any) || 'No transactions yet.'}</td></tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
 
                   {/* Payment Methods for top-up */}
@@ -587,6 +652,18 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                       <textarea defaultValue={authUser?.bio || ''} id="profile-bio" rows={3} className={glassInputClass + " resize-none text-base"} />
                     </div>
                     <button onClick={async () => { try { const first_name = (document.getElementById('profile-first-name') as HTMLInputElement)?.value; const last_name = (document.getElementById('profile-last-name') as HTMLInputElement)?.value; const phone = (document.getElementById('profile-phone') as HTMLInputElement)?.value; const bio = (document.getElementById('profile-bio') as HTMLTextAreaElement)?.value; await api.updateMe({ first_name, last_name, phone, bio, profile_image: profileImage }); await refreshUser(); alert(t('profile_save_success')); } catch (err: any) { alert(err.message || 'Failed to update profile'); } }} className={glassButtonClass + " mt-6 w-auto px-8"}>{t('profile_save_button' as any)}</button>
+                  </div>
+
+                  {/* Change Password (#5) */}
+                  <div className={glassCardClass + " p-8 max-w-4xl mt-6"}>
+                    <h3 className="text-xl font-serif text-white mb-1">{t('password_change_title' as any) || 'Change Password'}</h3>
+                    <p className="text-sm text-gray-400 mb-6">{t('password_change_subtitle' as any) || 'You will be logged out after changing your password.'}</p>
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <input type="password" value={pwOld} onChange={e => setPwOld(e.target.value)} placeholder={t('password_current' as any) || 'Current password'} className={glassInputClass + ' text-base'} />
+                      <input type="password" value={pwNew} onChange={e => setPwNew(e.target.value)} placeholder={t('password_new' as any) || 'New password (min 8)'} className={glassInputClass + ' text-base'} />
+                      <input type="password" value={pwConfirm} onChange={e => setPwConfirm(e.target.value)} placeholder={t('password_confirm' as any) || 'Confirm new password'} className={glassInputClass + ' text-base'} />
+                    </div>
+                    <button disabled={pwBusy} onClick={handleChangePassword} className={glassButtonClass + " mt-6 w-auto px-8 disabled:opacity-50"}>{t('password_change_button' as any) || 'Update Password'}</button>
                   </div>
                 </div>
               )}
