@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     port: 3000,
     host: '0.0.0.0',
-    allowedHosts: ['modeya.abdalgani.com', '72.60.130.170'],
+    allowedHosts: true, // Allow all hosts (nginx proxy + direct access)
     proxy: {
       '/api': {
         target: 'http://localhost:8002',
