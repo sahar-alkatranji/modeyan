@@ -21,6 +21,7 @@ export const ar = {
 
   // Shop Page
   shop_page_title: 'مجموعتنا',
+  shop_category_all: 'الكل',
 
   // Product Card
   product_card_view: 'نظرة سريعة',

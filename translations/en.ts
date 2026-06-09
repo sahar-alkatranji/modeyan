@@ -21,6 +21,7 @@ export const en = {
 
   // Shop Page
   shop_page_title: 'Our Collection',
+  shop_category_all: 'All',
 
   // Product Card
   product_card_view: 'Quick View',
