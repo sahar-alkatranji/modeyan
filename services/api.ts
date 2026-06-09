@@ -507,14 +507,14 @@ class ApiClient {
     });
   }
 
-  // AI Image Generation (POST /ai/generate-design-image)
+  // AI Image Generation (POST /ai/generate-design-public)
   async generateDesignImage(
     prompt: string,
     parts: Record<string, string>,
     model: string = 'gpt-image-1',
     quality: string = 'medium'
   ): Promise<{ image_url: string; model_used: string; revised_prompt?: string }> {
-    return this.request('/ai/generate-design-image', {
+    return this.request('/ai/generate-design-public', {
       method: 'POST',
       body: JSON.stringify({ prompt, parts, model, quality }),
     });
