@@ -47,7 +47,7 @@ interface UserDashboardProps {
   onLogout: () => void;
 }
 
-type DashboardView = 'overview' | 'design' | 'my-designs' | 'orders' | 'profile' | 'wallet' | 'portfolio' | 'requests' | 'admin-approvals' | 'admin-products' | 'admin-users' | 'admin-payments' | 'admin-socials' | 'admin-design-assets' | 'admin-orders' | 'admin-topups' | 'admin-settings';
+type DashboardView = 'overview' | 'design' | 'my-designs' | 'orders' | 'profile' | 'wallet' | 'portfolio' | 'requests' | 'support-chat' | 'admin-approvals' | 'admin-products' | 'admin-users' | 'admin-payments' | 'admin-socials' | 'admin-design-assets' | 'admin-orders' | 'admin-topups' | 'admin-settings' | 'admin-support';
 
 const UserDashboard: React.FC<UserDashboardProps> = ({ 
   onNavigate, userRole, orders, setOrders, users, setUsers, products, setProducts, socialLinks, setSocialLinks, dressParts, setDressParts, setSavedDesigns, savedDesigns, onLogout
@@ -331,11 +331,13 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                         <SidebarItem view="admin-payments" icon="credit-card" label={t('dashboard_menu_admin_payments')} />
                         <SidebarItem view="admin-socials" icon="share" label={t('dashboard_menu_admin_socials')} />
                         <SidebarItem view="admin-design-assets" icon="palette" label={t('admin_design_assets_title' as any) || 'Design Assets'} />
+                        <SidebarItem view="admin-support" icon="headphones" label={t('admin_support_title' as any) || 'Support Tickets'} />
                     </>
                   )}
 
                   <div className="mt-6 mb-2 px-3 text-start"><span className="text-sm font-black text-brand-gold uppercase tracking-[0.2em]">{t('dashboard_sidebar_personal')}</span></div>
                   <SidebarItem view="wallet" icon="credit-card" label={t('dashboard_menu_wallet')} />
+                  <SidebarItem view="support-chat" icon="message-square" label={t('support_chat_title' as any) || 'Support'} />
                   <SidebarItem view="profile" icon="settings" label={t('dashboard_menu_profile')} />
               </nav>
           </div>
@@ -401,11 +403,13 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                         <SidebarItem view="admin-payments" icon="credit-card" label={t('dashboard_menu_admin_payments')} />
                         <SidebarItem view="admin-socials" icon="share" label={t('dashboard_menu_admin_socials')} />
                         <SidebarItem view="admin-design-assets" icon="palette" label={t('admin_design_assets_title' as any) || 'Design Assets'} />
+                        <SidebarItem view="admin-support" icon="headphones" label={t('admin_support_title' as any) || 'Support Tickets'} />
                     </>
                   )}
 
                   <div className="mt-6 mb-2 px-3 text-start"><span className="text-sm font-black text-brand-gold uppercase tracking-[0.2em]">{t('dashboard_sidebar_personal')}</span></div>
                   <SidebarItem view="wallet" icon="credit-card" label={t('dashboard_menu_wallet')} />
+                  <SidebarItem view="support-chat" icon="message-square" label={t('support_chat_title' as any) || 'Support'} />
                   <SidebarItem view="profile" icon="settings" label={t('dashboard_menu_profile')} />
               </nav>
 
@@ -457,6 +461,12 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
               )}
               {currentView === 'admin-settings' && (
                 <AdminSettings />
+              )}
+              {currentView === 'support-chat' && (
+                <div className="flex items-center justify-center py-20 text-gray-400 text-sm">Support Chat — loading...</div>
+              )}
+              {currentView === 'admin-support' && (
+                <div className="flex items-center justify-center py-20 text-gray-400 text-sm">Support Tickets — loading...</div>
               )}
               {currentView === 'design' && (
                 <DesignStudio

@@ -682,4 +682,8 @@ export const en = {
 
   // Admin Settings
   admin_settings_title: 'Settings',
+
+  // Support Chat
+  support_chat_title: 'Support',
+  admin_support_title: 'Support Tickets',
 };

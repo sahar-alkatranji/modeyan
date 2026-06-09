@@ -682,4 +682,8 @@ export const ar = {
 
   // Admin Settings
   admin_settings_title: 'الإعدادات',
+
+  // Support Chat
+  support_chat_title: 'الدعم الفني',
+  admin_support_title: 'تذاكر الدعم',
 };
