@@ -32,7 +32,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
   // Add Payment Method State
   const [isAddMethodOpen, setIsAddMethodOpen] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newType, setNewType] = useState<'mobile_transfer' | 'remittance' | 'bank_transfer' | 'paypal' | 'stripe' | 'cash_location' | 'wallet_qr'>('bank_transfer');
+  const [newType, setNewType] = useState<'mobile_transfer' | 'remittance' | 'bank_transfer' | 'paypal' | 'stripe' | 'cash_location' | 'wallet_qr' | 'payment_credit_card' | 'payment_baraka'>('bank_transfer');
   const [newImgUrl, setNewImgUrl] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -99,7 +99,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
       form.walletCode = currentDetails.walletCode || '';
       form.qrImageUrl = currentDetails.qrImageUrl || '';
     } else if (method.type === 'mobile_transfer') {
-      form.phoneNumber = currentDetails.phoneNumber || '';
+      form.phoneNumber = currentDetails.phoneNumber || currentDetails.phone_number || '';
     } else if (method.type === 'remittance') {
       form.accountName = currentDetails.accountName || '';
       form.phoneNumber = currentDetails.phoneNumber || '';
@@ -110,8 +110,8 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
     } else if (method.type === 'cash_location') {
       form.address = currentDetails.address || '';
     } else if (method.type === 'bank_transfer') {
-      form.bankName = currentDetails.bankName || '';
-      form.accountNumber = currentDetails.accountNumber || '';
+      form.bankName = currentDetails.bankName || currentDetails.bank_name || '';
+      form.accountNumber = currentDetails.accountNumber || currentDetails.account_number || '';
       form.iban = currentDetails.iban || '';
     } else if (method.type === 'payment_credit_card') {
       form.publishableKey = currentDetails.publishableKey || '';
@@ -158,9 +158,18 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
 
     setIsAdding(true);
     try {
+      // Map frontend types back to backend types
+      const backendType = (() => {
+        if (newType === 'payment_credit_card') return 'card';
+        if (newType === 'mobile_transfer') return 'wallet_phone';
+        if (newType === 'bank_transfer') return 'bank';
+        if (newType === 'payment_baraka') return 'bank';
+        return newType;
+      })();
+
       const added = await api.createPaymentMethod({
         name: newName,
-        type: newType,
+        type: backendType,
         img_url: newImgUrl || undefined,
         is_active: true,
         details: {},
@@ -171,7 +180,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
         translationKey: added.translation_key || added.name,
         isActive: added.is_active,
         imgUrl: added.img_url || '',
-        type: added.type as any,
+        type: newType,
         details: added.details || {},
       };
 

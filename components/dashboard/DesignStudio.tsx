@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { DressPart, SavedDesign } from '../../types';
 import { api } from '../../services/api';
@@ -34,6 +34,11 @@ export const DesignStudio: React.FC<DesignStudioProps> = ({
   setSavedDesigns,
 }) => {
   const { t } = useTranslation();
+  const [openCategory, setOpenCategory] = useState<string | null>(null);
+
+  const toggleCategory = (cat: string) => {
+    setOpenCategory(prev => prev === cat ? null : cat);
+  };
 
   const handleGenerateAI = async () => {
     if (Object.keys(designSelections).length === 0) {
@@ -81,57 +86,93 @@ export const DesignStudio: React.FC<DesignStudioProps> = ({
       </div>
 
       <div className="grid xl:grid-cols-5 gap-6">
-        <div className="xl:col-span-3 space-y-4">
-          {PART_TYPES.map(partType => (
-            <div key={partType} className={glassCardClass + ' p-5'}>
-              <div className="flex items-center justify-between mb-3 gap-3">
-                <h4 className="font-bold text-sm sm:text-base tracking-wide text-brand-gold">
-                  {t(`design_part_${partType}` as any)}
-                </h4>
-                <span className="text-xs text-gray-400 whitespace-nowrap">
-                  {dressParts.filter(p => p.type === partType).length} خيارات
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {dressParts.filter(p => p.type === partType).map(part => {
-                  const isSelected = designSelections[partType]?.id === part.id;
-                  return (
-                    <button
-                      key={`${part.type}_${part.id}`}
-                      onClick={() => setDesignSelections({ ...designSelections, [partType]: part })}
-                      className={`rounded-xl border-2 p-2 transition-all duration-200 ${
-                        isSelected
-                          ? 'border-brand-gold bg-brand-gold/10 shadow-lg shadow-brand-gold/10'
-                          : 'border-white/10 hover:border-white/30 hover:bg-white/5'
-                      }`}
+        <div className="xl:col-span-3 space-y-3">
+          {PART_TYPES.map(partType => {
+            const isOpen = openCategory === partType;
+            const parts = dressParts.filter(p => p.type === partType);
+            const selectedPart = designSelections[partType];
+            return (
+              <div key={partType} className={glassCardClass + ' overflow-hidden'}>
+                {/* Accordion Header — clickable */}
+                <button
+                  onClick={() => toggleCategory(partType)}
+                  className="w-full flex items-center justify-between p-4 sm:p-5 text-start hover:bg-white/5 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    {selectedPart?.imageUrl && (
+                      <img
+                        src={selectedPart.imageUrl}
+                        alt={selectedPart.name}
+                        className="w-10 h-10 object-contain rounded-lg bg-white/10 border border-white/20"
+                      />
+                    )}
+                    <div>
+                      <h4 className="font-bold text-sm sm:text-base tracking-wide text-brand-gold">
+                        {t(`design_part_${partType}` as any)}
+                      </h4>
+                      {selectedPart && (
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {t(selectedPart.name as any)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">{parts.length}</span>
+                    <svg
+                      className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor"
                     >
-                      <div className="w-full h-40 sm:h-44 bg-white rounded-lg mb-2 overflow-hidden flex items-center justify-center">
-                        {part.imageUrl ? (
-                          <img
-                            src={part.imageUrl}
-                            alt={t(part.name as any)}
-                            loading="lazy"
-                            className="w-full h-full object-contain p-1"
-                            onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.2'; }}
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-                            No image
-                          </div>
-                        )}
-                      </div>
-                      <p className={`text-sm font-bold text-center leading-tight ${
-                        isSelected ? 'text-brand-gold' : 'text-white'
-                      }`}>
-                        {t(part.name as any)}
-                      </p>
-                    </button>
-                  );
-                })}
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </button>
+
+                {/* Accordion Body — parts grid with images */}
+                {isOpen && (
+                  <div className="px-4 sm:px-5 pb-5 animate-fade-in">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {parts.map(part => {
+                        const isSelected = designSelections[partType]?.id === part.id;
+                        return (
+                          <button
+                            key={`${part.type}_${part.id}`}
+                            onClick={() => setDesignSelections({ ...designSelections, [partType]: part })}
+                            className={`rounded-xl border-2 p-2 transition-all duration-200 ${
+                              isSelected
+                                ? 'border-brand-gold bg-brand-gold/10 shadow-lg shadow-brand-gold/10'
+                                : 'border-white/10 hover:border-white/30 hover:bg-white/5'
+                            }`}
+                          >
+                            <div className="w-full aspect-square bg-white rounded-lg mb-2 overflow-hidden flex items-center justify-center">
+                              {part.imageUrl ? (
+                                <img
+                                  src={part.imageUrl}
+                                  alt={t(part.name as any)}
+                                  loading="lazy"
+                                  className="w-full h-full object-contain p-1"
+                                  onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.2'; }}
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                                  📷
+                                </div>
+                              )}
+                            </div>
+                            <p className={`text-xs font-bold text-center leading-tight ${
+                              isSelected ? 'text-brand-gold' : 'text-white'
+                            }`}>
+                              {t(part.name as any)}
+                            </p>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           <div className={glassCardClass + ' p-5'}>
             <h4 className="font-bold text-sm sm:text-base tracking-wide text-brand-gold mb-3">

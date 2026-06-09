@@ -140,14 +140,42 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   useEffect(() => {
     api.getPaymentMethods().then((data: any[]) => {
       if (data.length > 0) {
-        setPaymentMethods(data.map(m => ({
-          id: String(m.id),
-          translationKey: m.translation_key || m.name,
-          isActive: m.is_active,
-          imgUrl: m.img_url || '',
-          type: m.type || 'cash_location',
-          details: m.details || {},
-        })));
+        setPaymentMethods(data
+          .map(m => ({
+            id: String(m.id),
+            translationKey: m.translation_key || m.name,
+            isActive: m.is_active,
+            imgUrl: m.img_url || '',
+            type: (() => {
+              const bt = m.type || 'cash_location';
+              if (bt === 'card') return 'payment_credit_card';
+              if (bt === 'wallet_phone') return 'mobile_transfer';
+              if (bt === 'bank') {
+                const name = (m.name || '').toLowerCase();
+                if (name.includes('baraka') || name.includes('بركة') || name.includes('باريكا')) return 'payment_baraka';
+                return 'bank_transfer';
+              }
+              return bt;
+            })(),
+            details: (() => {
+              const d = m.details || {};
+              // Normalize snake_case backend keys to camelCase frontend keys
+              return {
+                ...d,
+                bankName: d.bankName || d.bank_name || '',
+                accountNumber: d.accountNumber || d.account_number || '',
+                iban: d.iban || '',
+                phoneNumber: d.phoneNumber || d.phone_number || '',
+                walletCode: d.walletCode || d.wallet_code || '',
+                qrImageUrl: d.qrImageUrl || d.qr_image_url || '',
+                accountName: d.accountName || d.account_name || '',
+                publishableKey: d.publishableKey || d.publishable_key || '',
+                secretKey: d.secretKey || d.secret_key || '',
+              };
+            })(),
+          }))
+          .filter(m => m.type !== 'wallet')
+        );
       }
     }).catch(() => {});
   }, []);
@@ -582,29 +610,68 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                               ) : null}
                               <span className="font-bold text-white text-xs uppercase tracking-wider">{t(method.translationKey as any)}</span>
                             </div>
-                            {method.details?.phoneNumber && (
-                              <p className="text-sm text-gray-400 mb-1">
-                                <span className="text-gray-300">{t('wallet_payment_phone' as any)}</span> {method.details.phoneNumber}
-                              </p>
-                            )}
-                            {method.details?.paymentCode && (
+                            {/* شام كاش — Wallet Code + QR */}
+                            {method.type === 'wallet_qr' && method.details?.walletCode && (
                               <p className="text-sm text-gray-300 font-bold bg-white/5 rounded-lg px-3 py-2 mt-2 border border-white/10">
-                                {t('wallet_payment_code' as any)} <span className="text-brand-gold">{method.details.paymentCode}</span>
+                                {t('wallet_payment_code' as any) || 'رمز المحفظة'}: <span className="text-brand-gold">{method.details.walletCode}</span>
                               </p>
                             )}
-                            {method.details?.accountName && (
+                            {method.type === 'wallet_qr' && method.details?.qrImageUrl && (
+                              <div className="mt-3">
+                                <img src={method.details.qrImageUrl} alt="QR Code" className="w-28 h-28 object-contain rounded-lg bg-white/10 p-1 border border-white/20" />
+                              </div>
+                            )}
+                            {/* سيرتيل / MTN — Phone */}
+                            {method.type === 'mobile_transfer' && method.details?.phoneNumber && (
                               <p className="text-sm text-gray-400 mb-1">
-                                <span className="text-gray-300">{t('wallet_payment_account_name' as any)}</span> {method.details.accountName}
+                                <span className="text-gray-300">{t('wallet_payment_phone' as any) || 'رقم الهاتف'}:</span> {method.details.phoneNumber}
                               </p>
                             )}
-                            {method.details?.bankName && (
+                            {/* بنك — Bank + Account + IBAN */}
+                            {method.type === 'bank_transfer' && (
+                              <>
+                                {method.details?.bankName && (
+                                  <p className="text-sm text-gray-400 mb-1">
+                                    <span className="text-gray-300">{t('wallet_payment_bank' as any) || 'البنك'}:</span> {method.details.bankName}
+                                  </p>
+                                )}
+                                {method.details?.accountNumber && (
+                                  <p className="text-sm text-gray-400 mb-1">
+                                    <span className="text-gray-300">{t('wallet_payment_account_number' as any) || 'رقم الحساب'}:</span> {method.details.accountNumber}
+                                  </p>
+                                )}
+                                {method.details?.iban && (
+                                  <p className="text-sm text-gray-400 mb-1 font-mono text-xs">
+                                    <span className="text-gray-300">IBAN:</span> {method.details.iban}
+                                  </p>
+                                )}
+                              </>
+                            )}
+                            {/* باريكا — Account Number */}
+                            {method.type === 'payment_baraka' && method.details?.accountNumber && (
                               <p className="text-sm text-gray-400 mb-1">
-                                <span className="text-gray-300">{t('wallet_payment_bank' as any)}</span> {method.details.bankName}
+                                <span className="text-gray-300">{t('wallet_payment_account_number' as any) || 'رقم الحساب'}:</span> {method.details.accountNumber}
                               </p>
                             )}
-                            {method.details?.accountNumber && (
+                            {/* حوالة — Account Name + Phone + City */}
+                            {method.type === 'remittance' && (
+                              <>
+                                {method.details?.accountName && (
+                                  <p className="text-sm text-gray-400 mb-1">
+                                    <span className="text-gray-300">{t('wallet_payment_account_name' as any) || 'اسم الحساب'}:</span> {method.details.accountName}
+                                  </p>
+                                )}
+                                {method.details?.phoneNumber && (
+                                  <p className="text-sm text-gray-400 mb-1">
+                                    <span className="text-gray-300">{t('wallet_payment_phone' as any) || 'رقم الهاتف'}:</span> {method.details.phoneNumber}
+                                  </p>
+                                )}
+                              </>
+                            )}
+                            {/* PayPal — Email */}
+                            {method.type === 'paypal' && method.details?.email && (
                               <p className="text-sm text-gray-400 mb-1">
-                                <span className="text-gray-300">{t('wallet_payment_account_number' as any)}</span> {method.details.accountNumber}
+                                <span className="text-gray-300">Email:</span> {method.details.email}
                               </p>
                             )}
                           </div>
