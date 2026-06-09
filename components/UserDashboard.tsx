@@ -19,6 +19,8 @@ import { AdminDesignAssets } from './dashboard/AdminDesignAssets';
 import { OrderDetailModal } from './dashboard/OrderDetailModal';
 import { AdminTopups } from './dashboard/AdminTopups';
 import AdminSettings from './dashboard/AdminSettings';
+import { SupportChat } from './dashboard/SupportChat';
+import { OrderChat } from './dashboard/OrderChat';
 
 const ROLE_IMAGES = {
   customer: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop',
@@ -463,10 +465,10 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                 <AdminSettings />
               )}
               {currentView === 'support-chat' && (
-                <div className="flex items-center justify-center py-20 text-gray-400 text-sm">Support Chat — loading...</div>
+                <SupportChat mode="user" />
               )}
               {currentView === 'admin-support' && (
-                <div className="flex items-center justify-center py-20 text-gray-400 text-sm">Support Tickets — loading...</div>
+                <SupportChat mode="admin" />
               )}
               {currentView === 'design' && (
                 <DesignStudio
