@@ -507,7 +507,7 @@ class ApiClient {
     });
   }
 
-  // AI Image Generation (POST /ai/generate-design-public)
+  // AI Image Generation (POST /ai/generate-design-public) — needs longer timeout (90s)
   async generateDesignImage(
     prompt: string,
     parts: Record<string, string>,
@@ -517,7 +517,7 @@ class ApiClient {
     return this.request('/ai/generate-design-public', {
       method: 'POST',
       body: JSON.stringify({ prompt, parts, model, quality }),
-    });
+    }, 90000);
   }
 }
 
