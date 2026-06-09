@@ -115,7 +115,21 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onLogin }) => {
     <div className="space-y-8">
       <div className="text-center">
         <h2 className="text-4xl font-serif text-white mb-2">{t('login_tab_login')}</h2>
-
+        <p className="text-gray-300 text-sm">{t('signup_form_role_label')}</p>
+        
+        {/* Role Selector */}
+        <div className="flex flex-wrap justify-center gap-2 mt-4">
+            {(['customer', 'designer', 'tailor', 'manager'] as UserRole[]).map(role => (
+                <button 
+                    key={role} 
+                    type="button"
+                    onClick={() => handleRoleChange(role)}
+                    className={roleButtonClasses(role)}
+                >
+                    {t(`signup_form_role_${role}` as any)}
+                </button>
+            ))}
+        </div>
       </div>
 
       <form onSubmit={handleLoginSubmit} className="space-y-5">
