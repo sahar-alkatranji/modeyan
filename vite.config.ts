@@ -11,6 +11,12 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8002',
         changeOrigin: true,
+        ws: true,
+      },
+      '/ws': {
+        target: 'http://localhost:8002',
+        changeOrigin: true,
+        ws: true,
       },
       // Uploaded files (profile images, portfolio media) are served by the
       // backend under /storage/uploads. Without this proxy the dev server

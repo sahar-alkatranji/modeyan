@@ -704,7 +704,11 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                       </thead>
                       <tbody className="divide-y divide-white/10">
                         {orders.filter(o => String(o.customerId) === String(authUser?.id)).map(order => (
-                          <tr key={order.id} onClick={() => setSelectedOrderId(order.id)} className="hover:bg-white/5 transition-colors cursor-pointer">
+                          <tr
+                            key={order.id}
+                            onClick={() => setSelectedOrderId(prev => prev === order.id ? null : order.id)}
+                            className={`hover:bg-white/5 transition-colors cursor-pointer ${selectedOrderId === order.id ? 'bg-white/10' : ''}`}
+                          >
                             <td className="px-6 py-4 font-mono text-sm text-gray-200">#{String(order.id || '').slice(-6)}</td>
                             <td className="px-6 py-4"><StatusPill status={order.status} /></td>
                             <td className="px-6 py-4 text-sm text-white font-medium">${order.price || '-'}</td>
@@ -717,6 +721,30 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                       </tbody>
                     </table>
                   </div>
+
+                  {/* Order Chat — shown when user selects an order row */}
+                  {selectedOrderId && (
+                    <div className={glassCardClass + " p-6 mt-6"}>
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-xs text-gray-400 uppercase tracking-widest font-bold">
+                          Order #{selectedOrderId.slice(-6)}
+                        </span>
+                        <button
+                          onClick={() => setSelectedOrderId(null)}
+                          className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                          aria-label="Close chat"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                      <OrderChat
+                        orderId={selectedOrderId}
+                        currentUserId={authUser?.id ? String(authUser.id) : undefined}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
 

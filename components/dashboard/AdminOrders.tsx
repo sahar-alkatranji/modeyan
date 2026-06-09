@@ -3,6 +3,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { Order, User } from '../../types';
 import { api } from '../../services/api';
 import { glassCardClass, StatusPill, Icon } from './DashboardShared';
+import OrderChat from './OrderChat';
 
 type OrderStatus = Order['status'];
 
@@ -59,6 +60,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
 
   // Action state
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   // Filters logic
   const filteredOrders = orders.filter(order => {
@@ -145,7 +147,11 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
               const isUpdating = updatingOrderId === order.id;
 
               return (
-                <tr key={order.id} className="hover:bg-white/5 transition-colors group">
+                <tr
+                  key={order.id}
+                  onClick={() => setSelectedOrderId(prev => prev === order.id ? null : order.id)}
+                  className={`hover:bg-white/5 transition-colors group cursor-pointer ${selectedOrderId === order.id ? 'bg-white/10' : ''}`}
+                >
                   <td className="px-6 py-4 font-mono text-xs text-gray-300">
                     #{order.id.slice(-6)}
                   </td>
@@ -213,6 +219,27 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ orders, setOrders, use
           >
             {t('admin_orders_pagination_next' as any)}
           </button>
+        </div>
+      )}
+
+      {/* Order Chat — shown when admin selects a row */}
+      {selectedOrderId && (
+        <div className={glassCardClass + " p-6 mt-6"}>
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs text-gray-400 uppercase tracking-widest font-bold">
+              Order #{selectedOrderId.slice(-6)}
+            </span>
+            <button
+              onClick={() => setSelectedOrderId(null)}
+              className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+              aria-label="Close chat"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <OrderChat orderId={selectedOrderId} />
         </div>
       )}
     </div>
