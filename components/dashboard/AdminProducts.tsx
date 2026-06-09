@@ -428,8 +428,9 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ products, setProdu
   }
 
   return (
-    <div className="animate-fade-in text-start">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div className="text-start">
+      <div className="animate-fade-in">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h2 className="text-4xl font-serif text-white mb-2">{t('admin_products_title')}</h2>
           <p className="text-base text-gray-200">{t('admin_products_subtitle')}</p>
@@ -491,6 +492,7 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ products, setProdu
             {t('admin_products_empty' as any) || 'No products listed in catalog.'}
           </div>
         )}
+      </div>
       </div>
 
       <ConfirmDialog

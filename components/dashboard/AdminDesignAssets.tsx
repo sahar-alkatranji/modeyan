@@ -95,8 +95,9 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
   };
 
   return (
-    <div className="animate-fade-in text-start">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div className="text-start">
+      <div className="animate-fade-in">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h2 className="text-3xl font-serif text-white mb-1">
             {t('admin_design_assets_title' as any) || 'AI Studio Design Assets'}
@@ -177,10 +178,11 @@ export const AdminDesignAssets: React.FC<AdminDesignAssetsProps> = ({ dressParts
           </div>
         )}
       </div>
+      </div>
 
       {/* Add Asset Modal */}
       {isAddOpen && (
-        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
+        <div className="fixed inset-0 z-[120] flex items-start justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto animate-fade-in">
           <form
             onSubmit={handleAddSubmit}
             className={glassCardClass + " p-6 sm:p-8 max-w-md w-full text-start space-y-4 my-4 max-h-[85vh] overflow-y-auto"}

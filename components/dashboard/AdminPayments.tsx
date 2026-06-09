@@ -196,8 +196,9 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
   };
 
   return (
-    <div className="animate-fade-in text-start">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div className="text-start">
+      <div className="animate-fade-in">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h2 className="text-3xl font-serif text-white mb-1">{t('admin_payments_title')}</h2>
           <p className="text-sm text-gray-300">{t('admin_payments_subtitle')}</p>
@@ -270,6 +271,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
             </button>
           </div>
         ))}
+      </div>
       </div>
 
       {/* Configure Payment Details Overlay (BUG-05) */}

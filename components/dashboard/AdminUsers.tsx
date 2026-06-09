@@ -205,8 +205,9 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
   };
 
   return (
-    <div className="animate-fade-in text-start">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div className="text-start">
+      <div className="animate-fade-in">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h2 className="text-3xl font-serif text-white mb-1">{t('admin_users_title')}</h2>
           <p className="text-sm text-gray-300">{t('admin_users_subtitle')}</p>
@@ -353,6 +354,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, setUsers }) => {
             )}
           </tbody>
         </table>
+      </div>
       </div>
 
       {/* Wallet Deposit/Deduction Modal */}
