@@ -462,7 +462,7 @@ class ApiClient {
   }
 
   async deleteDesignAsset(id: number): Promise<any> {
-    return this.request<any>(`/parts/${id}`, { method: 'DELETE' });
+    return this.request<any>(`/admin/parts/${id}`, { method: 'DELETE' });
   }
 
   async updateUser(userId: number, data: Record<string, unknown>): Promise<any> {
