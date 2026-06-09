@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 
 interface HeroProps {
-  onNavigate: (page: 'shop' | 'design-dress') => void;
+  onNavigate: (page: 'shop' | 'user-dashboard') => void;
 }
 
 const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
@@ -35,8 +35,8 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
           >
             {t('hero_button')}
           </button>
-          <button 
-            onClick={() => onNavigate('design-dress')}
+          <button
+            onClick={() => onNavigate('user-dashboard')}
             className="px-8 sm:px-10 py-3 bg-transparent border-2 border-white text-white font-semibold tracking-widest text-sm hover:bg-white hover:text-black transition duration-300"
           >
             {isAr ? 'صمم فستانك' : 'Design Your Dress'}

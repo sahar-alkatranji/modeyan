@@ -8,7 +8,7 @@ interface PaymentMethod {
   translationKey: string;
   isActive: boolean;
   imgUrl: string;
-  type: 'mobile_transfer' | 'remittance' | 'bank_transfer' | 'paypal' | 'stripe' | 'cash_location' | 'wallet_qr';
+  type: 'mobile_transfer' | 'remittance' | 'bank_transfer' | 'paypal' | 'stripe' | 'cash_location' | 'wallet_qr' | 'payment_credit_card' | 'payment_baraka';
   details: any;
 }
 
@@ -35,6 +35,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
   const [newType, setNewType] = useState<'mobile_transfer' | 'remittance' | 'bank_transfer' | 'paypal' | 'stripe' | 'cash_location' | 'wallet_qr'>('bank_transfer');
   const [newImgUrl, setNewImgUrl] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Helper for Payment Gateway Safe Fallback Icons (BUG-06)
   const getFallbackIcon = (type: string) => {
@@ -94,9 +95,11 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
     const currentDetails = method.details || {};
     const form: Record<string, string> = {};
     
-    if (method.type === 'mobile_transfer' || method.type === 'wallet_qr') {
+    if (method.type === 'wallet_qr') {
+      form.walletCode = currentDetails.walletCode || '';
+      form.qrImageUrl = currentDetails.qrImageUrl || '';
+    } else if (method.type === 'mobile_transfer') {
       form.phoneNumber = currentDetails.phoneNumber || '';
-      form.paymentCode = currentDetails.paymentCode || '';
     } else if (method.type === 'remittance') {
       form.accountName = currentDetails.accountName || '';
       form.phoneNumber = currentDetails.phoneNumber || '';
@@ -110,6 +113,11 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
       form.bankName = currentDetails.bankName || '';
       form.accountNumber = currentDetails.accountNumber || '';
       form.iban = currentDetails.iban || '';
+    } else if (method.type === 'payment_credit_card') {
+      form.publishableKey = currentDetails.publishableKey || '';
+      form.secretKey = currentDetails.secretKey || '';
+    } else if (method.type === 'payment_baraka') {
+      form.accountNumber = currentDetails.accountNumber || '';
     }
 
     setDetailsForm(form);
@@ -284,43 +292,129 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                   <img src={configureImgUrl} alt="Payment logo" className="h-10 w-auto max-w-[120px] object-contain rounded bg-white/10 p-1" onError={e => { (e.target as HTMLElement).style.display = 'none'; }} />
                 </div>
               )}
-              <input
-                type="text"
-                value={configureImgUrl}
-                onChange={e => setConfigureImgUrl(e.target.value)}
-                className={glassInputClass}
-                placeholder="https://example.com/logo.png"
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={configureImgUrl}
+                  onChange={e => setConfigureImgUrl(e.target.value)}
+                  className={glassInputClass.replace('w-full', 'flex-1 min-w-0')}
+                  placeholder="https://example.com/logo.png"
+                />
+                <label className="flex-shrink-0 flex items-center justify-center w-11 h-11 bg-white/10 border border-white/20 rounded-xl cursor-pointer hover:bg-brand-gold/20 hover:border-brand-gold/50 transition-all group" title={t('admin_design_assets_upload_label' as any) || 'Upload from device'}>
+                  <input
+                    type="file"
+                    accept="image/png,image/svg+xml,image/webp,image/jpeg"
+                    className="sr-only"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setIsUploading(true);
+                      try {
+                        const result = await api.uploadFile(file, 'image');
+                        if (result?.url) setConfigureImgUrl(result.url);
+                      } catch (err: any) {
+                        alert(err.message || 'Upload failed');
+                      } finally {
+                        setIsUploading(false);
+                        e.target.value = '';
+                      }
+                    }}
+                    disabled={isUploading}
+                  />
+                  {isUploading ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-brand-gold rounded-full animate-spin" />
+                  ) : (
+                    <svg className="w-5 h-5 text-gray-300 group-hover:text-brand-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                  )}
+                </label>
+              </div>
             </div>
 
             {/* Dynamic configure fields depending on payment channel type */}
-            {(selectedMethod.type === 'mobile_transfer' || selectedMethod.type === 'wallet_qr') && (
+
+            {/* شام كاش — Wallet Code + QR Image */}
+            {selectedMethod.type === 'wallet_qr' && (
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">
-                    {t('signup_form_phone_label')}
+                    {t('admin_payments_field_wallet_code' as any) || 'رمز المحفظة (Wallet Code)'}
                   </label>
                   <input
                     type="text"
                     required
-                    value={detailsForm.phoneNumber || ''}
-                    onChange={e => setDetailsForm({ ...detailsForm, phoneNumber: e.target.value })}
+                    value={detailsForm.walletCode || ''}
+                    onChange={e => setDetailsForm({ ...detailsForm, walletCode: e.target.value })}
                     className={glassInputClass}
-                    placeholder="09xx xxx xxx"
+                    placeholder="e.g. 1234567890"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">
-                    {t('admin_payments_field_payment_code' as any)}
+                    {t('admin_payments_field_qr_image' as any) || 'صورة QR Code'}
                   </label>
-                  <input
-                    type="text"
-                    value={detailsForm.paymentCode || ''}
-                    onChange={e => setDetailsForm({ ...detailsForm, paymentCode: e.target.value })}
-                    className={glassInputClass}
-                  />
-                  <p className="text-xs text-gray-400 mt-1">{t('admin_payments_payment_code_hint' as any)}</p>
+                  {detailsForm.qrImageUrl && (
+                    <div className="mb-3">
+                      <img src={detailsForm.qrImageUrl} alt="QR Code" className="w-32 h-32 object-contain rounded-lg bg-white/10 p-2 border border-white/20" onError={e => { (e.target as HTMLElement).style.display = 'none'; }} />
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={detailsForm.qrImageUrl || ''}
+                      onChange={e => setDetailsForm({ ...detailsForm, qrImageUrl: e.target.value })}
+                      className={glassInputClass.replace('w-full', 'flex-1 min-w-0')}
+                      placeholder="https://example.com/qr.png"
+                    />
+                    <label className="flex-shrink-0 flex items-center justify-center w-11 h-11 bg-white/10 border border-white/20 rounded-xl cursor-pointer hover:bg-brand-gold/20 hover:border-brand-gold/50 transition-all group" title="Upload QR">
+                      <input
+                        type="file"
+                        accept="image/png,image/svg+xml,image/webp,image/jpeg"
+                        className="sr-only"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          setIsUploading(true);
+                          try {
+                            const result = await api.uploadFile(file, 'image');
+                            if (result?.url) setDetailsForm({ ...detailsForm, qrImageUrl: result.url });
+                          } catch (err: any) {
+                            alert(err.message || 'Upload failed');
+                          } finally {
+                            setIsUploading(false);
+                            e.target.value = '';
+                          }
+                        }}
+                        disabled={isUploading}
+                      />
+                      {isUploading ? (
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-brand-gold rounded-full animate-spin" />
+                      ) : (
+                        <svg className="w-5 h-5 text-gray-300 group-hover:text-brand-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                      )}
+                    </label>
+                  </div>
                 </div>
+              </div>
+            )}
+
+            {/* سيرتيل كاش / MTN كاش — Phone Number only */}
+            {selectedMethod.type === 'mobile_transfer' && (
+              <div>
+                <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">
+                  {t('signup_form_phone_label')}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={detailsForm.phoneNumber || ''}
+                  onChange={e => setDetailsForm({ ...detailsForm, phoneNumber: e.target.value })}
+                  className={glassInputClass}
+                  placeholder="09xx xxx xxx"
+                />
               </div>
             )}
 
@@ -408,11 +502,12 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
               </div>
             )}
 
+            {/* بنك — Bank Name + Account Number + IBAN */}
             {selectedMethod.type === 'bank_transfer' && (
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
-                    {t('admin_payments_field_bank_name' as any) || 'Bank Name'}
+                    {t('admin_payments_field_bank_name' as any) || 'اسم البنك'}
                   </label>
                   <input
                     type="text"
@@ -424,7 +519,7 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
-                    {t('admin_payments_field_account_num' as any) || 'Account Number'}
+                    {t('admin_payments_field_account_num' as any) || 'رقم الحساب'}
                   </label>
                   <input
                     type="text"
@@ -443,8 +538,57 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
                     value={detailsForm.iban || ''}
                     onChange={e => setDetailsForm({ ...detailsForm, iban: e.target.value })}
                     className={glassInputClass}
+                    placeholder="SYxx xxxx xxxx xxxx xxxx xxxx"
                   />
                 </div>
+              </div>
+            )}
+
+            {/* كريدت كارد — Publishable Key + Secret Key */}
+            {selectedMethod.type === 'payment_credit_card' && (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
+                    Publishable Key
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={detailsForm.publishableKey || ''}
+                    onChange={e => setDetailsForm({ ...detailsForm, publishableKey: e.target.value })}
+                    className={glassInputClass}
+                    placeholder="pk_test_..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
+                    Secret Key
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={detailsForm.secretKey || ''}
+                    onChange={e => setDetailsForm({ ...detailsForm, secretKey: e.target.value })}
+                    className={glassInputClass}
+                    placeholder="sk_test_..."
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* باريكا — Account Number */}
+            {selectedMethod.type === 'payment_baraka' && (
+              <div>
+                <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">
+                  {t('admin_payments_field_account_num' as any) || 'رقم الحساب'}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={detailsForm.accountNumber || ''}
+                  onChange={e => setDetailsForm({ ...detailsForm, accountNumber: e.target.value })}
+                  className={glassInputClass}
+                />
               </div>
             )}
 
@@ -508,13 +652,14 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
               </label>
               <GlassDropdown
                 options={[
+                  { value: 'mobile_transfer', label: 'Mobile Transfer (سيرتيل / MTN)' },
+                  { value: 'wallet_qr', label: 'شام كاش / Usend (Wallet QR)' },
                   { value: 'bank_transfer', label: 'Bank Transfer' },
-                  { value: 'mobile_transfer', label: 'Mobile Wallet Transfer' },
-                  { value: 'wallet_qr', label: 'Wallet QR (شام كاش / Usend)' },
+                  { value: 'payment_baraka', label: 'Al-Baraka Bank' },
+                  { value: 'payment_credit_card', label: 'Credit Card (Stripe)' },
                   { value: 'remittance', label: 'Remittance Agency' },
                   { value: 'cash_location', label: 'Cash / Head Office' },
                   { value: 'paypal', label: 'PayPal' },
-                  { value: 'stripe', label: 'Stripe Card Element' },
                 ]}
                 value={newType}
                 onChange={(v) => setNewType(v as any)}
@@ -525,13 +670,50 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
               <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">
                 {t('admin_payments_field_icon' as any) || 'Logo URL (Optional)'}
               </label>
-              <input
-                type="text"
-                value={newImgUrl}
-                onChange={e => setNewImgUrl(e.target.value)}
-                className={glassInputClass}
-                placeholder="https://example.com/logo.jpg"
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={newImgUrl}
+                  onChange={e => setNewImgUrl(e.target.value)}
+                  className={glassInputClass.replace('w-full', 'flex-1 min-w-0')}
+                  placeholder="https://example.com/logo.jpg"
+                />
+                <label className="flex-shrink-0 flex items-center justify-center w-11 h-11 bg-white/10 border border-white/20 rounded-xl cursor-pointer hover:bg-brand-gold/20 hover:border-brand-gold/50 transition-all group" title={t('admin_design_assets_upload_label' as any) || 'Upload from device'}>
+                  <input
+                    type="file"
+                    accept="image/png,image/svg+xml,image/webp,image/jpeg"
+                    className="sr-only"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setIsUploading(true);
+                      try {
+                        const result = await api.uploadFile(file, 'image');
+                        if (result?.url) setNewImgUrl(result.url);
+                      } catch (err: any) {
+                        alert(err.message || 'Upload failed');
+                      } finally {
+                        setIsUploading(false);
+                        e.target.value = '';
+                      }
+                    }}
+                    disabled={isUploading}
+                  />
+                  {isUploading ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-brand-gold rounded-full animate-spin" />
+                  ) : (
+                    <svg className="w-5 h-5 text-gray-300 group-hover:text-brand-gold transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                  )}
+                </label>
+              </div>
+              {newImgUrl && (
+                <div className="mt-2 flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl p-2">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{t('admin_design_assets_preview' as any) || 'Preview'}:</span>
+                  <img src={newImgUrl} alt="Preview" className="w-8 h-8 rounded object-contain bg-black/40 border border-white/10" />
+                </div>
+              )}
             </div>
 
             <div className="flex gap-3 pt-4">
@@ -544,10 +726,10 @@ export const AdminPayments: React.FC<AdminPaymentsProps> = ({ paymentMethods, se
               </button>
               <button
                 type="submit"
-                disabled={isAdding}
+                disabled={isAdding || isUploading}
                 className="flex-1 py-3 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-brand-gold hover:text-white transition-colors disabled:opacity-50"
               >
-                {isAdding ? t('wallet_processing') : t('signup_form_submit_label' as any) || 'Submit'}
+                {isAdding ? t('wallet_processing') : (t('admin_payments_add_button' as any) || 'إضافة طريقة دفع')}
               </button>
             </div>
           </form>

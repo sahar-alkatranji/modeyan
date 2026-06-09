@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { DressPart, SavedDesign } from '../../types';
-import { GoogleGenAI } from "@google/genai";
 import { api } from '../../services/api';
 import { glassCardClass, glassButtonClass, Icon } from './DashboardShared';
 
@@ -46,49 +45,22 @@ export const DesignStudio: React.FC<DesignStudioProps> = ({
     setGeneratedAiImage(null);
 
     try {
-      let apiKey = '';
-      try {
-        const settings = await api.getPublicSettings();
-        apiKey = settings.gemini_api_key || '';
-      } catch {}
-      if (!apiKey) {
-        const storedKey = localStorage.getItem('modeya_gemini_key');
-        if (storedKey) apiKey = storedKey;
-      }
-      if (!apiKey) {
-        alert('Please configure Gemini API key in settings');
-        return;
-      }
-      const ai = new GoogleGenAI({ apiKey });
+      const partsDescription = Object.entries(designSelections)
+        .filter(([_, part]) => part)
+        .map(([key, part]) => `${key}: ${(part as any).name}`)
+        .join(', ');
 
-      const partsDescription = [
-        designSelections.front_neckline ? `Front Neckline: ${t(designSelections.front_neckline.name as any)}` : '',
-        designSelections.back_neckline ? `Back Neckline: ${t(designSelections.back_neckline.name as any)}` : '',
-        designSelections.fabrics ? `Fabric: ${t(designSelections.fabrics.name as any)}` : '',
-        designSelections.skirt_styles ? `Skirt Style: ${t(designSelections.skirt_styles.name as any)}` : '',
-        designSelections.train ? `Train: ${t(designSelections.train.name as any)}` : '',
-        designSelections.ornaments ? `Ornaments: ${t(designSelections.ornaments.name as any)}` : '',
-      ].filter(Boolean).join(', ');
+      const prompt = `Create a high-fashion, realistic full-body photograph of a dress. ${partsDescription}. Color: ${selectedColor}. Professional studio lighting, white background.`;
 
-      const prompt = `Create a high-fashion, realistic full-body photograph of a dress. The dress has the following specifications: ${partsDescription}. The color of the dress is ${selectedColor}. The style should be elegant and suitable for a boutique display. Professional studio lighting, 4k resolution, white background.`;
+      const result = await api.generateDesignImage(
+        prompt,
+        { ...Object.fromEntries(Object.entries(designSelections).map(([k, v]) => [k, (v as any)?.name])), color: selectedColor },
+        'gpt-image-1',
+        'medium'
+      );
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: { parts: [{ text: prompt }] },
-        config: {
-          imageConfig: { aspectRatio: '3:4', imageSize: '1K' }
-        }
-      });
-
-      if (response.candidates && response.candidates[0].content && response.candidates[0].content.parts) {
-        for (const part of response.candidates[0].content.parts) {
-          if (part.inlineData) {
-            const base64EncodeString = part.inlineData.data;
-            const imageUrl = `data:image/png;base64,${base64EncodeString}`;
-            setGeneratedAiImage(imageUrl);
-            break;
-          }
-        }
+      if (result.image_url) {
+        setGeneratedAiImage(result.image_url);
       } else {
         throw new Error("No image generated");
       }

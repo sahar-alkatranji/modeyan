@@ -17,10 +17,9 @@ import { PRODUCTS, SOCIAL_LINKS, DRESS_PARTS } from './constants';
 import { api } from './services/api';
 
 import ShippingPolicyPage from './components/ShippingPolicyPage';
-import DesignYourDress from './components/DesignYourDress';
 import { useTranslation } from './hooks/useTranslation';
 
-type Page = 'home' | 'login' | 'about' | 'shop' | 'user-dashboard' | 'policy-shipping' | 'design-dress';
+type Page = 'home' | 'login' | 'about' | 'shop' | 'user-dashboard' | 'policy-shipping';
 type ShopCategory = 'all' | 'long' | 'short' | 'summer' | 'winter' | 'spring' | 'autumn';
 
 const AppContent: React.FC = () => {
@@ -28,7 +27,7 @@ const AppContent: React.FC = () => {
   const isAr = lang === 'ar';
   const [currentPage, setCurrentPage] = useState<Page>(() => {
     const path = window.location.pathname.replace('/', '');
-    const validPages: Page[] = ['home', 'login', 'about', 'shop', 'user-dashboard', 'policy-shipping', 'design-dress'];
+    const validPages: Page[] = ['home', 'login', 'about', 'shop', 'user-dashboard', 'policy-shipping'];
     return (validPages.includes(path as Page) ? path : 'home') as Page;
   });
   // F2: Persist cart in localStorage across sessions
@@ -277,97 +276,85 @@ const AppContent: React.FC = () => {
 
   if (isLoading && currentPage === 'user-dashboard') {
     return (
-      <LanguageProvider>
-        <div className="min-h-screen flex items-center justify-center bg-brand-beige">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-gold"></div>
-        </div>
-      </LanguageProvider>
+      <div className="min-h-screen flex items-center justify-center bg-brand-beige">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-gold"></div>
+      </div>
     );
   }
 
   return (
-    <LanguageProvider>
-      <div className="bg-brand-beige text-gray-800 font-sans overflow-x-hidden max-w-[100vw]">
-        <Header
-          onNavigate={navigate}
-          cartItemCount={cartItemCount}
-          onCartClick={() => setIsCartOpen(true)}
-          socialLinks={socialLinks}
-          isAuthenticated={isAuthenticated}
-          onLogout={logout}
-          hidden={currentPage === 'user-dashboard'}
-        />
-        <CartSidebar 
-          isOpen={isCartOpen}
-          onClose={() => setIsCartOpen(false)}
-          cartItems={cart}
-          onRemove={handleRemoveFromCart}
-          onUpdateQuantity={handleUpdateCartQuantity}
-        />
-        <main>
-          {currentPage === 'home' && (
-            <>
-              <Hero onNavigate={navigate} />
-              <NewArrivals onNavigate={navigate} onAddToCart={handleAddToCart} products={products} />
-              <About onNavigate={navigate} />
-              <Contact />
-            </>
-          )}
-          {currentPage === 'login' && (
-            <LoginPage 
-              onNavigate={navigate}
-              onLogin={() => {
-                navigate('user-dashboard');
-              }}
-            />
-          )}
-          {currentPage === 'about' && <AboutPage onNavigate={navigate} />}
-          {currentPage === 'shop' && <ShopPage onAddToCart={handleAddToCart} products={products} initialCategory={shopCategory} />}
-          {currentPage === 'policy-shipping' && <ShippingPolicyPage onNavigate={navigate} />}
-          {currentPage === 'design-dress' && (
-            <DesignYourDress
-              dressParts={dressParts}
-              onBack={() => navigate('home')}
-              onSave={(design) => {
-                setSavedDesigns(prev => [...prev, { ...design, id: Date.now().toString(), createdAt: new Date() }]);
-                alert(isAr ? 'تم حفظ التصميم!' : 'Design saved!');
-              }}
-            />
-          )}
-          {currentPage === 'user-dashboard' && (
-            <UserDashboard 
-              onNavigate={navigate}
-              userRole={userRole}
-              savedDesigns={savedDesigns}
-              setSavedDesigns={setSavedDesigns}
-              orders={orders}
-              setOrders={setOrders}
-              onAddToCart={handleAddToCart}
-              products={products}
-              setProducts={setProducts}
-              users={users}
-              setUsers={setUsers}
-              socialLinks={socialLinks}
-              setSocialLinks={setSocialLinks}
-              dressParts={dressParts}
-              setDressParts={setDressParts}
-              onLogout={logout}
-            />
-          )}
-        </main>
-        {currentPage !== 'user-dashboard' && (
-          <Footer socialLinks={socialLinks} onNavigate={navigate} onShopCategory={navigateToShopCategory} />
+    <div className="bg-brand-beige text-gray-800 font-sans overflow-x-hidden max-w-[100vw]">
+      <Header
+        onNavigate={navigate}
+        cartItemCount={cartItemCount}
+        onCartClick={() => setIsCartOpen(true)}
+        socialLinks={socialLinks}
+        isAuthenticated={isAuthenticated}
+        onLogout={logout}
+        hidden={currentPage === 'user-dashboard'}
+      />
+      <CartSidebar 
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cartItems={cart}
+        onRemove={handleRemoveFromCart}
+        onUpdateQuantity={handleUpdateCartQuantity}
+      />
+      <main>
+        {currentPage === 'home' && (
+          <>
+            <Hero onNavigate={navigate} />
+            <NewArrivals onNavigate={navigate} onAddToCart={handleAddToCart} products={products} />
+            <About onNavigate={navigate} />
+            <Contact />
+          </>
         )}
-      </div>
-    </LanguageProvider>
+        {currentPage === 'login' && (
+          <LoginPage 
+            onNavigate={navigate}
+            onLogin={() => {
+              navigate('user-dashboard');
+            }}
+          />
+        )}
+        {currentPage === 'about' && <AboutPage onNavigate={navigate} />}
+        {currentPage === 'shop' && <ShopPage onAddToCart={handleAddToCart} products={products} initialCategory={shopCategory} />}
+        {currentPage === 'policy-shipping' && <ShippingPolicyPage onNavigate={navigate} />}
+        {currentPage === 'user-dashboard' && (
+          <UserDashboard 
+            onNavigate={navigate}
+            userRole={userRole}
+            savedDesigns={savedDesigns}
+            setSavedDesigns={setSavedDesigns}
+            orders={orders}
+            setOrders={setOrders}
+            onAddToCart={handleAddToCart}
+            products={products}
+            setProducts={setProducts}
+            users={users}
+            setUsers={setUsers}
+            socialLinks={socialLinks}
+            setSocialLinks={setSocialLinks}
+            dressParts={dressParts}
+            setDressParts={setDressParts}
+            onLogout={logout}
+          />
+        )}
+      </main>
+      {currentPage !== 'user-dashboard' && (
+        <Footer socialLinks={socialLinks} onNavigate={navigate} onShopCategory={navigateToShopCategory} />
+      )}
+    </div>
   );
 };
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </LanguageProvider>
   );
 };
 
