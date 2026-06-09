@@ -83,8 +83,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     setIsUploadingImage(true);
     try {
       const { url } = await api.uploadFile(file, 'image');
-      await api.updateMe({ profile_image: url });
-      setProfileImage(url);  // Update local state immediately
+      const finalUrl = url.startsWith("http") ? url : url.replace("/storage/uploads/", "/api/v1/uploads/");
+      await api.updateMe({ profile_image: finalUrl });
+      setProfileImage(finalUrl);
       await refreshUser();   // Refresh user data to sync with backend
     } catch (err: any) {
       alert(err.message || 'Upload failed');
@@ -218,7 +219,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       <aside className="hidden md:flex fixed top-0 bottom-0 start-0 w-64 bg-gray-950/80 backdrop-blur-xl border-r border-white/10 flex-col h-full overflow-y-auto custom-scrollbar z-[80]">
           <div className="p-8 pb-0 text-center">
              <h1 className="font-serif text-xl font-black tracking-[0.15em] text-white mb-1">MODEYA</h1>
-             <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.2em]">{t('dashboard_management_suite')}</p>
+             {userRole === 'manager' && (
+               <p className="text-xs font-bold text-brand-gold uppercase tracking-[0.2em]">{t('dashboard_management_suite')}</p>
+             )}
           </div>
           
           <div className="p-4 flex-grow">
@@ -263,25 +266,29 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
           </div>
           
           <div className="p-6 mt-auto border-t border-white/10">
-             <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2 text-start">
-                    <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-sm font-bold">
-                        {authUser?.first_name?.[0] || ''}{authUser?.last_name?.[0] || ''}
+             <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-start min-w-0">
+                    <div className="w-9 h-9 rounded-full overflow-hidden bg-white/10 border border-white/20 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                        {profileImage ? (
+                          <img src={profileImage} alt="profile" className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-white text-xs font-bold">{authUser?.first_name?.[0] || ''}{authUser?.last_name?.[0] || ''}</span>
+                        )}
                     </div>
-                    <div>
-                        <p className="text-sm font-bold text-white leading-none mb-1">{userRole === 'manager' ? t('dashboard_admin_access') : t('dashboard_user_account')}</p>
-                        <p className="text-xs text-gray-400 leading-none">{t('dashboard_version_premium')}</p>
+                    <div className="min-w-0">
+                        <p className="text-sm font-bold text-white leading-none mb-0.5 truncate">{authUser?.first_name || ''} {authUser?.last_name || ''}</p>
+                        <p className="text-xs text-brand-gold leading-none capitalize">{userRole}</p>
                     </div>
                 </div>
-                <button 
+                <button
                     onClick={() => {
                       onLogout();
                       onNavigate('home');
-                    }} 
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/20 text-red-300 hover:bg-red-500/40 hover:text-white transition-all text-sm font-medium"
+                    }}
+                    className="flex-shrink-0 p-2 rounded-lg bg-red-500/20 text-red-300 hover:bg-red-500/40 hover:text-white transition-all"
+                    title={t('dashboard_menu_logout')}
                 >
-                    <Icon name="logout" className="w-5 h-5" />
-                    <span>{t('dashboard_menu_logout')}</span>
+                    <Icon name="logout" className="w-4 h-4" />
                 </button>
              </div>
           </div>
@@ -341,8 +348,8 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
       </aside>
 
       {/* Main Content Area - scrollable */}
-      <main className="flex-grow relative md:ms-64 overflow-y-auto overflow-x-hidden pt-[56px] md:pt-0">
-          <div className="relative z-10 p-4 sm:p-6 md:p-10 max-w-6xl mx-auto min-h-full">
+      <main className="flex-grow relative md:ms-64 overflow-y-auto overflow-x-hidden pt-[56px] md:pt-0 h-full">
+          <div className="relative z-10 p-4 sm:p-6 md:p-10 max-w-6xl mx-auto min-h-screen">
               {currentView === 'overview' && (
                 <ManagerOverview
                   userRole={userRole}
@@ -423,7 +430,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                       <p className="text-base font-bold text-gray-300 uppercase tracking-widest mb-2">{t('wallet_amount_to_add' as any)}</p>
                       <div className="flex gap-2 mt-3">
                         <input type="number" value={topUpAmount} onChange={e => setTopUpAmount(e.target.value)} className={glassInputClass.replace('w-full','flex-1') + ' text-base'} placeholder="0.00" />
-                        <button onClick={async () => { if (!topUpAmount || parseFloat(topUpAmount) <= 0) return; try { await api.topUpWallet(parseFloat(topUpAmount)); const w = await api.getWallet(); setWalletBalance(Number(w.balance)); setTopUpAmount(''); alert(t('profile_save_success')); } catch (err: any) { alert(err.message || 'Failed to top up'); } }} className="px-4 py-2 bg-brand-gold text-white font-bold uppercase tracking-widest text-sm rounded-xl hover:bg-yellow-600">{t('wallet_top_up' as any)}</button>
+                        <button onClick={async () => { if (!topUpAmount || parseFloat(topUpAmount) <= 0) return; try { await api.topUpWallet(parseFloat(topUpAmount)); setTopUpAmount(''); alert('Top-up request submitted — pending admin approval.'); } catch (err: any) { alert(err.message || 'Failed to submit top-up'); } }} className="px-4 py-2 bg-brand-gold text-white font-bold uppercase tracking-widest text-sm rounded-xl hover:bg-yellow-600">{t('wallet_top_up' as any)}</button>
                       </div>
                     </div>
                     <div className={glassCardClass + " p-6 text-center"}>

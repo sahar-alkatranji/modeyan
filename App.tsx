@@ -92,15 +92,12 @@ const AppContent: React.FC = () => {
               sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
               category: d.category || 'all', // ensure API products have a category
             }));
-          // Merge the bundled boutique catalog with admin-managed products from
-          // the API so the original collection stays visible alongside any new
-          // items (previously the API list REPLACED the catalog, dropping the
-          // original product images). De-dupe by id, keeping the bundled entry.
+          // API is source of truth; bundled items fill gaps for IDs not returned by API.
           setProducts(() => {
-            const apiOnly = mappedProducts.filter(
-              mp => !PRODUCTS.some(bp => bp.id === mp.id)
+            const bundledNotInApi = PRODUCTS.filter(
+              bp => !mappedProducts.some(mp => mp.id === bp.id)
             );
-            return [...PRODUCTS, ...apiOnly];
+            return [...mappedProducts, ...bundledNotInApi];
           });
         }
       } catch (e) {

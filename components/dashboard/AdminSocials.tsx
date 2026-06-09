@@ -80,11 +80,14 @@ export const AdminSocials: React.FC<AdminSocialsProps> = ({ socialLinks, setSoci
                 key={link.name}
                 className="flex items-center gap-4 pb-4 border-b last:border-0 border-white/10"
               >
-                <div className="p-3 bg-white/10 rounded-xl text-brand-gold border border-white/10 flex items-center justify-center">
-                  {/* Icon Placeholder fallback */}
-                  <span className="w-5 h-5 flex items-center justify-center text-sm font-bold uppercase">
-                    {link.name.slice(0, 2)}
-                  </span>
+                <div className="p-3 bg-white/10 rounded-xl border border-white/10 flex items-center justify-center">
+                  {link.icon ? (
+                    <span className="w-5 h-5 flex items-center justify-center">{link.icon}</span>
+                  ) : (
+                    <span className="w-5 h-5 flex items-center justify-center text-sm font-bold uppercase text-brand-gold">
+                      {link.name.slice(0, 2)}
+                    </span>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-xs uppercase tracking-widest text-white mb-1.5">

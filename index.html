@@ -8,19 +8,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700&family=Montserrat:wght@100;200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-    <script src="https://js.stripe.com/v3/"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200;300;400;500;600;700&family=Montserrat:wght@100;200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <!-- Stripe.js removed (P0-2): payments use the manual receipt + admin-approval flow; no live card gateway. -->
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
               'sans': ['Montserrat', 'Cairo', 'sans-serif'],
-              'serif': ['Playfair Display', 'serif'],
+              'serif': ['Playfair Display', 'Amiri', 'serif'],
             },
             colors: {
               'brand-beige': '#FBF6E6',
-              'brand-gold': '#C5A059',
+              'brand-gold': '#A07830',
               'brand-dark': '#1A1A1A',
               'brand-muted': '#F4F1EA',
             },
@@ -33,6 +33,27 @@
       }
     </script>
     <style>
+      /* Base font: Amiri for Arabic, Playfair Display for Latin headings */
+      :root {
+        --font-arabic: 'Amiri', 'Cairo', serif;
+        --font-latin: 'Playfair Display', 'Montserrat', sans-serif;
+        --color-gold: #A07830;
+        --color-dark: #1A1A1A;
+        --color-beige: #FBF6E6;
+      }
+      /* Arabic text uses Amiri */
+      :lang(ar), [dir="rtl"], .font-arabic {
+        font-family: 'Amiri', 'Cairo', sans-serif !important;
+      }
+      /* Headings & serif elements use Playfair + Amiri */
+      h1, h2, h3, .font-serif {
+        font-family: 'Playfair Display', 'Amiri', serif;
+      }
+      /* Body text */
+      body, .font-sans {
+        font-family: 'Montserrat', 'Cairo', sans-serif;
+      }
+
       @keyframes fade-in {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
@@ -53,6 +74,7 @@
       html, body {
         overflow-x: hidden;
         max-width: 100vw;
+        background-color: var(--color-beige);
       }
       * {
         box-sizing: border-box;
@@ -62,12 +84,14 @@
         scrollbar-width: none;
       }
       .overflow-x-scroll::-webkit-scrollbar, .flex.overflow-x-auto::-webkit-scrollbar {
-      .fixed.inset-0 > div, .fixed.inset-0 > form {
-        max-height: 90vh;
-        overflow-y: auto;
-      }
         display: none;
       }
+      /* Consistent section padding */
+      section { padding-top: 4rem; padding-bottom: 4rem; }
+      /* Brand color consistency */
+      .text-brand-gold { color: var(--color-gold) !important; }
+      .border-brand-gold { border-color: var(--color-gold) !important; }
+      .bg-brand-gold { background-color: var(--color-gold) !important; }
     </style>
   </head>
   <body class="bg-brand-beige">

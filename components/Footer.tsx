@@ -132,7 +132,7 @@ const Footer: React.FC<FooterProps> = ({ socialLinks, onNavigate, onShopCategory
                 ))}
              </div>
              <a
-               href="https://instagram.com/modeyaboutiq"
+               href="https://www.instagram.com/modeyaboutiq/"
                target="_blank"
                rel="noopener noreferrer"
                className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-black transition-colors duration-200"
