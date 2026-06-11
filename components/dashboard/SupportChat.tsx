@@ -62,6 +62,10 @@ export const SupportChat: React.FC<SupportChatProps> = ({ mode }) => {
     : s;
 
   const loadList = useCallback(async () => {
+    if (!me) {
+      setLoadingList(false);
+      return;
+    }
     setLoadingList(true);
     setListError(null);
     try {
@@ -74,7 +78,7 @@ export const SupportChat: React.FC<SupportChatProps> = ({ mode }) => {
       setLoadingList(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resolvedMode, filter]);
+  }, [resolvedMode, filter, me?.id]);
 
   useEffect(() => { loadList(); }, [loadList]);
 

@@ -208,7 +208,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
 
   return (
     <div
-      className="fixed inset-0 z-[120] flex items-center justify-center bg-black bg-opacity-70 p-4"
+      className="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 p-4"
       onClick={onClose}
       aria-modal="true"
       role="dialog"

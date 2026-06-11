@@ -22,7 +22,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
             target.src = 'https://via.placeholder.com/400x600/E5E7EB/9CA3AF?text=No+Image';
           }}
         />
-        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-300 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-opacity duration-300 flex items-center justify-center">
           <button
             onClick={() => onQuickView(product)}
             className="bg-white text-black px-6 py-2 text-base tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-medium"

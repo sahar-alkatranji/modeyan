@@ -24,7 +24,7 @@ const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
         backgroundPosition: isDesktop ? 'center calc(15% - 200px)' : 'center 15%'
       }}
     >
-      <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+      <div className="absolute inset-0 bg-black/20"></div>
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
         <h1 className="font-serif text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-widest">MODEYA</h1>
         <p className="mt-4 text-lg sm:text-xl md:text-2xl lg:text-3xl tracking-widest">{t('hero_subtitle')}</p>

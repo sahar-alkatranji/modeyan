@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, cartItemCount, onCartClick,
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-brand-beige bg-opacity-95 backdrop-blur-sm shadow-sm">
+    <header className="sticky top-0 z-50 bg-brand-beige/95 backdrop-blur-sm shadow-sm">
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
         {/* Brand Name */}
         <button
@@ -132,7 +132,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, cartItemCount, onCartClick,
 
       {/* Mobile Menu Drawer */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-brand-beige bg-opacity-98 border-t border-gray-100 px-6 py-4 space-y-3">
+        <div className="md:hidden bg-brand-beige/98 border-t border-gray-100 px-6 py-4 space-y-3">
           {NAV_LINKS.map((link) => (
             <button
               key={link.key}

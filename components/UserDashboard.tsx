@@ -15,6 +15,7 @@ import { AdminProducts } from './dashboard/AdminProducts';
 import { AdminSocials } from './dashboard/AdminSocials';
 import { AdminOrders } from './dashboard/AdminOrders';
 import { ProfessionalPortfolio } from './dashboard/ProfessionalPortfolio';
+import { PortfolioAddPage, PortfolioDetailPage } from './dashboard/PortfolioAddPage';
 import { AdminDesignAssets } from './dashboard/AdminDesignAssets';
 import { OrderDetailModal } from './dashboard/OrderDetailModal';
 import { AdminTopups } from './dashboard/AdminTopups';
@@ -49,7 +50,7 @@ interface UserDashboardProps {
   onLogout: () => void;
 }
 
-type DashboardView = 'overview' | 'design' | 'my-designs' | 'orders' | 'profile' | 'wallet' | 'portfolio' | 'requests' | 'support-chat' | 'admin-approvals' | 'admin-products' | 'admin-users' | 'admin-payments' | 'admin-socials' | 'admin-design-assets' | 'admin-orders' | 'admin-topups' | 'admin-settings' | 'admin-support';
+type DashboardView = 'overview' | 'design' | 'my-designs' | 'orders' | 'profile' | 'wallet' | 'portfolio' | 'portfolio-add' | 'portfolio-detail' | 'requests' | 'support-chat' | 'admin-approvals' | 'admin-products' | 'admin-users' | 'admin-payments' | 'admin-socials' | 'admin-design-assets' | 'admin-orders' | 'admin-topups' | 'admin-settings' | 'admin-support';
 
 const UserDashboard: React.FC<UserDashboardProps> = ({ 
   onNavigate, userRole, orders, setOrders, users, setUsers, products, setProducts, socialLinks, setSocialLinks, dressParts, setDressParts, setSavedDesigns, savedDesigns, onLogout
@@ -81,6 +82,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   // Order detail / quote modal + tailor's quotable requests
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [tailorRequests, setTailorRequests] = useState<any[]>([]);
+
+  // Portfolio detail (full-page view, no modal)
+  const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<any | null>(null);
 
   // Transaction history (#6) + change password (#5)
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -117,8 +121,10 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         setWalletBalance(Number(wallet.balance));
       } catch {}
     };
-    if (userRole) loadWallet();
-  }, [userRole]);
+    if (authUser && (currentView === 'wallet' || currentView === 'overview')) {
+      loadWallet();
+    }
+  }, [authUser, currentView]);
 
   useEffect(() => {
     if (userRole === 'manager') {
@@ -138,47 +144,49 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   }, [userRole]);
 
   useEffect(() => {
-    api.getPaymentMethods().then((data: any[]) => {
-      if (data.length > 0) {
-        setPaymentMethods(data
-          .map(m => ({
-            id: String(m.id),
-            translationKey: m.translation_key || m.name,
-            isActive: m.is_active,
-            imgUrl: m.img_url || '',
-            type: (() => {
-              const bt = m.type || 'cash_location';
-              if (bt === 'card') return 'payment_credit_card';
-              if (bt === 'wallet_phone') return 'mobile_transfer';
-              if (bt === 'bank') {
-                const name = (m.name || '').toLowerCase();
-                if (name.includes('baraka') || name.includes('بركة') || name.includes('باريكا')) return 'payment_baraka';
-                return 'bank_transfer';
-              }
-              return bt;
-            })(),
-            details: (() => {
-              const d = m.details || {};
-              // Normalize snake_case backend keys to camelCase frontend keys
-              return {
-                ...d,
-                bankName: d.bankName || d.bank_name || '',
-                accountNumber: d.accountNumber || d.account_number || '',
-                iban: d.iban || '',
-                phoneNumber: d.phoneNumber || d.phone_number || '',
-                walletCode: d.walletCode || d.wallet_code || '',
-                qrImageUrl: d.qrImageUrl || d.qr_image_url || '',
-                accountName: d.accountName || d.account_name || '',
-                publishableKey: d.publishableKey || d.publishable_key || '',
-                secretKey: d.secretKey || d.secret_key || '',
-              };
-            })(),
-          }))
-          .filter(m => m.type !== 'wallet')
-        );
-      }
-    }).catch(() => {});
-  }, []);
+    if (authUser && (currentView === 'wallet' || currentView === 'admin-payments')) {
+      api.getPaymentMethods().then((data: any[]) => {
+        if (data.length > 0) {
+          setPaymentMethods(data
+            .map(m => ({
+              id: String(m.id),
+              translationKey: m.translation_key || m.name,
+              isActive: m.is_active,
+              imgUrl: m.img_url || '',
+              type: (() => {
+                const bt = m.type || 'cash_location';
+                if (bt === 'card') return 'payment_credit_card';
+                if (bt === 'wallet_phone') return 'mobile_transfer';
+                if (bt === 'bank') {
+                  const name = (m.name || '').toLowerCase();
+                  if (name.includes('baraka') || name.includes('بركة') || name.includes('باريكا')) return 'payment_baraka';
+                  return 'bank_transfer';
+                }
+                return bt;
+              })(),
+              details: (() => {
+                const d = m.details || {};
+                // Normalize snake_case backend keys to camelCase frontend keys
+                return {
+                  ...d,
+                  bankName: d.bankName || d.bank_name || '',
+                  accountNumber: d.accountNumber || d.account_number || '',
+                  iban: d.iban || '',
+                  phoneNumber: d.phoneNumber || d.phone_number || '',
+                  walletCode: d.walletCode || d.wallet_code || '',
+                  qrImageUrl: d.qrImageUrl || d.qr_image_url || '',
+                  accountName: d.accountName || d.account_name || '',
+                  publishableKey: d.publishableKey || d.publishable_key || '',
+                  secretKey: d.secretKey || d.secret_key || '',
+                };
+              })(),
+            }))
+            .filter(m => m.type !== 'wallet')
+          );
+        }
+      }).catch(() => {});
+    }
+  }, [currentView, authUser]);
 
   useEffect(() => {
     if (userRole === 'tailor' || userRole === 'designer' || userRole === 'manager') {
@@ -526,6 +534,21 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                   setPortfolioItems={setPortfolioItems}
                   userRole={userRole}
                   currentUserId={authUser?.id ? String(authUser.id) : undefined}
+                  onAddNew={() => { setSelectedPortfolioItem(null); setCurrentView('portfolio-add'); }}
+                  onViewItem={(item) => { setSelectedPortfolioItem(item); setCurrentView('portfolio-detail'); }}
+                />
+              )}
+              {currentView === 'portfolio-add' && (
+                <PortfolioAddPage
+                  setPortfolioItems={setPortfolioItems}
+                  currentUserId={authUser?.id ? String(authUser.id) : undefined}
+                  onBack={() => setCurrentView('portfolio')}
+                />
+              )}
+              {currentView === 'portfolio-detail' && selectedPortfolioItem && (
+                <PortfolioDetailPage
+                  item={selectedPortfolioItem}
+                  onBack={() => setCurrentView('portfolio')}
                 />
               )}
               {currentView === 'admin-design-assets' && (
