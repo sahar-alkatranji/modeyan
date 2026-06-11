@@ -14,7 +14,10 @@ const ALLOWED_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   pending_quote: ['cancelled'],
   quote_submitted: ['quote_accepted', 'cancelled'],
   quote_accepted: ['in_progress', 'cancelled'],
-  in_progress: ['completed', 'disputed'],
+  in_progress: ['ready_for_delivery', 'disputed'],
+  ready_for_delivery: ['out_for_delivery', 'in_progress', 'disputed'],
+  out_for_delivery: ['delivered', 'ready_for_delivery', 'disputed'],
+  delivered: ['completed', 'disputed'],
   completed: ['disputed'],
   cancelled: [],
   disputed: ['completed', 'cancelled'],
@@ -26,6 +29,9 @@ const ACTION_LABEL_KEY: Record<OrderStatus, string> = {
   quote_submitted: 'status_quote_submitted',
   quote_accepted: 'admin_orders_action_accept_quote',
   in_progress: 'admin_orders_action_start',
+  ready_for_delivery: 'admin_orders_action_ready_for_delivery',
+  out_for_delivery: 'admin_orders_action_out_for_delivery',
+  delivered: 'admin_orders_action_delivered',
   completed: 'admin_orders_action_mark_completed',
   cancelled: 'admin_orders_action_cancel',
   disputed: 'admin_orders_action_dispute',
@@ -36,6 +42,9 @@ const ACTION_STYLE: Record<OrderStatus, string> = {
   quote_submitted: 'bg-purple-500 hover:bg-purple-600',
   quote_accepted: 'bg-green-500 hover:bg-green-600',
   in_progress: 'bg-indigo-500 hover:bg-indigo-600',
+  ready_for_delivery: 'bg-teal-500 hover:bg-teal-600',
+  out_for_delivery: 'bg-amber-500 hover:bg-amber-600',
+  delivered: 'bg-emerald-500 hover:bg-emerald-600',
   completed: 'bg-blue-500 hover:bg-blue-600',
   cancelled: 'bg-red-500 hover:bg-red-600',
   disputed: 'bg-amber-500 hover:bg-amber-600',
@@ -43,7 +52,8 @@ const ACTION_STYLE: Record<OrderStatus, string> = {
 
 const STATUS_FILTERS: string[] = [
   'all', 'pending_quote', 'quote_submitted', 'quote_accepted',
-  'in_progress', 'completed', 'cancelled', 'disputed',
+  'in_progress', 'ready_for_delivery', 'out_for_delivery',
+  'delivered', 'completed', 'cancelled', 'disputed',
 ];
 
 interface AdminOrdersProps {

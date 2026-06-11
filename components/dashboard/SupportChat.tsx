@@ -247,8 +247,7 @@ export const SupportChat: React.FC<SupportChatProps> = ({ mode }) => {
             )}
           </div>
         </aside>
-
-        {/* ── Thread ── */}
+      {/* ── Thread ── */}
         <section>
           {selected ? (
             <>
@@ -273,6 +272,22 @@ export const SupportChat: React.FC<SupportChatProps> = ({ mode }) => {
                   </button>
                 )}
               </div>
+
+              {/* AI Auto-response notice */}
+              {selected.status !== 'closed' && (
+                <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-blue-500/10 border border-blue-400/20">
+                  <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-[11px] text-blue-300">
+                    {tr(
+                      'An AI assistant will respond instantly. A human agent can take over at any time.',
+                      'سيرد المساعد الذكي فوراً. يمكن لموظف بشري تولي المحادثة في أي وقت.'
+                    )}
+                  </p>
+                </div>
+              )}
+
               <ChatThread
                 messages={channel.messages}
                 currentUserId={me?.id}

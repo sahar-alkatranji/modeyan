@@ -373,6 +373,22 @@ class ApiClient {
     return this.request<any>(`/quotes/${quoteId}/respond`, { method: 'PUT', body: JSON.stringify({ accept }) });
   }
 
+  async submitMeasurements(orderId: number, data: {
+    bust?: number;
+    waist?: number;
+    hips?: number;
+    shoulder_width?: number;
+    dress_length?: number;
+    sleeve_length?: number;
+    neck_circumference?: number;
+    notes?: string;
+  }): Promise<any> {
+    return this.request<any>(`/orders/${orderId}/measurements`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   async getTailorPendingOrders(): Promise<any[]> {
     return this.request<any[]>('/tailors/pending-orders');
   }

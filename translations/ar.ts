@@ -460,6 +460,9 @@ export const ar = {
   status_disputed: 'قيد النزاع',
   status_priced: 'تم التسعير',
   status_accepted: 'مقبول',
+  status_ready_for_delivery: 'جاهز للتوصيل',
+  status_out_for_delivery: 'خرج للتوصيل',
+  status_delivered: 'تم التوصيل',
   
   // My Designs
   dashboard_my_designs_title: 'التصاميم المحفوظة',
@@ -652,9 +655,9 @@ export const ar = {
   order_cancel_button: 'إلغاء الطلب',
 
   // Admin top-up approvals
-  dashboard_menu_admin_topups: 'طلبات الشحن',
-  admin_topups_title: 'طلبات الشحن المعلّقة',
-  admin_topups_subtitle: 'مراجعة واعتماد طلبات شحن المحفظة.',
+  dashboard_menu_admin_topups: 'طلبات الرصيد',
+  admin_topups_title: 'طلبات الرصيد المعلّقة',
+  admin_topups_subtitle: 'مراجعة واعتماد طلبات رصيد المحفظة.',
   admin_topups_user: 'المستخدم',
   admin_topups_amount: 'المبلغ',
   admin_topups_method: 'الطريقة',
@@ -662,7 +665,7 @@ export const ar = {
   admin_topups_view_receipt: 'عرض',
   admin_topups_approve: 'اعتماد',
   admin_topups_reject: 'رفض',
-  admin_topups_empty: 'لا توجد طلبات شحن معلّقة.',
+  admin_topups_empty: 'لا توجد طلبات رصيد معلّقة.',
 
   // Change password
   password_change_title: 'تغيير كلمة المرور',

@@ -361,6 +361,9 @@ export const en = {
   admin_orders_action_start: 'Start Work',
   admin_orders_action_dispute: 'Mark Disputed',
   admin_orders_action_mark_completed: 'Mark Completed',
+  admin_orders_action_ready_for_delivery: 'Ready for Delivery',
+  admin_orders_action_out_for_delivery: 'Dispatch Delivery',
+  admin_orders_action_delivered: 'Confirm Delivered',
   admin_orders_pagination_previous: 'Previous',
   admin_orders_pagination_next: 'Next',
   portfolio_action_approve: 'Approve',
@@ -460,6 +463,9 @@ export const en = {
   status_disputed: 'Disputed',
   status_priced: 'Priced',
   status_accepted: 'Accepted',
+  status_ready_for_delivery: 'Ready for Delivery',
+  status_out_for_delivery: 'Out for Delivery',
+  status_delivered: 'Delivered',
 
   // My Designs
   dashboard_my_designs_title: 'Saved Designs',

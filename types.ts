@@ -91,12 +91,17 @@ export interface Order {
   design?: SavedDesign;
   tailorId: string;
   measurements?: Measurements;
-  status: 'pending_quote' | 'quote_submitted' | 'quote_accepted' | 'in_progress' | 'completed' | 'cancelled' | 'disputed';
+  status: 'pending_quote' | 'quote_submitted' | 'quote_accepted' | 'in_progress' | 'ready_for_delivery' | 'out_for_delivery' | 'delivered' | 'completed' | 'cancelled' | 'disputed';
   price?: number;
   createdAt: Date;
   chatHistory?: ChatMessage[];
   designType?: string;
   notes?: string;
+  deliveryAddress?: string;
+  deliveryNotes?: string;
+  deliveryAssignedTo?: string;
+  deliveryStartedAt?: Date;
+  deliveredAt?: Date;
 }
 
 export interface PortfolioItem {

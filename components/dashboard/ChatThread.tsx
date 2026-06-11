@@ -59,6 +59,12 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
     }
   };
 
+  const isAiBot = (name?: string) => {
+    if (!name) return false;
+    const lower = name.toLowerCase();
+    return lower.includes('ai') || lower.includes('المساعد') || lower.includes('الذكي') || lower.includes('bot');
+  };
+
   return (
     <div className={`flex flex-col ${heightClass} bg-black/20 border border-white/10 rounded-2xl overflow-hidden`}>
       {/* Connection status */}
@@ -78,15 +84,25 @@ export const ChatThread: React.FC<ChatThreadProps> = ({
         ) : (
           messages.map(m => {
             const mine = !!currentUserId && String(m.senderId) === String(currentUserId);
+            const isBot = isAiBot(m.senderName);
             return (
               <div key={m.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[78%] rounded-2xl px-4 py-2.5 ${
                   mine
                     ? 'bg-brand-gold/90 text-white rounded-br-sm'
-                    : 'bg-white/10 text-gray-100 border border-white/10 rounded-bl-sm'
+                    : isBot
+                      ? 'bg-blue-500/10 text-gray-100 border border-blue-400/20 rounded-bl-sm'
+                      : 'bg-white/10 text-gray-100 border border-white/10 rounded-bl-sm'
                 }`}>
                   {!mine && m.senderName && (
-                    <p className="text-[11px] font-bold text-brand-gold mb-0.5">{m.senderName}</p>
+                    <p className={`text-[11px] font-bold mb-0.5 flex items-center gap-1.5 ${isBot ? 'text-blue-400' : 'text-brand-gold'}`}>
+                      {isBot && (
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      )}
+                      {isBot ? tr('AI Assistant', 'المساعد الذكي') : m.senderName}
+                    </p>
                   )}
                   <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{m.text}</p>
                   {m.createdAt && (
