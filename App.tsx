@@ -17,9 +17,14 @@ import { PRODUCTS, SOCIAL_LINKS, DRESS_PARTS } from './constants';
 import { api } from './services/api';
 
 import ShippingPolicyPage from './components/ShippingPolicyPage';
+import DesignersWorks from './components/DesignersWorks';
+import CheckoutPage from './components/CheckoutPage';
+import FAQPage from './components/FAQPage';
+import PaymentMethodsPage from './components/PaymentMethodsPage';
+import StorePolicyPage from './components/StorePolicyPage';
 import { useTranslation } from './hooks/useTranslation';
 
-type Page = 'home' | 'login' | 'about' | 'shop' | 'user-dashboard' | 'policy-shipping';
+type Page = 'home' | 'login' | 'about' | 'shop' | 'user-dashboard' | 'policy-shipping' | 'designers-works' | 'checkout' | 'faq' | 'policy-payment' | 'policy-store';
 type ShopCategory = 'all' | 'long' | 'short' | 'summer' | 'winter' | 'spring' | 'autumn';
 
 const AppContent: React.FC = () => {
@@ -27,7 +32,7 @@ const AppContent: React.FC = () => {
   const isAr = lang === 'ar';
   const [currentPage, setCurrentPage] = useState<Page>(() => {
     const path = window.location.pathname.replace('/', '');
-    const validPages: Page[] = ['home', 'login', 'about', 'shop', 'user-dashboard', 'policy-shipping'];
+    const validPages: Page[] = ['home', 'login', 'about', 'shop', 'user-dashboard', 'policy-shipping', 'designers-works', 'checkout', 'faq', 'policy-payment', 'policy-store'];
     return (validPages.includes(path as Page) ? path : 'home') as Page;
   });
   // F2: Persist cart in localStorage across sessions
@@ -293,12 +298,16 @@ const AppContent: React.FC = () => {
         onLogout={logout}
         hidden={currentPage === 'user-dashboard'}
       />
-      <CartSidebar 
+      <CartSidebar
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cartItems={cart}
         onRemove={handleRemoveFromCart}
         onUpdateQuantity={handleUpdateCartQuantity}
+        onCheckout={() => {
+          setIsCartOpen(false);
+          navigate('checkout');
+        }}
       />
       <main>
         {currentPage === 'home' && (
@@ -319,7 +328,18 @@ const AppContent: React.FC = () => {
         )}
         {currentPage === 'about' && <AboutPage onNavigate={navigate} />}
         {currentPage === 'shop' && <ShopPage onAddToCart={handleAddToCart} products={products} initialCategory={shopCategory} />}
+        {currentPage === 'designers-works' && <DesignersWorks />}
+        {currentPage === 'checkout' && (
+          <CheckoutPage
+            cartItems={cart}
+            onOrderPlaced={() => setCart([])}
+            onNavigate={navigate}
+          />
+        )}
         {currentPage === 'policy-shipping' && <ShippingPolicyPage onNavigate={navigate} />}
+        {currentPage === 'faq' && <FAQPage onNavigate={navigate} />}
+        {currentPage === 'policy-payment' && <PaymentMethodsPage onNavigate={navigate} />}
+        {currentPage === 'policy-store' && <StorePolicyPage onNavigate={navigate} />}
         {currentPage === 'user-dashboard' && (
           <UserDashboard 
             onNavigate={navigate}

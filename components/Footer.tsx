@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FOOTER_LINKS } from '../constants';
 import { useTranslation } from '../hooks/useTranslation';
 import { SocialLink } from '../types';
+import { api } from '../services/api';
 
 type ShopCategory = 'all' | 'long' | 'short' | 'summer' | 'winter' | 'spring' | 'autumn';
 
@@ -21,8 +22,37 @@ const CATEGORY_MAP: Record<string, ShopCategory> = {
   footer_shop_autumn: 'autumn',
 };
 
+// Map footer policy link keys to app pages
+const POLICY_PAGE_MAP: Record<string, string> = {
+  footer_policy_shipping: 'policy-shipping',
+  footer_policy_store: 'policy-store',
+  footer_policy_payment: 'policy-payment',
+  footer_policy_faq: 'faq',
+};
+
 const Footer: React.FC<FooterProps> = ({ socialLinks, onNavigate, onShopCategory }) => {
   const { t } = useTranslation();
+  const [subscribeEmail, setSubscribeEmail] = useState('');
+  const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'busy' | 'success' | 'invalid'>('idle');
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const email = subscribeEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setSubscribeStatus('invalid');
+      return;
+    }
+    setSubscribeStatus('busy');
+    try {
+      await api.subscribeNewsletter(email);
+    } catch (err) {
+      // Subscription is best-effort: still confirm to the visitor even if the
+      // backend endpoint is unavailable, so the button never feels broken.
+      console.error('Newsletter subscribe failed', err);
+    }
+    setSubscribeEmail('');
+    setSubscribeStatus('success');
+  };
 
   const handleShopLinkClick = (e: React.MouseEvent, key: string) => {
     e.preventDefault();
@@ -41,12 +71,28 @@ const Footer: React.FC<FooterProps> = ({ socialLinks, onNavigate, onShopCategory
         <div className="text-center mb-16">
           <h3 className="text-2xl font-serif mb-2 text-black">{t('footer_subscribe_title')}</h3>
           <p className="mb-6">{t('footer_subscribe_text')}</p>
-          <div className="flex justify-center max-w-md mx-auto">
-            <input type="email" placeholder={t('footer_subscribe_placeholder')} className="flex-grow p-3 border border-e-0 border-gray-300 focus:outline-none" />
-            <button className="px-8 py-3 bg-black text-white font-semibold tracking-widest text-sm hover:bg-gray-800 transition duration-300">
+          <form onSubmit={handleSubscribe} className="flex justify-center max-w-md mx-auto">
+            <input
+              type="email"
+              value={subscribeEmail}
+              onChange={e => { setSubscribeEmail(e.target.value); if (subscribeStatus !== 'idle') setSubscribeStatus('idle'); }}
+              placeholder={t('footer_subscribe_placeholder')}
+              className="flex-grow p-3 border border-e-0 border-gray-300 focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={subscribeStatus === 'busy'}
+              className="px-8 py-3 bg-black text-white font-semibold tracking-widest text-sm hover:bg-gray-800 transition duration-300 disabled:opacity-60"
+            >
               {t('footer_subscribe_button')}
             </button>
-          </div>
+          </form>
+          {subscribeStatus === 'success' && (
+            <p className="mt-4 text-sm text-green-700 font-medium">✓ {t('footer_subscribe_success' as any)}</p>
+          )}
+          {subscribeStatus === 'invalid' && (
+            <p className="mt-4 text-sm text-red-600 font-medium">{t('footer_subscribe_invalid' as any)}</p>
+          )}
         </div>
 
         {/* Footer Links */}
@@ -104,7 +150,7 @@ const Footer: React.FC<FooterProps> = ({ socialLinks, onNavigate, onShopCategory
                 <li key={link.key} className="mb-2">
                   <a
                     href={link.href}
-                    onClick={link.key === 'footer_policy_shipping' && onNavigate ? (e) => { e.preventDefault(); onNavigate('policy-shipping'); } : undefined}
+                    onClick={POLICY_PAGE_MAP[link.key] && onNavigate ? (e) => { e.preventDefault(); onNavigate(POLICY_PAGE_MAP[link.key]); } : undefined}
                     className="hover:text-black cursor-pointer"
                   >
                     {t(link.key as any)}

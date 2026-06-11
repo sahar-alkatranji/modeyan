@@ -9,9 +9,10 @@ interface CartSidebarProps {
   cartItems: CartItem[];
   onRemove: (productId: number, size: string) => void;
   onUpdateQuantity: (productId: number, size: string, newQuantity: number) => void;
+  onCheckout: () => void;
 }
 
-const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, onRemove, onUpdateQuantity }) => {
+const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, onRemove, onUpdateQuantity, onCheckout }) => {
   const { t } = useTranslation();
   const { direction } = useLanguage();
 
@@ -83,7 +84,10 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose, cartItems, o
                 <span className="text-lg font-semibold text-black">{t('cart_subtotal')}</span>
                 <span className="text-lg font-semibold text-black">${subtotal.toFixed(2)}</span>
                 </div>
-                <button className="w-full bg-black text-white py-3 tracking-widest text-sm font-semibold hover:bg-gray-800 transition-colors duration-300">
+                <button
+                  onClick={onCheckout}
+                  className="w-full bg-black text-white py-3 tracking-widest text-sm font-semibold hover:bg-gray-800 transition-colors duration-300"
+                >
                 {t('cart_checkout')}
                 </button>
             </footer>

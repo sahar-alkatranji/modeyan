@@ -22,11 +22,12 @@ import { AdminTopups } from './dashboard/AdminTopups';
 import AdminSettings from './dashboard/AdminSettings';
 import { SupportChat } from './dashboard/SupportChat';
 import { OrderChat } from './dashboard/OrderChat';
+import { ShippingInfo } from './dashboard/ShippingInfo';
 
 const ROLE_IMAGES = {
   customer: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop',
   designer: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=1974&auto=format&fit=crop',
-  tailor: 'https://images.unsplash.com/photo-1550920430-b3b4f624d783?q=80&w=2070&auto=format&fit=crop',
+  tailor: 'https://images.unsplash.com/photo-1606501126768-b78d4569d3f9?q=80&w=2070&auto=format&fit=crop',
   manager: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop',
   default: 'https://i.pinimg.com/1200x/6a/8a/d1/6a8ad1d51775ca4922490cc273a4cd01.jpg'
 };
@@ -50,7 +51,7 @@ interface UserDashboardProps {
   onLogout: () => void;
 }
 
-type DashboardView = 'overview' | 'design' | 'my-designs' | 'orders' | 'profile' | 'wallet' | 'portfolio' | 'portfolio-add' | 'portfolio-detail' | 'requests' | 'support-chat' | 'admin-approvals' | 'admin-products' | 'admin-users' | 'admin-payments' | 'admin-socials' | 'admin-design-assets' | 'admin-orders' | 'admin-topups' | 'admin-settings' | 'admin-support';
+type DashboardView = 'overview' | 'design' | 'my-designs' | 'orders' | 'profile' | 'wallet' | 'portfolio' | 'portfolio-add' | 'portfolio-detail' | 'requests' | 'support-chat' | 'shipping-info' | 'admin-approvals' | 'admin-products' | 'admin-users' | 'admin-payments' | 'admin-socials' | 'admin-design-assets' | 'admin-orders' | 'admin-topups' | 'admin-settings' | 'admin-support';
 
 const UserDashboard: React.FC<UserDashboardProps> = ({ 
   onNavigate, userRole, orders, setOrders, users, setUsers, products, setProducts, socialLinks, setSocialLinks, dressParts, setDressParts, setSavedDesigns, savedDesigns, onLogout
@@ -375,6 +376,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
 
                   <div className="mt-6 mb-2 px-3 text-start"><span className="text-sm font-black text-brand-gold uppercase tracking-[0.2em]">{t('dashboard_sidebar_personal')}</span></div>
                   <SidebarItem view="wallet" icon="credit-card" label={t('dashboard_menu_wallet')} />
+                  <SidebarItem view="shipping-info" icon="box" label={t('dashboard_menu_shipping' as any) || 'Shipping Requests'} />
                   <SidebarItem view="support-chat" icon="message-square" label={t('support_chat_title' as any) || 'Support'} />
                   <SidebarItem view="profile" icon="settings" label={t('dashboard_menu_profile')} />
               </nav>
@@ -447,6 +449,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
 
                   <div className="mt-6 mb-2 px-3 text-start"><span className="text-sm font-black text-brand-gold uppercase tracking-[0.2em]">{t('dashboard_sidebar_personal')}</span></div>
                   <SidebarItem view="wallet" icon="credit-card" label={t('dashboard_menu_wallet')} />
+                  <SidebarItem view="shipping-info" icon="box" label={t('dashboard_menu_shipping' as any) || 'Shipping Requests'} />
                   <SidebarItem view="support-chat" icon="message-square" label={t('support_chat_title' as any) || 'Support'} />
                   <SidebarItem view="profile" icon="settings" label={t('dashboard_menu_profile')} />
               </nav>
@@ -502,6 +505,9 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
               )}
               {currentView === 'support-chat' && (
                 <SupportChat mode="user" />
+              )}
+              {currentView === 'shipping-info' && (
+                <ShippingInfo />
               )}
               {currentView === 'admin-support' && (
                 <SupportChat mode="admin" />

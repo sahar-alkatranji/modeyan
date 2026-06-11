@@ -523,6 +523,14 @@ class ApiClient {
     });
   }
 
+  // Newsletter subscription (POST /newsletter/subscribe)
+  async subscribeNewsletter(email: string): Promise<any> {
+    return this.request<any>('/newsletter/subscribe', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
   // AI Image Generation (POST /ai/generate-design-public) — needs longer timeout (90s)
   async generateDesignImage(
     prompt: string,

@@ -5,7 +5,7 @@ import { useTranslation } from '../hooks/useTranslation';
 import { SocialLink } from '../types';
 
 interface HeaderProps {
-  onNavigate: (page: 'home' | 'login' | 'shop' | 'about' | 'user-dashboard', anchor?: string) => void;
+  onNavigate: (page: 'home' | 'login' | 'shop' | 'about' | 'user-dashboard' | 'designers-works', anchor?: string) => void;
   cartItemCount: number;
   onCartClick: () => void;
   socialLinks: SocialLink[];
